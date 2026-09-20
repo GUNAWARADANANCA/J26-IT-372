@@ -59,7 +59,7 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
       >
         <Box>
           <Typography variant="caption" color="text.secondary">
-            DocType
+            Module
           </Typography>
           <Typography variant="h5">{title || meta.name}</Typography>
           <Typography variant="body2" color="text.secondary">

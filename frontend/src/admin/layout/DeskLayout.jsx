@@ -76,7 +76,7 @@ export default function DeskLayout({ onResetSeed, resetting }) {
               color="text.secondary"
               sx={{ px: 1, mb: 0.5, textTransform: 'uppercase' }}
             >
-              DocTypes
+              Modules
             </Typography>
             <List dense disablePadding>
               {nav.map((item) => (
