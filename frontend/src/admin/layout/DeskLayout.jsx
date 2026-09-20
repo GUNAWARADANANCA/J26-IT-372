@@ -12,6 +12,7 @@ import Avatar from '@mui/material/Avatar'
 import Stack from '@mui/material/Stack'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined'
+import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 
 const DRAWER_WIDTH = 240
@@ -28,6 +29,12 @@ const nav = [
     label: 'Daily KPI Log',
     desc: 'Transaction',
     icon: <AssessmentOutlinedIcon fontSize="small" />,
+  },
+  {
+    to: '/attendance-log',
+    label: 'Attendance Logs',
+    desc: 'Fingerprint',
+    icon: <FingerprintOutlinedIcon fontSize="small" />,
   },
 ]
 

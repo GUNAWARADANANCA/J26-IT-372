@@ -8,11 +8,13 @@ import {
 export const DOCTYPES = {
   employee: 'employee',
   daily_kpi_log: 'daily_kpi_log',
+  attendance_log: 'attendance_log',
 }
 
 const SEED_URLS = {
   [DOCTYPES.employee]: '/data/employees.json',
   [DOCTYPES.daily_kpi_log]: '/data/daily_kpi_logs.json',
+  [DOCTYPES.attendance_log]: '/data/attendance_logs.json',
 }
 
 async function fetchJson(url) {

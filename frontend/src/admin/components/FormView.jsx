@@ -88,8 +88,33 @@ export default function FormView({
     return list('employee').find((e) => e.name === doc.employee_id) ?? null
   }, [doc.employee_id])
 
+  function applyFetchFrom(nextDoc, changedField, changedValue) {
+    const patches = {}
+    for (const section of meta.sections) {
+      for (const f of section.fields) {
+        if (!f.fetch_from) continue
+        const [sourceField, sourceProp] = f.fetch_from.split('.')
+        if (sourceField !== changedField) continue
+        if (!changedValue) {
+          patches[f.fieldname] = ''
+          continue
+        }
+        const linked = list(
+          meta.sections
+            .flatMap((s) => s.fields)
+            .find((x) => x.fieldname === sourceField)?.options || 'employee',
+        ).find((r) => r.name === changedValue)
+        patches[f.fieldname] = linked?.[sourceProp] ?? ''
+      }
+    }
+    return { ...nextDoc, ...patches }
+  }
+
   function setField(fieldname, value) {
-    setDoc((prev) => ({ ...prev, [fieldname]: value }))
+    setDoc((prev) => {
+      const next = { ...prev, [fieldname]: value }
+      return applyFetchFrom(next, fieldname, value)
+    })
   }
 
   async function handleSave(e) {
@@ -291,6 +316,19 @@ function FieldInput({ field, value, onChange, disabled }) {
         value={value ?? ''}
         disabled={disabled}
         InputLabelProps={{ shrink: true }}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    )
+  }
+
+  if (field.fieldtype === 'Time') {
+    return (
+      <TextField
+        type="time"
+        value={value ?? ''}
+        disabled={disabled}
+        InputLabelProps={{ shrink: true }}
+        inputProps={{ step: 60 }}
         onChange={(e) => onChange(e.target.value)}
       />
     )

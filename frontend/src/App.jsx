@@ -9,6 +9,8 @@ import EmployeeList from './admin/pages/EmployeeList'
 import EmployeeForm from './admin/pages/EmployeeForm'
 import DailyKpiList from './admin/pages/DailyKpiList'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
+import AttendanceLogList from './admin/pages/AttendanceLogList'
+import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import { ensureSeeded, resetToSeed } from './admin/data/seed'
 
 function EmployeeFormRoute({ onSaved }) {
@@ -28,6 +30,18 @@ function DailyKpiFormRoute({ onSaved }) {
   const isNew = id === 'new'
   return (
     <DailyKpiForm
+      name={isNew ? null : decodeURIComponent(id)}
+      isNew={isNew}
+      onSaved={onSaved}
+    />
+  )
+}
+
+function AttendanceLogFormRoute({ onSaved }) {
+  const { id } = useParams()
+  const isNew = id === 'new'
+  return (
+    <AttendanceLogForm
       name={isNew ? null : decodeURIComponent(id)}
       isNew={isNew}
       onSaved={onSaved}
@@ -128,6 +142,14 @@ export default function App() {
         <Route
           path="daily-kpi-log/:id"
           element={<DailyKpiFormRoute onSaved={bump} />}
+        />
+        <Route
+          path="attendance-log"
+          element={<AttendanceLogList refreshKey={refreshKey} />}
+        />
+        <Route
+          path="attendance-log/:id"
+          element={<AttendanceLogFormRoute onSaved={bump} />}
         />
         <Route path="*" element={<Navigate to="/employee" replace />} />
       </Route>
