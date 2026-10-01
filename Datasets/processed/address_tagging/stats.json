@@ -1,0 +1,95 @@
+{
+  "seed": 13,
+  "deepparse_skipped": {
+    "other_language": 3338,
+    "tokenizer_mismatch": 536,
+    "duplicate": 7330,
+    "foreign_script": 100
+  },
+  "splits": {
+    "test": {
+      "examples": 5337,
+      "groups": 606,
+      "by_source": {
+        "synthetic": 3790,
+        "deepparse_lk": 1547
+      },
+      "by_script": {
+        "si": 1195,
+        "en": 2691,
+        "ta": 1150,
+        "mixed": 301
+      },
+      "noisy": 1106,
+      "labels": {
+        "NAME": 13712,
+        "HOUSE": 7025,
+        "STREET": 10696,
+        "CITY": 5521,
+        "POSTCODE": 2786,
+        "REGION": 2343,
+        "COUNTRY": 2610,
+        "O": 199,
+        "LOCALITY": 1582
+      }
+    },
+    "train": {
+      "examples": 24245,
+      "groups": 2750,
+      "by_source": {
+        "synthetic": 16887,
+        "deepparse_lk": 7358
+      },
+      "by_script": {
+        "si": 5137,
+        "en": 12583,
+        "ta": 5219,
+        "mixed": 1305,
+        "none": 1
+      },
+      "noisy": 4891,
+      "labels": {
+        "NAME": 61244,
+        "HOUSE": 32003,
+        "STREET": 49190,
+        "CITY": 25119,
+        "COUNTRY": 12681,
+        "LOCALITY": 6844,
+        "POSTCODE": 12569,
+        "REGION": 11155,
+        "O": 906
+      }
+    },
+    "val": {
+      "examples": 4878,
+      "groups": 623,
+      "by_source": {
+        "synthetic": 3760,
+        "deepparse_lk": 1118
+      },
+      "by_script": {
+        "ta": 1191,
+        "si": 1145,
+        "en": 2238,
+        "mixed": 304
+      },
+      "noisy": 975,
+      "labels": {
+        "NAME": 13626,
+        "HOUSE": 7062,
+        "STREET": 10861,
+        "CITY": 5039,
+        "POSTCODE": 2285,
+        "LOCALITY": 1496,
+        "COUNTRY": 2086,
+        "REGION": 1319,
+        "O": 214
+      }
+    }
+  },
+  "group_overlap": {
+    "test-train": 0,
+    "test-val": 0,
+    "train-val": 0
+  }
+}

@@ -1,0 +1,298 @@
+{
+  "gazetteer_madurapa/cities.sql": {
+    "url": "https://raw.githubusercontent.com/madurapa/sri-lanka-provinces-districts-cities/master/cities.sql",
+    "licence": "MIT",
+    "citation": "M. Madurapperuma, sri-lanka-provinces-districts-cities (GitHub)",
+    "bytes": 310931,
+    "sha256": "0749339607e1b755ad9f15e739c43fcf58833e5169f699f1bf492b6bde1766fd",
+    "retrieved_at": "2026-10-01T15:43:53+00:00"
+  },
+  "gazetteer_madurapa/districts.sql": {
+    "url": "https://raw.githubusercontent.com/madurapa/sri-lanka-provinces-districts-cities/master/districts.sql",
+    "licence": "MIT",
+    "citation": "M. Madurapperuma, sri-lanka-provinces-districts-cities (GitHub)",
+    "bytes": 3018,
+    "sha256": "29bb99c3dbfece004b299bed00f9e292a969ce43d5b9636308881e0753336f48",
+    "retrieved_at": "2026-10-01T15:43:54+00:00"
+  },
+  "gazetteer_madurapa/provinces.sql": {
+    "url": "https://raw.githubusercontent.com/madurapa/sri-lanka-provinces-districts-cities/master/provinces.sql",
+    "licence": "MIT",
+    "citation": "M. Madurapperuma, sri-lanka-provinces-districts-cities (GitHub)",
+    "bytes": 1444,
+    "sha256": "af5c90e4da4405521fbd6e9a5e8a708a7a82ee55b49b9745d9e0fbe4df56389a",
+    "retrieved_at": "2026-10-01T15:43:54+00:00"
+  },
+  "gazetteer_madurapa/LICENSE": {
+    "url": "https://raw.githubusercontent.com/madurapa/sri-lanka-provinces-districts-cities/master/LICENSE",
+    "licence": "MIT",
+    "citation": "M. Madurapperuma, sri-lanka-provinces-districts-cities (GitHub)",
+    "bytes": 1082,
+    "sha256": "b3a48bb1023db2de6f59d05ef2c2912fb18e86a0a48cbcbf68edeb3af617c205",
+    "retrieved_at": "2026-10-01T15:43:55+00:00"
+  },
+  "deepparse_worldwide/lk.parquet": {
+    "url": "https://huggingface.co/datasets/deepparse/worldwide-addresses/resolve/main/lk/chunk-0.parquet",
+    "licence": "CC BY 4.0",
+    "citation": "M. Yassine and D. Beauchemin, Structured Multinational Address Data (deepparse/worldwide-addresses)",
+    "bytes": 231731,
+    "sha256": "1b7c105ae8ab0a02531408cfb399797aa0cd189788b506800babca660c0df783",
+    "retrieved_at": "2026-10-01T15:43:57+00:00"
+  },
+  "slpost/domestic_postage_revision_2026-02-09.pdf": {
+    "url": "https://slpost.gov.lk/wp-content/uploads/2026/02/domesticpostagerevision2026-02-09.pdf",
+    "licence": "Public government notice (Department of Posts, Sri Lanka)",
+    "citation": "Department of Posts Sri Lanka, Domestic postage revision effective 9 February 2026",
+    "bytes": 1216875,
+    "sha256": "07889bc2634da6e4dfd7175b85d04b1ceb2817bb3e9947bc4f317cdfb3b7e77f",
+    "retrieved_at": "2026-10-01T15:43:58+00:00"
+  },
+  "fonts/NotoSansSinhala.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssinhala/NotoSansSinhala%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 1181956,
+    "sha256": "9bd93e407a278075be403324063bc94a7e306c44de4df81214e932330c22eecf",
+    "retrieved_at": "2026-10-01T15:44:00+00:00"
+  },
+  "fonts/NotoSerifSinhala.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifsinhala/NotoSerifSinhala%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 1026928,
+    "sha256": "2b0df6b8bde56d3b934ba89fada82486b1ec50ee06842c81be36496f8c9b5ac9",
+    "retrieved_at": "2026-10-01T15:44:01+00:00"
+  },
+  "fonts/AbhayaLibre-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/abhayalibre/AbhayaLibre-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 555376,
+    "sha256": "d4279d38a0012fa54d340979694e70e3235266220dedc0d7000131345fb33bd4",
+    "retrieved_at": "2026-10-01T15:44:02+00:00"
+  },
+  "fonts/AbhayaLibre-Bold.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/abhayalibre/AbhayaLibre-Bold.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 527476,
+    "sha256": "01fb4cd74841c5f108372737a74cfedeaf0a722ca23e2275dc69f411dc0ad5a6",
+    "retrieved_at": "2026-10-01T15:44:03+00:00"
+  },
+  "fonts/Yaldevi.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/yaldevi/Yaldevi%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 469216,
+    "sha256": "21d5516cd9a8831964b57503f5b7a119aafa9603bdddd0183e91a0ac8c8dc2e4",
+    "retrieved_at": "2026-10-01T15:44:04+00:00"
+  },
+  "fonts/GemunuLibre.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/gemunulibre/GemunuLibre%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 256512,
+    "sha256": "e723b7f44b06b2443b44eb734f32794eae64915029842d2b2187eadd74b377a6",
+    "retrieved_at": "2026-10-01T15:44:04+00:00"
+  },
+  "fonts/StickNoBills.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/sticknobills/StickNoBills%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 279212,
+    "sha256": "4754d337fbf0cffac744b58316c3d091b7abc668d7b9fb5df082e1905b27c027",
+    "retrieved_at": "2026-10-01T15:44:05+00:00"
+  },
+  "fonts/OFL-NotoSansSinhala.txt": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssinhala/OFL.txt",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 4383,
+    "sha256": "2d6f7c43bce61f4b1919379f901bc613484f5285f520b6d29bb7c1f31b17e841",
+    "retrieved_at": "2026-10-01T15:44:06+00:00"
+  },
+  "fonts/NotoSansTamil.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanstamil/NotoSansTamil%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 340668,
+    "sha256": "aa3a9b321f4b0bb2c40203ffbde9af89713227866e0e13f76e5b9eeea727cf88",
+    "retrieved_at": "2026-10-01T15:44:07+00:00"
+  },
+  "fonts/NotoSerifTamil.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoseriftamil/NotoSerifTamil%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 420124,
+    "sha256": "4b10fe56ee22907a80136c16dbe386ee20f3bf116332b35128bb35eeb775d91e",
+    "retrieved_at": "2026-10-01T15:44:07+00:00"
+  },
+  "fonts/HindMadurai-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/hindmadurai/HindMadurai-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 136868,
+    "sha256": "8bd56d6002d4fe4f5f378dd29f9ad382dbbd03a2bf16da24599aabe33f9b55b3",
+    "retrieved_at": "2026-10-01T15:44:08+00:00"
+  },
+  "fonts/MuktaMalar-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/muktamalar/MuktaMalar-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 243008,
+    "sha256": "51904041260855ef4ba2bf845c9bc6511ea330157b704a44c85b029195d32a73",
+    "retrieved_at": "2026-10-01T15:44:09+00:00"
+  },
+  "fonts/Catamaran.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/catamaran/Catamaran%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 184276,
+    "sha256": "f6ee331c381f441454225196d7930d4d0a31554d7f1f9c8c58149ca9e122b294",
+    "retrieved_at": "2026-10-01T15:44:10+00:00"
+  },
+  "fonts/Kavivanar-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/kavivanar/Kavivanar-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 66324,
+    "sha256": "ab373a218ee8464fee6ed14ee864d5a6c5146ca0458f0a61678a1889fe44b710",
+    "retrieved_at": "2026-10-01T15:44:11+00:00"
+  },
+  "fonts/Pavanam-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/pavanam/Pavanam-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 63100,
+    "sha256": "d2805bfdca57f7d7a0c69edf35a5f98d4605af6603dcca943db5d11ea531c2f3",
+    "retrieved_at": "2026-10-01T15:44:12+00:00"
+  },
+  "fonts/MeeraInimai-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/meerainimai/MeeraInimai-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 72260,
+    "sha256": "3dffa9501ac790b5e1c3ebecdba4f2c90a617a7d3131fad129893929bc56708e",
+    "retrieved_at": "2026-10-01T15:44:14+00:00"
+  },
+  "fonts/BalooThambi2.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/baloothambi2/BalooThambi2%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 307136,
+    "sha256": "6739a11d3557b7426f0f43ce3a22ff6fbfee2d3be56ffb4df093d35d3460bf73",
+    "retrieved_at": "2026-10-01T15:44:15+00:00"
+  },
+  "fonts/TiroTamil-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/tirotamil/TiroTamil-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 197432,
+    "sha256": "f4ad26a93893a45fcb44bf117940d462c5aef1887543e9b8bf150767e597a76f",
+    "retrieved_at": "2026-10-01T15:44:15+00:00"
+  },
+  "fonts/NotoSans.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 2049096,
+    "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+    "retrieved_at": "2026-10-01T15:44:17+00:00"
+  },
+  "fonts/NotoSerif.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserif/NotoSerif%5Bwdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 1887192,
+    "sha256": "4d8e6761424656867019081a1a01336f3cb086982682698714054fc33f782713",
+    "retrieved_at": "2026-10-01T15:44:18+00:00"
+  },
+  "fonts/SourceSans3.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/sourcesans3/SourceSans3%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 646340,
+    "sha256": "042fe2cc0b933e328410d7acbd0aa6a1873dca5aef81875f4bc214b08825c7b9",
+    "retrieved_at": "2026-10-01T15:44:19+00:00"
+  },
+  "fonts/Merriweather.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/merriweather/Merriweather%5Bopsz,wdth,wght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 4628080,
+    "sha256": "d0ed0e359e396af7ad05e73dffd11a3a4c326ea0d0283c56bd9361cb2cc86a96",
+    "retrieved_at": "2026-10-01T15:44:22+00:00"
+  },
+  "fonts/CourierPrime-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/courierprime/CourierPrime-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 71188,
+    "sha256": "72f793376f8e2841656bf21d77a5de010f2929bd6956a22ee848ad0c7eb978af",
+    "retrieved_at": "2026-10-01T15:44:22+00:00"
+  },
+  "fonts/Caveat.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/caveat/Caveat%5Bwght%5D.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 403648,
+    "sha256": "0bdb6b660482d31531b3945849fba5916b3ef8695da7024a9e6b9ee3c4157988",
+    "retrieved_at": "2026-10-01T15:44:23+00:00"
+  },
+  "fonts/Kalam-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/kalam/Kalam-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 427360,
+    "sha256": "57cecb63d4608019371954274ae1d8c397764debd5b19d4a33c1efa4dc923c0b",
+    "retrieved_at": "2026-10-01T15:44:23+00:00"
+  },
+  "fonts/IndieFlower-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/indieflower/IndieFlower-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 108196,
+    "sha256": "ccc94b22b156e9c5dfe50fd051f01b097600b252c24473e624bb43a143140a94",
+    "retrieved_at": "2026-10-01T15:44:24+00:00"
+  },
+  "fonts/PatrickHand-Regular.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/patrickhand/PatrickHand-Regular.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 214772,
+    "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc",
+    "retrieved_at": "2026-10-01T15:44:25+00:00"
+  },
+  "fonts/ShadowsIntoLight.ttf": {
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/shadowsintolight/ShadowsIntoLight.ttf",
+    "licence": "SIL Open Font License 1.1",
+    "citation": "Google Fonts (github.com/google/fonts)",
+    "bytes": 54304,
+    "sha256": "1347863151acdc00fa281daaba1a3543dbce5870b55f9cf7479a15bb84007681",
+    "retrieved_at": "2026-10-01T15:44:25+00:00"
+  },
+  "osm/post_offices.json": {
+    "url": "https://overpass-api.de/api/interpreter",
+    "licence": "ODbL 1.0 (OpenStreetMap contributors)",
+    "citation": "OpenStreetMap contributors, via the Overpass API",
+    "bytes": 163524,
+    "sha256": "ff521b6be1c03870d49b099f8a000777c510883bd3b9484d96a9e0dfa3db31d4",
+    "retrieved_at": "2026-10-01T15:44:41+00:00"
+  },
+  "osm/streets_si_ta.json": {
+    "url": "https://overpass-api.de/api/interpreter",
+    "licence": "ODbL 1.0 (OpenStreetMap contributors)",
+    "citation": "OpenStreetMap contributors, via the Overpass API",
+    "bytes": 652974,
+    "sha256": "7e94b71dfb8f921aad455a879d749e0d4aca94ffe8dfbd9d5c7d64c71730b0d5",
+    "retrieved_at": "2026-10-01T15:44:41+00:00"
+  },
+  "wikidata/sri_lankan_person_names.csv": {
+    "url": "https://query.wikidata.org/sparql",
+    "licence": "CC0 1.0",
+    "citation": "Wikidata given-name (P735) and family-name (P734) labels of Sri Lankan citizens",
+    "bytes": 46837,
+    "sha256": "677a94a92c86240af3b4e737617dc9921e0ef7d8ef49f9cfcf6ee18ad2314080",
+    "retrieved_at": "2026-10-01T15:44:41+00:00"
+  }
+}

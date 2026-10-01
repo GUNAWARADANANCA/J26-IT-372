@@ -1,0 +1,2 @@
+image_id,file_name,writer_code,base_address_id,script,style,mixed_script,split,consent_reference,capture_device,annotator_1,annotator_2,adjudicated_by,recipient_name,house_number,street,locality,city,postcode,region,recipient_text_exact,sender_text_exact,unresolved_disagreement,notes
+ENV-0001,ENV-0001.jpg,W01,A001,si,handwritten,false,dev,CONSENT-2026-001,ESP32-CAM OV3660,AN1,AN2,AN1,,,,,,,,,,false,example row - replace
