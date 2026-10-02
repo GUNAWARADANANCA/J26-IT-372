@@ -1,0 +1,58 @@
+"""PostAssist LK - Smart Registered Mail Intake and Tracking (J26-IT-372, IT23324138).
+
+Run (from backend/):  .venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+API docs:             http://localhost:8000/docs
+"""
+from __future__ import annotations
+
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from .config import get_settings
+from .db import ensure_indexes, get_client
+from .routers import admin, auth, devices, intake, iot, items, notifications, public, reports, review, scans
+from .seed import seed
+from .services.notifications.outbox import OutboxWorker
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+log = logging.getLogger("postassist")
+API_VERSION = "1.0.0"
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    s = get_settings()
+    ensure_indexes()
+    if s.demo_seed:
+        seed()
+    worker = OutboxWorker(s) if s.outbox_worker_enabled else None
+    if worker:
+        worker.start()
+    app.state.outbox_worker = worker
+    yield
+    if worker:
+        worker.stop()
+    get_client().close()
+
+
+app = FastAPI(
+    title="PostAssist LK - Smart Registered Mail Intake and Tracking",
+    version=API_VERSION,
+    description="Counter acceptance with assisted OCR and IoT weighing, versioned tariffs, barcode/QR labels, "
+                "authenticated location-aware scans, offline sync and an outbox for sender notifications.",
+    lifespan=lifespan,
+)
+app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins, allow_credentials=False,
+                   allow_methods=["*"], allow_headers=["*"])
+
+for r in (auth, intake, items, scans, review, notifications, devices, iot, public, admin, reports):
+    app.include_router(r.router)
+
+
+@app.get("/api/health", tags=["meta"])
+def health():
+    get_client().admin.command("ping")
+    return {"status": "ok", "api_version": API_VERSION, "component": "smart-registered-mail"}

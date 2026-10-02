@@ -1,0 +1,67 @@
+{
+  "tariff_version": "SLP-DOM-2026-02-09",
+  "title": "Sri Lanka Post - domestic ordinary/business letter postage with registration",
+  "service": "domestic_registered_letter",
+  "currency": "LKR",
+  "effective_from": "2026-02-09",
+  "effective_to": null,
+  "approval_status": "transcribed",
+  "approval_note": "Transcribed by the student from the official Sinhala notice (pages 1, 2, 7 and 8). Must be checked against the current counter price chart by an authorised postal officer and then marked 'approved' in the admin screen before it is used for anything other than research demonstrations.",
+  "source": {
+    "publisher": "Department of Posts, Sri Lanka",
+    "document": "තැපැල් ගාස්තු ලේඛනය (2026.02.09 දින සිට ක්‍රියාත්මක වන පරිදි) - Domestic postage revision effective 9 February 2026",
+    "url": "https://slpost.gov.lk/wp-content/uploads/2026/02/domesticpostagerevision2026-02-09.pdf",
+    "local_copy": "Datasets/raw/slpost/domestic_postage_revision_2026-02-09.pdf",
+    "items_used": {
+      "01": "Ordinary / business letter (maximum 2 kg) - weight bands",
+      "02": "Registration fee",
+      "25": "Insurance fee (registration mandatory)",
+      "29": "Advice of delivery (භාරදීමේ නිවේදනය)"
+    }
+  },
+  "max_weight_g": 2000,
+  "band_rule": "A weight W belongs to the band where min_exclusive_g < W <= max_inclusive_g (the notice writes every band as 'a < W <= b').",
+  "letter_postage_bands": [
+    {"min_exclusive_g": 0, "max_inclusive_g": 30, "postage_lkr": 70.00},
+    {"min_exclusive_g": 30, "max_inclusive_g": 40, "postage_lkr": 80.00},
+    {"min_exclusive_g": 40, "max_inclusive_g": 50, "postage_lkr": 90.00},
+    {"min_exclusive_g": 50, "max_inclusive_g": 60, "postage_lkr": 100.00},
+    {"min_exclusive_g": 60, "max_inclusive_g": 70, "postage_lkr": 110.00},
+    {"min_exclusive_g": 70, "max_inclusive_g": 80, "postage_lkr": 120.00},
+    {"min_exclusive_g": 80, "max_inclusive_g": 90, "postage_lkr": 130.00},
+    {"min_exclusive_g": 90, "max_inclusive_g": 100, "postage_lkr": 140.00},
+    {"min_exclusive_g": 100, "max_inclusive_g": 200, "postage_lkr": 160.00},
+    {"min_exclusive_g": 200, "max_inclusive_g": 300, "postage_lkr": 180.00},
+    {"min_exclusive_g": 300, "max_inclusive_g": 400, "postage_lkr": 200.00},
+    {"min_exclusive_g": 400, "max_inclusive_g": 500, "postage_lkr": 220.00},
+    {"min_exclusive_g": 500, "max_inclusive_g": 600, "postage_lkr": 240.00},
+    {"min_exclusive_g": 600, "max_inclusive_g": 700, "postage_lkr": 260.00},
+    {"min_exclusive_g": 700, "max_inclusive_g": 800, "postage_lkr": 280.00},
+    {"min_exclusive_g": 800, "max_inclusive_g": 900, "postage_lkr": 300.00},
+    {"min_exclusive_g": 900, "max_inclusive_g": 1000, "postage_lkr": 320.00},
+    {"min_exclusive_g": 1000, "max_inclusive_g": 1250, "postage_lkr": 350.00},
+    {"min_exclusive_g": 1250, "max_inclusive_g": 1500, "postage_lkr": 380.00},
+    {"min_exclusive_g": 1500, "max_inclusive_g": 1750, "postage_lkr": 410.00},
+    {"min_exclusive_g": 1750, "max_inclusive_g": 2000, "postage_lkr": 440.00}
+  ],
+  "registration_fee_lkr": 60.00,
+  "optional_services": {
+    "advice_of_delivery": {
+      "label": "Advice of delivery",
+      "fee_lkr": 100.00,
+      "source_item": "29"
+    },
+    "insurance": {
+      "label": "Insurance (declared value)",
+      "fee_per_block_lkr": 100.00,
+      "block_value_lkr": 1000,
+      "max_insured_value_lkr": 25000,
+      "requires_registration": true,
+      "source_item": "25"
+    }
+  },
+  "consistency_check": {
+    "_about": "Item 05 of the notice (registered mail for ministries/government departments) lists combined 'ordinary letter postage + registration fee' amounts. For every band up to 2000 g it equals item 01 + 60.00, which independently confirms the transcription of items 01 and 02. backend/tests/test_tariff.py asserts this.",
+    "item05_combined_lkr": [130.00, 140.00, 150.00, 160.00, 170.00, 180.00, 190.00, 200.00, 220.00, 240.00, 260.00, 280.00, 300.00, 320.00, 340.00, 360.00, 380.00, 410.00, 440.00, 470.00, 500.00]
+  }
+}

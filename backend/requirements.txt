@@ -1,0 +1,17 @@
+# PostAssist LK - Smart Registered Mail Intake and Tracking (backend)
+# Tested with Python 3.14 on Windows 11 and MongoDB 8.2.
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+pymongo==4.18.2
+PyJWT==2.15.1
+python-multipart==0.0.32
+numpy==2.5.3
+opencv-python-headless==5.0.0.93
+onnxruntime==1.30.0
+python-crfsuite==0.9.12
+pytesseract==0.3.13
+python-barcode==0.16.1
+qrcode==8.2
+# tests
+pytest==9.1.1
+httpx==0.28.1
