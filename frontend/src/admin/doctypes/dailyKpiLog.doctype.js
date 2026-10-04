@@ -54,6 +54,7 @@ export const dailyKpiLogDoctype = {
           fieldname: 'primary_task_type',
           label: 'Primary Task Type',
           fieldtype: 'Select',
+          creatable: true,
           reqd: true,
           options: [
             'Accounts Processing',

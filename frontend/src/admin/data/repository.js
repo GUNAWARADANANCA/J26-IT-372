@@ -77,3 +77,93 @@ export async function count(doctype) {
   const rows = await list(doctype)
   return rows.length
 }
+
+export async function getFieldOptions() {
+  return request('/api/field-options')
+}
+
+export function createFieldOption(field, value) {
+  return request('/api/field-options', {
+    method: 'POST',
+    body: JSON.stringify({ field, value }),
+  })
+}
+
+export function importExcel(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', `${API}/api/import/excel`)
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) {
+        onProgress?.({ phase: 'upload', percent: null })
+        return
+      }
+      onProgress?.({
+        phase: 'upload',
+        percent: Math.round((event.loaded / event.total) * 100),
+      })
+    }
+    xhr.upload.onload = () => {
+      onProgress?.({ phase: 'save', percent: null })
+    }
+    xhr.onload = () => {
+      let payload = null
+      try {
+        payload = JSON.parse(xhr.responseText)
+      } catch {
+        payload = null
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(payload)
+        return
+      }
+      const detail = payload?.detail
+      reject(
+        new Error(
+          typeof detail === 'string' ? detail : `Import failed (${xhr.status})`,
+        ),
+      )
+    }
+    xhr.onerror = () => reject(new Error('Import failed'))
+    const body = new FormData()
+    body.append('file', file)
+    xhr.send(body)
+  })
+}
+
+export async function exportExcel(doctype, onProgress) {
+  const response = await fetch(`${API}/api/export/${doctype}`)
+  if (!response.ok) {
+    throw new Error(`Export failed (${response.status})`)
+  }
+  const total = Number(response.headers.get('Content-Length')) || 0
+  const reader = response.body?.getReader()
+  let blob
+  if (!reader) {
+    blob = await response.blob()
+    onProgress?.({ phase: 'download', percent: 100 })
+  } else {
+    const chunks = []
+    let loaded = 0
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+      loaded += value.byteLength
+      onProgress?.({
+        phase: 'download',
+        percent: total
+          ? Math.min(100, Math.round((loaded / total) * 100))
+          : null,
+      })
+    }
+    blob = new Blob(chunks)
+  }
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download =
+    doctype === 'employee' ? 'employees.xlsx' : 'daily_kpi_logs.xlsx'
+  link.click()
+  URL.revokeObjectURL(url)
+}

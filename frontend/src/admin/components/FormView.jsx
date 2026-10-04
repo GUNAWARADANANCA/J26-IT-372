@@ -13,6 +13,7 @@ import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormSection from './FormSection'
 import LinkField from './LinkField'
+import CreatableSelect from './CreatableSelect'
 import { get as getDoc, list } from '../data/repository'
 
 function emptyFromMeta(meta) {
@@ -300,6 +301,16 @@ function FieldInput({ field, value, onChange, disabled }) {
   }
 
   if (field.fieldtype === 'Select') {
+    if (field.creatable) {
+      return (
+        <CreatableSelect
+          field={field}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+        />
+      )
+    }
     return (
       <TextField
         select

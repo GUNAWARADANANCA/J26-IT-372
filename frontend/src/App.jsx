@@ -12,6 +12,7 @@ import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import { ensureSeeded } from './admin/data/seed'
+import { FieldOptionsProvider } from './admin/data/fieldOptions'
 
 function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
@@ -106,6 +107,7 @@ export default function App() {
   }
 
   return (
+    <FieldOptionsProvider>
     <Routes>
       <Route
         element={
@@ -140,5 +142,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/employee" replace />} />
       </Route>
     </Routes>
+    </FieldOptionsProvider>
   )
 }

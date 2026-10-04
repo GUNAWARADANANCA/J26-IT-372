@@ -1,13 +1,27 @@
-"""CRUD for the three desk collections."""
+"""CRUD, Excel import, and Excel export for the desk collections."""
 
-from fastapi import APIRouter, HTTPException, Request
+import re
+
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi.responses import Response
 from pymongo.errors import DuplicateKeyError
 
 from db import get_db
+from excel_io import export_employees, export_kpi_logs, import_workbook
 
 router = APIRouter(prefix="/api")
 
 DOCTYPES = ("employee", "daily_kpi_log", "attendance_log")
+
+# Dropdowns that can grow. Values already stored on documents are included too.
+CREATABLE_FIELDS = {
+    "post_office": ("employee", "post_office"),
+    "designation": ("employee", "designation"),
+    "work_category": ("employee", "work_category"),
+    "employment_type": ("employee", "employment_type"),
+    "reward_type": ("employee", "reward_type"),
+    "primary_task_type": ("daily_kpi_log", "primary_task_type"),
+}
 
 
 def _collection(doctype: str):
@@ -25,6 +39,81 @@ def _require_name(doc: dict) -> str:
     if not name:
         raise HTTPException(status_code=400, detail="Document name is required")
     return name
+
+
+@router.post("/import/excel")
+async def import_excel(file: UploadFile = File(...)):
+    name = (file.filename or "").lower()
+    if not name.endswith((".xlsx", ".xlsm")):
+        raise HTTPException(status_code=400, detail="Upload an .xlsx Excel file")
+    payload = await file.read()
+    if not payload:
+        raise HTTPException(status_code=400, detail="The Excel file is empty")
+    try:
+        return import_workbook(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/export/employee")
+def export_employee_excel():
+    return Response(
+        content=export_employees(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": 'attachment; filename="employees.xlsx"'},
+    )
+
+
+@router.get("/export/daily_kpi_log")
+def export_kpi_excel():
+    return Response(
+        content=export_kpi_logs(),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": 'attachment; filename="daily_kpi_logs.xlsx"'},
+    )
+
+
+@router.get("/field-options")
+def list_field_options():
+    db = get_db()
+    stored = list(db["field_option"].find())
+    grouped = {field: set() for field in CREATABLE_FIELDS}
+    for row in stored:
+        field = row.get("field")
+        value = str(row.get("value") or "").strip()
+        if field in grouped and value:
+            grouped[field].add(value)
+    for field, (collection, key) in CREATABLE_FIELDS.items():
+        for value in db[collection].distinct(key):
+            text = str(value or "").strip()
+            if text:
+                grouped[field].add(text)
+    return {
+        field: sorted(values, key=str.lower) for field, values in grouped.items()
+    }
+
+
+@router.post("/field-options")
+def create_field_option(body: dict):
+    field = str(body.get("field") or "").strip()
+    value = str(body.get("value") or "").strip()
+    if field not in CREATABLE_FIELDS:
+        raise HTTPException(status_code=400, detail="This field does not allow new values")
+    if not value:
+        raise HTTPException(status_code=400, detail="Enter a value")
+
+    collection = get_db()["field_option"]
+    existing = collection.find_one(
+        {
+            "field": field,
+            "value": {"$regex": f"^{re.escape(value)}$", "$options": "i"},
+        }
+    )
+    if existing:
+        return {"field": field, "value": existing["value"]}
+
+    collection.insert_one({"_id": f"{field}:{value}", "field": field, "value": value})
+    return {"field": field, "value": value}
 
 
 @router.get("/{doctype}")
