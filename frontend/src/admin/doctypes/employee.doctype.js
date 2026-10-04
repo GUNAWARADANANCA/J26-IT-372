@@ -56,6 +56,7 @@ export const employeeDoctype = {
           fieldname: 'post_office',
           label: 'Post Office',
           fieldtype: 'Select',
+          creatable: true,
           reqd: true,
           options: [
             'Anuradhapura',
@@ -72,6 +73,7 @@ export const employeeDoctype = {
           fieldname: 'designation',
           label: 'Designation',
           fieldtype: 'Select',
+          creatable: true,
           reqd: true,
           options: [
             'Delivery Officer',
@@ -86,6 +88,7 @@ export const employeeDoctype = {
           fieldname: 'work_category',
           label: 'Work Category',
           fieldtype: 'Select',
+          creatable: true,
           reqd: true,
           options: ['Delivery (Field)', 'Office', 'Supervisory / Office'],
         },
@@ -98,6 +101,7 @@ export const employeeDoctype = {
           fieldname: 'employment_type',
           label: 'Employment Type',
           fieldtype: 'Select',
+          creatable: true,
           options: ['Permanent', 'Contract', 'Temporary'],
         },
         {
@@ -143,6 +147,7 @@ export const employeeDoctype = {
           fieldname: 'reward_type',
           label: 'Reward Type',
           fieldtype: 'Select',
+          creatable: true,
           options: [
             'None',
             'Certificate of Appreciation',

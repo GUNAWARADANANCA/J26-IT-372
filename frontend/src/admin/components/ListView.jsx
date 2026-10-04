@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -17,7 +17,13 @@ import TablePagination from '@mui/material/TablePagination'
 import InputAdornment from '@mui/material/InputAdornment'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
-import { list } from '../data/repository'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import LinearProgress from '@mui/material/LinearProgress'
+import { exportExcel, importExcel, list } from '../data/repository'
+import { useFieldOptions } from '../data/fieldOptions'
 
 const PAGE_SIZE = 50
 
@@ -32,14 +38,80 @@ function labelize(col) {
 
 export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
   const navigate = useNavigate()
+  const { extra, mergeOptions } = useFieldOptions()
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({})
   const [page, setPage] = useState(0)
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [transfer, setTransfer] = useState(null)
+  const [reload, setReload] = useState(0)
+  const excelEnabled = meta.doctype === 'employee' || meta.doctype === 'daily_kpi_log'
 
-  const rows = useMemo(() => {
-    void refreshKey
-    return list(meta.doctype, { search, filters })
-  }, [meta.doctype, search, filters, refreshKey])
+  useEffect(() => {
+    let cancelled = false
+    const handle = setTimeout(() => {
+      setLoading(true)
+      list(meta.doctype, { search, filters })
+        .then((data) => {
+          if (cancelled) return
+          setRows(data)
+          setError('')
+        })
+        .catch((err) => {
+          if (!cancelled) setError(err.message || 'Failed to load records')
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+    }, search ? 200 : 0)
+    return () => {
+      cancelled = true
+      clearTimeout(handle)
+    }
+  }, [meta.doctype, search, filters, refreshKey, reload])
+
+  async function handleImport(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setTransfer({ label: `Uploading ${file.name}`, percent: 0 })
+    setError('')
+    setNotice('')
+    try {
+      const result = await importExcel(file, ({ phase, percent }) => {
+        if (phase === 'save') {
+          setTransfer({ label: 'Saving rows to the database', percent: null })
+          return
+        }
+        setTransfer({ label: `Uploading ${file.name}`, percent })
+      })
+      setNotice(
+        `Imported ${result.employees_upserted} employee rows and ${result.kpi_logs_upserted} KPI rows.`,
+      )
+      setReload((value) => value + 1)
+    } catch (err) {
+      setError(err.message || 'Import failed')
+    } finally {
+      setTransfer(null)
+    }
+  }
+
+  async function handleExport() {
+    setTransfer({ label: `Exporting ${meta.name}`, percent: 0 })
+    setError('')
+    try {
+      await exportExcel(meta.doctype, ({ percent }) => {
+        setTransfer({ label: `Exporting ${meta.name}`, percent })
+      })
+    } catch (err) {
+      setError(err.message || 'Export failed')
+    } finally {
+      setTransfer(null)
+    }
+  }
 
   useEffect(() => {
     setPage(0)
@@ -66,13 +138,41 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
             {rows.length.toLocaleString()} records
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate(`${basePath}/new`)}
-        >
-          Add {meta.name}
-        </Button>
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          {excelEnabled && (
+            <>
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<FileUploadOutlinedIcon />}
+                disabled={Boolean(transfer)}
+              >
+                Import Excel
+                <input
+                  hidden
+                  type="file"
+                  accept=".xlsx,.xlsm"
+                  onChange={handleImport}
+                />
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<FileDownloadOutlinedIcon />}
+                disabled={Boolean(transfer)}
+                onClick={handleExport}
+              >
+                Export Excel
+              </Button>
+            </>
+          )}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate(`${basePath}/new`)}
+          >
+            Add {meta.name}
+          </Button>
+        </Stack>
       </Stack>
 
       <Stack
@@ -108,7 +208,7 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
             sx={{ minWidth: 180 }}
           >
             <MenuItem value="">All</MenuItem>
-            {f.options.map((opt) => (
+            {mergeOptions(f.options, extra[f.fieldname]).map((opt) => (
               <MenuItem key={opt} value={opt}>
                 {opt}
               </MenuItem>
@@ -116,6 +216,44 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
           </TextField>
         ))}
       </Stack>
+
+      {transfer && (
+        <Box sx={{ mb: 1.5 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ mb: 0.75 }}
+          >
+            <CircularProgress size={16} />
+            <Typography variant="body2" sx={{ flex: 1 }}>
+              {transfer.label}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {transfer.percent == null ? '' : `${transfer.percent}%`}
+            </Typography>
+          </Stack>
+          <LinearProgress
+            variant={transfer.percent == null ? 'indeterminate' : 'determinate'}
+            value={transfer.percent ?? 0}
+          />
+        </Box>
+      )}
+      {notice && (
+        <Alert severity="success" sx={{ mb: 1.5 }}>
+          {notice}
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 1.5 }}>
+          {error}
+        </Alert>
+      )}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+          <CircularProgress size={22} />
+        </Box>
+      )}
 
       <Paper>
         <TableContainer sx={{ maxHeight: 'calc(100vh - 260px)' }}>

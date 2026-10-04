@@ -25,13 +25,13 @@ export default function DailyKpiForm({ name, isNew, onSaved }) {
       isNew={isNew}
       basePath="/daily-kpi-log"
       prepareDoc={prepareDoc}
-      onSave={(doc, { isNew: creating }) => {
-        if (creating) create('daily_kpi_log', doc)
-        else update('daily_kpi_log', name, doc)
+      onSave={async (doc, { isNew: creating }) => {
+        if (creating) await create('daily_kpi_log', doc)
+        else await update('daily_kpi_log', name, doc)
         onSaved?.()
       }}
-      onDelete={(id) => {
-        remove('daily_kpi_log', id)
+      onDelete={async (id) => {
+        await remove('daily_kpi_log', id)
         onSaved?.()
       }}
     />

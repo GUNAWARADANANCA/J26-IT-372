@@ -1,106 +1,169 @@
 /**
- * localStorage-backed repository.
- * Swap list/get/create/update/remove bodies for fetch('/api/...') when Postgres is ready.
+ * MongoDB-backed repository. The Python API on port 8000 owns the data.
+ * In dev, Vite proxies /api and /health to that server.
  */
 
-const PREFIX = 'postal_kpi'
+const API = import.meta.env.VITE_API_URL ?? ''
 
-function storageKey(doctype) {
-  return `${PREFIX}:${doctype}`
-}
-
-function readAll(doctype) {
+async function request(path, options = {}) {
+  const response = await fetch(`${API}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  })
+  if (response.status === 204) return null
+  let body = null
   try {
-    const raw = localStorage.getItem(storageKey(doctype))
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
+    body = await response.json()
   } catch {
-    return []
+    body = null
   }
-}
-
-function writeAll(doctype, rows) {
-  localStorage.setItem(storageKey(doctype), JSON.stringify(rows))
-}
-
-export function isHydrated(doctype) {
-  return localStorage.getItem(`${PREFIX}:hydrated:${doctype}`) === '1'
-}
-
-export function markHydrated(doctype) {
-  localStorage.setItem(`${PREFIX}:hydrated:${doctype}`, '1')
-}
-
-export function clearHydrated(doctype) {
-  localStorage.removeItem(`${PREFIX}:hydrated:${doctype}`)
-  localStorage.removeItem(storageKey(doctype))
-}
-
-export function list(doctype, { search = '', filters = {} } = {}) {
-  let rows = readAll(doctype)
-  const q = search.trim().toLowerCase()
-  if (q) {
-    rows = rows.filter((row) =>
-      Object.values(row).some((v) =>
-        String(v ?? '')
-          .toLowerCase()
-          .includes(q),
-      ),
-    )
+  if (!response.ok) {
+    const detail = body?.detail
+    const message =
+      typeof detail === 'string'
+        ? detail
+        : `Request failed (${response.status})`
+    throw new Error(message)
   }
+  return body
+}
+
+export async function list(doctype, { search = '', filters = {} } = {}) {
+  const params = new URLSearchParams()
+  if (search.trim()) params.set('search', search.trim())
   for (const [key, value] of Object.entries(filters)) {
     if (value === undefined || value === null || value === '') continue
-    rows = rows.filter((row) => String(row[key] ?? '') === String(value))
+    params.set(key, String(value))
   }
-  return rows
+  const query = params.toString()
+  return request(`/api/${doctype}${query ? `?${query}` : ''}`)
 }
 
-export function get(doctype, name) {
-  return readAll(doctype).find((r) => r.name === name) ?? null
+export async function get(doctype, name) {
+  const response = await fetch(
+    `${API}/api/${doctype}/${encodeURIComponent(name)}`,
+  )
+  if (response.status === 404) return null
+  if (!response.ok) {
+    throw new Error(`Request failed (${response.status})`)
+  }
+  return response.json()
 }
 
 export function create(doctype, doc) {
-  const rows = readAll(doctype)
-  if (!doc.name) {
-    throw new Error('Document name is required')
-  }
-  if (rows.some((r) => r.name === doc.name)) {
-    throw new Error(`Document ${doc.name} already exists`)
-  }
-  const next = { ...doc }
-  rows.push(next)
-  writeAll(doctype, rows)
-  return next
+  return request(`/api/${doctype}`, {
+    method: 'POST',
+    body: JSON.stringify(doc),
+  })
 }
 
 export function update(doctype, name, doc) {
-  const rows = readAll(doctype)
-  const idx = rows.findIndex((r) => r.name === name)
-  if (idx < 0) throw new Error(`Document ${name} not found`)
-  const next = { ...doc, name: doc.name || name }
-  // If renaming, ensure uniqueness
-  if (next.name !== name && rows.some((r) => r.name === next.name)) {
-    throw new Error(`Document ${next.name} already exists`)
-  }
-  rows[idx] = next
-  writeAll(doctype, rows)
-  return next
+  return request(`/api/${doctype}/${encodeURIComponent(name)}`, {
+    method: 'PUT',
+    body: JSON.stringify(doc),
+  })
 }
 
 export function remove(doctype, name) {
-  const rows = readAll(doctype)
-  const next = rows.filter((r) => r.name !== name)
-  if (next.length === rows.length) throw new Error(`Document ${name} not found`)
-  writeAll(doctype, next)
-  return true
+  return request(`/api/${doctype}/${encodeURIComponent(name)}`, {
+    method: 'DELETE',
+  })
 }
 
-export function replaceAll(doctype, rows) {
-  writeAll(doctype, rows)
-  markHydrated(doctype)
+export async function count(doctype) {
+  const rows = await list(doctype)
+  return rows.length
 }
 
-export function count(doctype) {
-  return readAll(doctype).length
+export async function getFieldOptions() {
+  return request('/api/field-options')
+}
+
+export function createFieldOption(field, value) {
+  return request('/api/field-options', {
+    method: 'POST',
+    body: JSON.stringify({ field, value }),
+  })
+}
+
+export function importExcel(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', `${API}/api/import/excel`)
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) {
+        onProgress?.({ phase: 'upload', percent: null })
+        return
+      }
+      onProgress?.({
+        phase: 'upload',
+        percent: Math.round((event.loaded / event.total) * 100),
+      })
+    }
+    xhr.upload.onload = () => {
+      onProgress?.({ phase: 'save', percent: null })
+    }
+    xhr.onload = () => {
+      let payload = null
+      try {
+        payload = JSON.parse(xhr.responseText)
+      } catch {
+        payload = null
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(payload)
+        return
+      }
+      const detail = payload?.detail
+      reject(
+        new Error(
+          typeof detail === 'string' ? detail : `Import failed (${xhr.status})`,
+        ),
+      )
+    }
+    xhr.onerror = () => reject(new Error('Import failed'))
+    const body = new FormData()
+    body.append('file', file)
+    xhr.send(body)
+  })
+}
+
+export async function exportExcel(doctype, onProgress) {
+  const response = await fetch(`${API}/api/export/${doctype}`)
+  if (!response.ok) {
+    throw new Error(`Export failed (${response.status})`)
+  }
+  const total = Number(response.headers.get('Content-Length')) || 0
+  const reader = response.body?.getReader()
+  let blob
+  if (!reader) {
+    blob = await response.blob()
+    onProgress?.({ phase: 'download', percent: 100 })
+  } else {
+    const chunks = []
+    let loaded = 0
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+      loaded += value.byteLength
+      onProgress?.({
+        phase: 'download',
+        percent: total
+          ? Math.min(100, Math.round((loaded / total) * 100))
+          : null,
+      })
+    }
+    blob = new Blob(chunks)
+  }
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download =
+    doctype === 'employee' ? 'employees.xlsx' : 'daily_kpi_logs.xlsx'
+  link.click()
+  URL.revokeObjectURL(url)
 }

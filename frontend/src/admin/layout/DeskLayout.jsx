@@ -6,14 +6,12 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Avatar from '@mui/material/Avatar'
 import Stack from '@mui/material/Stack'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined'
 import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined'
-import RestartAltIcon from '@mui/icons-material/RestartAlt'
 
 const DRAWER_WIDTH = 240
 
@@ -38,7 +36,7 @@ const nav = [
   },
 ]
 
-export default function DeskLayout({ onResetSeed, resetting }) {
+export default function DeskLayout() {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <Drawer
@@ -117,24 +115,12 @@ export default function DeskLayout({ onResetSeed, resetting }) {
 
           <Box sx={{ mt: 'auto' }}>
             <Divider sx={{ mb: 1.5 }} />
-            <Button
-              fullWidth
-              size="small"
-              variant="outlined"
-              color="inherit"
-              startIcon={<RestartAltIcon />}
-              onClick={onResetSeed}
-              disabled={resetting}
-              sx={{ borderColor: 'divider', color: 'text.secondary' }}
-            >
-              {resetting ? 'Resetting…' : 'Reset to seed'}
-            </Button>
             <Typography
               variant="caption"
               color="text.secondary"
               sx={{ display: 'block', mt: 1, px: 0.5 }}
             >
-              Auth & Postgres later
+              MongoDB connected
             </Typography>
           </Box>
         </Stack>

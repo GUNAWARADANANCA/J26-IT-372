@@ -11,7 +11,8 @@ import DailyKpiList from './admin/pages/DailyKpiList'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
-import { ensureSeeded, resetToSeed } from './admin/data/seed'
+import { ensureSeeded } from './admin/data/seed'
+import { FieldOptionsProvider } from './admin/data/fieldOptions'
 
 function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
@@ -70,7 +71,6 @@ export default function App() {
   const [ready, setReady] = useState(false)
   const [bootError, setBootError] = useState('')
   const [refreshKey, setRefreshKey] = useState(0)
-  const [resetting, setResetting] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -79,7 +79,7 @@ export default function App() {
         if (!cancelled) setReady(true)
       })
       .catch((err) => {
-        if (!cancelled) setBootError(err.message || 'Failed to load seed data')
+        if (!cancelled) setBootError(err.message || 'Failed to reach the API')
       })
     return () => {
       cancelled = true
@@ -87,19 +87,6 @@ export default function App() {
   }, [])
 
   const bump = useCallback(() => setRefreshKey((k) => k + 1), [])
-
-  async function handleReset() {
-    if (!window.confirm('Reset all local data to the Excel seed?')) return
-    setResetting(true)
-    try {
-      await resetToSeed()
-      bump()
-    } catch (err) {
-      alert(err.message || 'Reset failed')
-    } finally {
-      setResetting(false)
-    }
-  }
 
   if (bootError) {
     return (
@@ -120,10 +107,11 @@ export default function App() {
   }
 
   return (
+    <FieldOptionsProvider>
     <Routes>
       <Route
         element={
-          <DeskLayout onResetSeed={handleReset} resetting={resetting} />
+          <DeskLayout />
         }
       >
         <Route index element={<Navigate to="/employee" replace />} />
@@ -154,5 +142,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/employee" replace />} />
       </Route>
     </Routes>
+    </FieldOptionsProvider>
   )
 }
