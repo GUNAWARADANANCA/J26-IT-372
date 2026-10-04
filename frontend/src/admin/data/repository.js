@@ -89,6 +89,36 @@ export function createFieldOption(field, value) {
   })
 }
 
+export function getAttendanceSettings() {
+  return request('/api/settings/attendance')
+}
+
+export function saveAttendanceSettings(settings) {
+  return request('/api/settings/attendance', {
+    method: 'PUT',
+    body: JSON.stringify(settings),
+  })
+}
+
+export function checkAttendanceLocation(latitude, longitude) {
+  return request('/api/attendance/location', {
+    method: 'POST',
+    body: JSON.stringify({ latitude, longitude }),
+  })
+}
+
+export function scanAttendance({ employeeId, latitude, longitude, accuracy }) {
+  return request('/api/attendance/scan', {
+    method: 'POST',
+    body: JSON.stringify({
+      employee_id: employeeId,
+      latitude,
+      longitude,
+      accuracy,
+    }),
+  })
+}
+
 export function importExcel(file, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()

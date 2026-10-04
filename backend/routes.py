@@ -6,6 +6,12 @@ from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from fastapi.responses import Response
 from pymongo.errors import DuplicateKeyError
 
+from attendance import (
+    assert_at_office,
+    get_settings,
+    record_scan,
+    save_settings,
+)
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
 
@@ -114,6 +120,53 @@ def create_field_option(body: dict):
 
     collection.insert_one({"_id": f"{field}:{value}", "field": field, "value": value})
     return {"field": field, "value": value}
+
+
+@router.get("/settings/attendance")
+def read_attendance_settings():
+    return get_settings()
+
+
+@router.put("/settings/attendance")
+def update_attendance_settings(body: dict):
+    try:
+        latitude = float(body.get("latitude"))
+        longitude = float(body.get("longitude"))
+        radius_meters = int(body.get("radius_meters"))
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(
+            status_code=400, detail="Enter a latitude, longitude, and radius"
+        ) from exc
+    return save_settings(latitude, longitude, radius_meters)
+
+
+@router.post("/attendance/location")
+def check_attendance_location(body: dict):
+    try:
+        latitude = float(body.get("latitude"))
+        longitude = float(body.get("longitude"))
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail="Location is required") from exc
+    return assert_at_office(latitude, longitude)
+
+
+@router.post("/attendance/scan")
+def scan_attendance(body: dict):
+    employee_id = str(body.get("employee_id") or "").strip()
+    if not employee_id:
+        raise HTTPException(status_code=400, detail="Choose your name")
+    try:
+        latitude = float(body.get("latitude"))
+        longitude = float(body.get("longitude"))
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail="Location is required") from exc
+    accuracy = body.get("accuracy")
+    if accuracy is not None:
+        try:
+            accuracy = float(accuracy)
+        except (TypeError, ValueError):
+            accuracy = None
+    return record_scan(employee_id, latitude, longitude, accuracy)
 
 
 @router.get("/{doctype}")

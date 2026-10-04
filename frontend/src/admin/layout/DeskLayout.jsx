@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined'
 import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 
 const DRAWER_WIDTH = 240
 
@@ -33,6 +34,12 @@ const nav = [
     label: 'Attendance Logs',
     desc: 'Fingerprint',
     icon: <FingerprintOutlinedIcon fontSize="small" />,
+  },
+  {
+    to: '/settings',
+    label: 'Settings',
+    desc: 'Office location',
+    icon: <SettingsOutlinedIcon fontSize="small" />,
   },
 ]
 

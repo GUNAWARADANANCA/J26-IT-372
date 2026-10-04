@@ -11,6 +11,8 @@ import DailyKpiList from './admin/pages/DailyKpiList'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
+import SettingsPage from './admin/pages/SettingsPage'
+import AttendanceQrPage from './attendance/AttendanceQrPage'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
 
@@ -109,6 +111,7 @@ export default function App() {
   return (
     <FieldOptionsProvider>
     <Routes>
+      <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
       <Route
         element={
           <DeskLayout />
@@ -139,6 +142,7 @@ export default function App() {
           path="attendance-log/:id"
           element={<AttendanceLogFormRoute onSaved={bump} />}
         />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/employee" replace />} />
       </Route>
     </Routes>
