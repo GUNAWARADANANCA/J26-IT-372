@@ -105,6 +105,11 @@ export const employeeDoctype = {
           options: ['Permanent', 'Contract', 'Temporary'],
         },
         {
+          fieldname: 'basic_salary',
+          label: 'Basic Salary (LKR)',
+          fieldtype: 'Float',
+        },
+        {
           fieldname: 'reports_to',
           label: 'Reports To',
           fieldtype: 'Data',

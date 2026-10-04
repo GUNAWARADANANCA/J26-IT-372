@@ -33,6 +33,11 @@ DEFAULT_SETTINGS = {
     "checkout_start": "16:00",
     "checkout_end": "18:00",
     "open_days": [0, 1, 2, 3, 4, 5],
+    "epf_employee_percent": 8,
+    "epf_employer_percent": 12,
+    "etf_percent": 3,
+    "late_deduction_lkr": 0,
+    "ot_rate_lkr": 0,
 }
 
 
@@ -59,6 +64,11 @@ def _public_settings(current: dict) -> dict:
         "radius_meters": int(merged["radius_meters"]),
         **{field: str(merged[field]) for field in TIME_FIELDS},
         "open_days": [int(day) for day in open_days],
+        "epf_employee_percent": float(merged.get("epf_employee_percent", 8)),
+        "epf_employer_percent": float(merged.get("epf_employer_percent", 12)),
+        "etf_percent": float(merged.get("etf_percent", 3)),
+        "late_deduction_lkr": float(merged.get("late_deduction_lkr", 0)),
+        "ot_rate_lkr": float(merged.get("ot_rate_lkr", 0)),
     }
 
 
@@ -122,6 +132,24 @@ def save_settings(updates: dict) -> dict:
     if any(day < 0 or day > 6 for day in open_days):
         raise HTTPException(status_code=400, detail="Choose the open days")
 
+    rates = {}
+    for field in (
+        "epf_employee_percent",
+        "epf_employer_percent",
+        "etf_percent",
+        "late_deduction_lkr",
+        "ot_rate_lkr",
+    ):
+        try:
+            rates[field] = float(updates.get(field, current[field]))
+        except (TypeError, ValueError) as exc:
+            raise HTTPException(status_code=400, detail="Enter the payroll rates") from exc
+        if rates[field] < 0:
+            raise HTTPException(status_code=400, detail="Payroll rates cannot be negative")
+    for field in ("epf_employee_percent", "epf_employer_percent", "etf_percent"):
+        if rates[field] > 100:
+            raise HTTPException(status_code=400, detail="Contribution percents cannot exceed 100")
+
     stored = {
         "_id": "attendance",
         "latitude": latitude,
@@ -129,6 +157,7 @@ def save_settings(updates: dict) -> dict:
         "radius_meters": radius_meters,
         **times,
         "open_days": open_days,
+        **rates,
     }
     get_db()["settings"].replace_one({"_id": "attendance"}, stored, upsert=True)
     return _public_settings(stored)

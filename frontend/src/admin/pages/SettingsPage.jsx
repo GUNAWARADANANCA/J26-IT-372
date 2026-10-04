@@ -49,6 +49,11 @@ function formFromSettings(settings) {
     checkout_start: settings.checkout_start,
     checkout_end: settings.checkout_end,
     open_days: settings.open_days || [],
+    epf_employee_percent: String(settings.epf_employee_percent ?? 8),
+    epf_employer_percent: String(settings.epf_employer_percent ?? 12),
+    etf_percent: String(settings.etf_percent ?? 3),
+    late_deduction_lkr: String(settings.late_deduction_lkr ?? 0),
+    ot_rate_lkr: String(settings.ot_rate_lkr ?? 0),
   }
 }
 
@@ -211,6 +216,49 @@ export default function SettingsPage() {
                 ))}
               </FormGroup>
             </Box>
+            <Typography variant="h6" sx={{ mt: 1 }}>
+              Payroll rates
+            </Typography>
+            <TextField
+              label="EPF employee %"
+              type="number"
+              required
+              value={form.epf_employee_percent}
+              inputProps={{ step: '0.01', min: 0, max: 100 }}
+              onChange={(event) => setField('epf_employee_percent', event.target.value)}
+            />
+            <TextField
+              label="EPF employer %"
+              type="number"
+              required
+              value={form.epf_employer_percent}
+              inputProps={{ step: '0.01', min: 0, max: 100 }}
+              onChange={(event) => setField('epf_employer_percent', event.target.value)}
+            />
+            <TextField
+              label="ETF %"
+              type="number"
+              required
+              value={form.etf_percent}
+              inputProps={{ step: '0.01', min: 0, max: 100 }}
+              onChange={(event) => setField('etf_percent', event.target.value)}
+            />
+            <TextField
+              label="Late deduction per day (LKR)"
+              type="number"
+              required
+              value={form.late_deduction_lkr}
+              inputProps={{ step: '0.01', min: 0 }}
+              onChange={(event) => setField('late_deduction_lkr', event.target.value)}
+            />
+            <TextField
+              label="Overtime rate per hour (LKR)"
+              type="number"
+              required
+              value={form.ot_rate_lkr}
+              inputProps={{ step: '0.01', min: 0 }}
+              onChange={(event) => setField('ot_rate_lkr', event.target.value)}
+            />
             <Button type="submit" variant="contained" disabled={saving} sx={{ alignSelf: 'flex-start' }}>
               {saving ? 'Saving…' : 'Save settings'}
             </Button>

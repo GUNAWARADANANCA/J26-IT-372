@@ -13,6 +13,9 @@ import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import SettingsPage from './admin/pages/SettingsPage'
 import AttendanceQrPage from './attendance/AttendanceQrPage'
+import EntitlementDashboard from './entitlements/EntitlementDashboard'
+import PayrollPage from './entitlements/PayrollPage'
+import EntitlementPage from './entitlements/EntitlementPage'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
 
@@ -143,6 +146,19 @@ export default function App() {
           element={<AttendanceLogFormRoute onSaved={bump} />}
         />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="entitlements" element={<EntitlementDashboard />} />
+        <Route path="entitlements/payroll" element={<PayrollPage />} />
+        <Route path="entitlements/epf" element={<PayrollPage mode="epf" />} />
+        <Route path="entitlements/etf" element={<PayrollPage mode="etf" />} />
+        <Route path="entitlements/leave" element={<EntitlementPage pageKey="leave" />} />
+        <Route path="entitlements/holiday-pay" element={<EntitlementPage pageKey="holiday-pay" />} />
+        <Route path="entitlements/overtime" element={<EntitlementPage pageKey="overtime" />} />
+        <Route path="entitlements/gratuity" element={<EntitlementPage pageKey="gratuity" />} />
+        <Route path="entitlements/promotions" element={<EntitlementPage pageKey="promotions" />} />
+        <Route path="entitlements/transfers" element={<EntitlementPage pageKey="transfers" />} />
+        <Route path="entitlements/family-benefits" element={<EntitlementPage pageKey="family-benefits" />} />
+        <Route path="entitlements/retirement" element={<EntitlementPage pageKey="retirement" />} />
+        <Route path="entitlements/loans" element={<EntitlementPage pageKey="loans" />} />
         <Route path="*" element={<Navigate to="/employee" replace />} />
       </Route>
     </Routes>

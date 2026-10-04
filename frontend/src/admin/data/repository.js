@@ -119,6 +119,25 @@ export function scanAttendance({ employeeId, latitude, longitude, accuracy }) {
   })
 }
 
+export function deleteEntitlement(module, id) {
+  return request(`/api/entitlements/${module}/${id}`, { method: 'DELETE' })
+}
+
+export function getPayroll(month) {
+  return request(`/api/payroll?month=${encodeURIComponent(month)}`)
+}
+
+export function listEntitlements(module) {
+  return request(`/api/entitlements/${module}`)
+}
+
+export function createEntitlement(module, doc) {
+  return request(`/api/entitlements/${module}`, {
+    method: 'POST',
+    body: JSON.stringify(doc),
+  })
+}
+
 export function importExcel(file, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()

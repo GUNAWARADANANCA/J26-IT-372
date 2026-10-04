@@ -14,6 +14,12 @@ from attendance import (
 )
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
+from payroll import (
+    create_entitlement,
+    delete_entitlement,
+    list_entitlements,
+    payroll_rows,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -159,6 +165,26 @@ def scan_attendance(body: dict):
         except (TypeError, ValueError):
             accuracy = None
     return record_scan(employee_id, latitude, longitude, accuracy)
+
+
+@router.get("/payroll")
+def read_payroll(month: str):
+    return payroll_rows(month)
+
+
+@router.get("/entitlements/{module}")
+def read_entitlements(module: str):
+    return list_entitlements(module)
+
+
+@router.post("/entitlements/{module}", status_code=201)
+def add_entitlement(module: str, body: dict):
+    return create_entitlement(module, body)
+
+
+@router.delete("/entitlements/{module}/{item_id}")
+def remove_entitlement(module: str, item_id: str):
+    return delete_entitlement(module, item_id)
 
 
 @router.get("/{doctype}")
