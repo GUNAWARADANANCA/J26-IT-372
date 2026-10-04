@@ -230,8 +230,8 @@ export default function AttendanceQrPage() {
 
         {step === 'done' && result && (
           <Alert severity="success">
-            {result.action === 'in' ? 'Time in' : 'Time out'} saved for {result.employee_name} at{' '}
-            {result.time}.
+            {result.action === 'in' ? 'Checked in' : 'Checked out'} at {result.time}
+            {result.status ? ` (${result.status})` : ''} for {result.employee_name}.
           </Alert>
         )}
       </Paper>

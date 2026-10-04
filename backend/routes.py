@@ -129,15 +129,7 @@ def read_attendance_settings():
 
 @router.put("/settings/attendance")
 def update_attendance_settings(body: dict):
-    try:
-        latitude = float(body.get("latitude"))
-        longitude = float(body.get("longitude"))
-        radius_meters = int(body.get("radius_meters"))
-    except (TypeError, ValueError) as exc:
-        raise HTTPException(
-            status_code=400, detail="Enter a latitude, longitude, and radius"
-        ) from exc
-    return save_settings(latitude, longitude, radius_meters)
+    return save_settings(body)
 
 
 @router.post("/attendance/location")
