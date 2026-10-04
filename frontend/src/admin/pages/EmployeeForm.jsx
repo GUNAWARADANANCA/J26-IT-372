@@ -22,13 +22,13 @@ export default function EmployeeForm({ name, isNew, onSaved }) {
       isNew={isNew}
       basePath="/employee"
       prepareDoc={prepareDoc}
-      onSave={(doc, { isNew: creating }) => {
-        if (creating) create('employee', doc)
-        else update('employee', name, doc)
+      onSave={async (doc, { isNew: creating }) => {
+        if (creating) await create('employee', doc)
+        else await update('employee', name, doc)
         onSaved?.()
       }}
-      onDelete={(id) => {
-        remove('employee', id)
+      onDelete={async (id) => {
+        await remove('employee', id)
         onSaved?.()
       }}
     />

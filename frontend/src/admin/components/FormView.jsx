@@ -65,6 +65,19 @@ export default function FormView({
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [loaded, setLoaded] = useState(isNew)
+  const [employees, setEmployees] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    list('employee')
+      .then((rows) => {
+        if (!cancelled) setEmployees(rows)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (isNew) {
@@ -72,21 +85,34 @@ export default function FormView({
       setLoaded(true)
       return
     }
-    const existing = getDoc(meta.doctype, name)
-    if (!existing) {
-      setError('Document not found')
-      setLoaded(true)
-      return
+    let cancelled = false
+    setLoaded(false)
+    getDoc(meta.doctype, name)
+      .then((existing) => {
+        if (cancelled) return
+        if (!existing) {
+          setError('Document not found')
+          setLoaded(true)
+          return
+        }
+        setDoc(existing)
+        setLoaded(true)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(err.message || 'Failed to load document')
+        setLoaded(true)
+      })
+    return () => {
+      cancelled = true
     }
-    setDoc(existing)
-    setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meta.doctype, name, isNew])
 
   const employeeDoc = useMemo(() => {
     if (!doc.employee_id) return null
-    return list('employee').find((e) => e.name === doc.employee_id) ?? null
-  }, [doc.employee_id])
+    return employees.find((e) => e.name === doc.employee_id) ?? null
+  }, [doc.employee_id, employees])
 
   function applyFetchFrom(nextDoc, changedField, changedValue) {
     const patches = {}
@@ -99,11 +125,7 @@ export default function FormView({
           patches[f.fieldname] = ''
           continue
         }
-        const linked = list(
-          meta.sections
-            .flatMap((s) => s.fields)
-            .find((x) => x.fieldname === sourceField)?.options || 'employee',
-        ).find((r) => r.name === changedValue)
+        const linked = employees.find((r) => r.name === changedValue)
         patches[f.fieldname] = linked?.[sourceProp] ?? ''
       }
     }
@@ -132,7 +154,7 @@ export default function FormView({
           }
         }
       }
-      const prepared = prepareDoc ? prepareDoc(doc, { isNew }) : doc
+      const prepared = prepareDoc ? await prepareDoc(doc, { isNew }) : doc
       await onSave(prepared, { isNew })
       navigate(`${basePath}/${encodeURIComponent(prepared.name)}`, {
         replace: true,

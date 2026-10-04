@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { list } from '../data/repository'
@@ -16,8 +16,21 @@ export default function LinkField({
   placeholder = 'Type to search…',
 }) {
   const [inputValue, setInputValue] = useState('')
+  const [options, setOptions] = useState([])
 
-  const options = useMemo(() => list(doctype), [doctype])
+  useEffect(() => {
+    let cancelled = false
+    list(doctype)
+      .then((rows) => {
+        if (!cancelled) setOptions(rows)
+      })
+      .catch(() => {
+        if (!cancelled) setOptions([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [doctype])
 
   const selected =
     options.find((r) => r[idField] === value) ?? null

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -17,6 +17,8 @@ import TablePagination from '@mui/material/TablePagination'
 import InputAdornment from '@mui/material/InputAdornment'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
 import { list } from '../data/repository'
 
 const PAGE_SIZE = 50
@@ -35,10 +37,31 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({})
   const [page, setPage] = useState(0)
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const rows = useMemo(() => {
-    void refreshKey
-    return list(meta.doctype, { search, filters })
+  useEffect(() => {
+    let cancelled = false
+    const handle = setTimeout(() => {
+      setLoading(true)
+      list(meta.doctype, { search, filters })
+        .then((data) => {
+          if (cancelled) return
+          setRows(data)
+          setError('')
+        })
+        .catch((err) => {
+          if (!cancelled) setError(err.message || 'Failed to load records')
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+    }, search ? 200 : 0)
+    return () => {
+      cancelled = true
+      clearTimeout(handle)
+    }
   }, [meta.doctype, search, filters, refreshKey])
 
   useEffect(() => {
@@ -116,6 +139,17 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
           </TextField>
         ))}
       </Stack>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 1.5 }}>
+          {error}
+        </Alert>
+      )}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+          <CircularProgress size={22} />
+        </Box>
+      )}
 
       <Paper>
         <TableContainer sx={{ maxHeight: 'calc(100vh - 260px)' }}>
