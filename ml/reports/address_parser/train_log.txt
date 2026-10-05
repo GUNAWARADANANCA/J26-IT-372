@@ -1,0 +1,16 @@
+featurised train=24282 val=4882 test=5341 in 40s
+  grid c1=0.05 c2=0.01: val macro-F1=0.9924 required-field EM=0.9917
+  grid c1=0.1 c2=0.01: val macro-F1=0.9924 required-field EM=0.9917
+  grid c1=0.1 c2=0.05: val macro-F1=0.9924 required-field EM=0.9915
+  grid c1=0.3 c2=0.01: val macro-F1=0.9922 required-field EM=0.9908
+  grid c1=0.5 c2=0.05: val macro-F1=0.9923 required-field EM=0.9906
+selected c1=0.05 c2=0.01
+trained final model in 135s -> C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\backend\models\address_crf.crfsuite
+review threshold (val) = 0.994 -> {'threshold': 0.994, 'share_not_flagged': 0.9727, 'accuracy_not_flagged': 0.9971, 'flagged': 607, 'accuracy_flagged': 0.8501, 'errors_caught_by_flag': 0.5909, 'target_accuracy': 0.997}
+{
+  "token_accuracy": 0.9966,
+  "macro_f1": 0.9947,
+  "required_field_exact_match": 0.994,
+  "address_exact_match": 0.9822,
+  "ece": 0.0031
+}

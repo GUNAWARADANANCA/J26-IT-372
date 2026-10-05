@@ -1,0 +1,19 @@
+{
+  "model_version": "script-id-20261002",
+  "trained_at": "2026-10-02T02:32:29+00:00",
+  "classes": [
+    "si",
+    "ta",
+    "en"
+  ],
+  "input": [
+    1,
+    32,
+    256
+  ],
+  "normalisation": "(gray/255 - 0.5) / 0.5, paper light / ink dark",
+  "temperature": 0.5468,
+  "test_accuracy": 0.9862,
+  "test_ece_calibrated": 0.0115,
+  "training_data": "Datasets/processed/script_id (rendered; see Datasets/README.md)"
+}

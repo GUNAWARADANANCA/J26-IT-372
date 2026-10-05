@@ -1,0 +1,610 @@
+{
+  "trained_at": "2026-10-01T16:58:28+00:00",
+  "feature_version": "2026.10-v1",
+  "data": {
+    "seed": 13,
+    "deepparse_skipped": {
+      "other_language": 3338,
+      "tokenizer_mismatch": 536,
+      "duplicate": 7330,
+      "foreign_script": 100
+    },
+    "splits": {
+      "test": {
+        "examples": 5337,
+        "groups": 606,
+        "by_source": {
+          "synthetic": 3790,
+          "deepparse_lk": 1547
+        },
+        "by_script": {
+          "si": 1195,
+          "en": 2691,
+          "ta": 1150,
+          "mixed": 301
+        },
+        "noisy": 1106,
+        "labels": {
+          "NAME": 13712,
+          "HOUSE": 7025,
+          "STREET": 10696,
+          "CITY": 5521,
+          "POSTCODE": 2786,
+          "REGION": 2343,
+          "COUNTRY": 2610,
+          "O": 199,
+          "LOCALITY": 1582
+        }
+      },
+      "train": {
+        "examples": 24245,
+        "groups": 2750,
+        "by_source": {
+          "synthetic": 16887,
+          "deepparse_lk": 7358
+        },
+        "by_script": {
+          "si": 5137,
+          "en": 12583,
+          "ta": 5219,
+          "mixed": 1305,
+          "none": 1
+        },
+        "noisy": 4891,
+        "labels": {
+          "NAME": 61244,
+          "HOUSE": 32003,
+          "STREET": 49190,
+          "CITY": 25119,
+          "COUNTRY": 12681,
+          "LOCALITY": 6844,
+          "POSTCODE": 12569,
+          "REGION": 11155,
+          "O": 906
+        }
+      },
+      "val": {
+        "examples": 4878,
+        "groups": 623,
+        "by_source": {
+          "synthetic": 3760,
+          "deepparse_lk": 1118
+        },
+        "by_script": {
+          "ta": 1191,
+          "si": 1145,
+          "en": 2238,
+          "mixed": 304
+        },
+        "noisy": 975,
+        "labels": {
+          "NAME": 13626,
+          "HOUSE": 7062,
+          "STREET": 10861,
+          "CITY": 5039,
+          "POSTCODE": 2285,
+          "LOCALITY": 1496,
+          "COUNTRY": 2086,
+          "REGION": 1319,
+          "O": 214
+        }
+      }
+    },
+    "group_overlap": {
+      "test-train": 0,
+      "test-val": 0,
+      "train-val": 0
+    }
+  },
+  "grid": [
+    {
+      "c1": 0.05,
+      "c2": 0.01,
+      "val_macro_f1": 0.9933,
+      "val_required_field_exact_match": 0.9919
+    },
+    {
+      "c1": 0.1,
+      "c2": 0.01,
+      "val_macro_f1": 0.9934,
+      "val_required_field_exact_match": 0.9921
+    },
+    {
+      "c1": 0.1,
+      "c2": 0.05,
+      "val_macro_f1": 0.993,
+      "val_required_field_exact_match": 0.9919
+    },
+    {
+      "c1": 0.3,
+      "c2": 0.01,
+      "val_macro_f1": 0.9927,
+      "val_required_field_exact_match": 0.9916
+    },
+    {
+      "c1": 0.5,
+      "c2": 0.05,
+      "val_macro_f1": 0.9929,
+      "val_required_field_exact_match": 0.9918
+    }
+  ],
+  "selected": {
+    "c1": 0.1,
+    "c2": 0.01,
+    "max_iterations": 200
+  },
+  "validation": {
+    "token_accuracy": 0.9966,
+    "macro_f1": 0.9947,
+    "per_label": {
+      "NAME": {
+        "precision": 0.9996,
+        "recall": 1.0,
+        "f1": 0.9998,
+        "support": 13626
+      },
+      "HOUSE": {
+        "precision": 0.9948,
+        "recall": 0.9987,
+        "f1": 0.9967,
+        "support": 7062
+      },
+      "STREET": {
+        "precision": 0.996,
+        "recall": 0.9977,
+        "f1": 0.9968,
+        "support": 10861
+      },
+      "LOCALITY": {
+        "precision": 0.9775,
+        "recall": 0.986,
+        "f1": 0.9817,
+        "support": 1496
+      },
+      "CITY": {
+        "precision": 0.9958,
+        "recall": 0.9869,
+        "f1": 0.9913,
+        "support": 5039
+      },
+      "REGION": {
+        "precision": 0.9947,
+        "recall": 1.0,
+        "f1": 0.9974,
+        "support": 1319
+      },
+      "POSTCODE": {
+        "precision": 0.9991,
+        "recall": 0.9899,
+        "f1": 0.9945,
+        "support": 2285
+      },
+      "COUNTRY": {
+        "precision": 1.0,
+        "recall": 0.9981,
+        "f1": 0.999,
+        "support": 2086
+      },
+      "O": {
+        "precision": 1.0,
+        "recall": 0.986,
+        "f1": 0.9929,
+        "support": 214
+      }
+    },
+    "field_exact_match": {
+      "name": 0.9984,
+      "house_number": 0.9947,
+      "street": 0.9908,
+      "city": 0.9872,
+      "postcode": 0.9952,
+      "locality": 0.9714,
+      "country": 0.9975,
+      "region": 0.9932
+    },
+    "field_support": {
+      "name": 3760,
+      "house_number": 3970,
+      "street": 4548,
+      "city": 4545,
+      "postcode": 2273,
+      "locality": 1362,
+      "country": 1187,
+      "region": 590
+    },
+    "required_field_exact_match": 0.9938,
+    "address_exact_match": 0.982
+  },
+  "review_threshold": {
+    "threshold": 0.974,
+    "share_not_flagged": 0.9828,
+    "accuracy_not_flagged": 0.997,
+    "flagged": 382,
+    "accuracy_flagged": 0.7958,
+    "errors_caught_by_flag": 0.5455,
+    "target_accuracy": 0.997
+  },
+  "validation_operating_curve": [
+    {
+      "threshold": 0.5,
+      "share_not_flagged": 0.9996,
+      "accuracy_not_flagged": 0.9937,
+      "flagged": 9,
+      "accuracy_flagged": 0.5556,
+      "errors_caught_by_flag": 0.028
+    },
+    {
+      "threshold": 0.6,
+      "share_not_flagged": 0.9986,
+      "accuracy_not_flagged": 0.9943,
+      "flagged": 32,
+      "accuracy_flagged": 0.5,
+      "errors_caught_by_flag": 0.1119
+    },
+    {
+      "threshold": 0.7,
+      "share_not_flagged": 0.997,
+      "accuracy_not_flagged": 0.9949,
+      "flagged": 66,
+      "accuracy_flagged": 0.5455,
+      "errors_caught_by_flag": 0.2098
+    },
+    {
+      "threshold": 0.8,
+      "share_not_flagged": 0.996,
+      "accuracy_not_flagged": 0.9952,
+      "flagged": 89,
+      "accuracy_flagged": 0.5955,
+      "errors_caught_by_flag": 0.2517
+    },
+    {
+      "threshold": 0.9,
+      "share_not_flagged": 0.9919,
+      "accuracy_not_flagged": 0.9961,
+      "flagged": 180,
+      "accuracy_flagged": 0.6833,
+      "errors_caught_by_flag": 0.3986
+    },
+    {
+      "threshold": 0.95,
+      "share_not_flagged": 0.9881,
+      "accuracy_not_flagged": 0.9966,
+      "flagged": 263,
+      "accuracy_flagged": 0.7376,
+      "errors_caught_by_flag": 0.4825
+    },
+    {
+      "threshold": 0.98,
+      "share_not_flagged": 0.9808,
+      "accuracy_not_flagged": 0.9972,
+      "flagged": 426,
+      "accuracy_flagged": 0.8075,
+      "errors_caught_by_flag": 0.5734
+    },
+    {
+      "threshold": 0.99,
+      "share_not_flagged": 0.9742,
+      "accuracy_not_flagged": 0.9975,
+      "flagged": 572,
+      "accuracy_flagged": 0.8427,
+      "errors_caught_by_flag": 0.6294
+    }
+  ],
+  "test": {
+    "token_accuracy": 0.9968,
+    "macro_f1": 0.9948,
+    "per_label": {
+      "NAME": {
+        "precision": 0.9997,
+        "recall": 1.0,
+        "f1": 0.9999,
+        "support": 13712
+      },
+      "HOUSE": {
+        "precision": 0.9989,
+        "recall": 0.9981,
+        "f1": 0.9985,
+        "support": 7025
+      },
+      "STREET": {
+        "precision": 0.9944,
+        "recall": 0.9993,
+        "f1": 0.9969,
+        "support": 10696
+      },
+      "LOCALITY": {
+        "precision": 0.9852,
+        "recall": 0.9709,
+        "f1": 0.978,
+        "support": 1582
+      },
+      "CITY": {
+        "precision": 0.9924,
+        "recall": 0.9884,
+        "f1": 0.9904,
+        "support": 5521
+      },
+      "REGION": {
+        "precision": 0.9974,
+        "recall": 0.9974,
+        "f1": 0.9974,
+        "support": 2343
+      },
+      "POSTCODE": {
+        "precision": 0.9989,
+        "recall": 0.9982,
+        "f1": 0.9986,
+        "support": 2786
+      },
+      "COUNTRY": {
+        "precision": 0.9992,
+        "recall": 0.9977,
+        "f1": 0.9985,
+        "support": 2610
+      },
+      "O": {
+        "precision": 1.0,
+        "recall": 0.995,
+        "f1": 0.9975,
+        "support": 199
+      }
+    },
+    "field_exact_match": {
+      "name": 0.9992,
+      "house_number": 0.996,
+      "street": 0.9913,
+      "city": 0.9863,
+      "region": 0.9893,
+      "postcode": 0.9971,
+      "country": 0.9963,
+      "locality": 0.9648
+    },
+    "field_support": {
+      "name": 3791,
+      "house_number": 3955,
+      "street": 4505,
+      "city": 5027,
+      "region": 845,
+      "postcode": 2789,
+      "country": 1605,
+      "locality": 1450
+    },
+    "required_field_exact_match": 0.9943,
+    "address_exact_match": 0.9833
+  },
+  "test_threshold": {
+    "threshold": 0.974,
+    "share_not_flagged": 0.9817,
+    "accuracy_not_flagged": 0.9981,
+    "flagged": 437,
+    "accuracy_flagged": 0.7872,
+    "errors_caught_by_flag": 0.6788
+  },
+  "test_calibration": {
+    "ece": 0.0024,
+    "bins": [
+      {
+        "bin": "0.2-0.3",
+        "n": 2,
+        "mean_confidence": 0.288,
+        "accuracy": 0.0
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 2,
+        "mean_confidence": 0.3607,
+        "accuracy": 0.5
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 10,
+        "mean_confidence": 0.4559,
+        "accuracy": 0.5
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 34,
+        "mean_confidence": 0.5598,
+        "accuracy": 0.6176
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 56,
+        "mean_confidence": 0.6509,
+        "accuracy": 0.5893
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 44,
+        "mean_confidence": 0.7561,
+        "accuracy": 0.75
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 97,
+        "mean_confidence": 0.8618,
+        "accuracy": 0.8454
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 23658,
+        "mean_confidence": 0.9993,
+        "accuracy": 0.9972
+      }
+    ]
+  },
+  "test_by_script": {
+    "en": {
+      "n": 2691,
+      "token_accuracy": 0.9945,
+      "macro_f1": 0.9917,
+      "required_field_exact_match": 0.989,
+      "address_exact_match": 0.9766
+    },
+    "mixed": {
+      "n": 301,
+      "token_accuracy": 0.9987,
+      "macro_f1": 0.9972,
+      "required_field_exact_match": 0.9993,
+      "address_exact_match": 0.9967
+    },
+    "si": {
+      "n": 1195,
+      "token_accuracy": 0.9979,
+      "macro_f1": 0.9946,
+      "required_field_exact_match": 0.9971,
+      "address_exact_match": 0.9866
+    },
+    "ta": {
+      "n": 1150,
+      "token_accuracy": 0.999,
+      "macro_f1": 0.9967,
+      "required_field_exact_match": 0.9983,
+      "address_exact_match": 0.9922
+    }
+  },
+  "test_by_source": {
+    "deepparse_lk": {
+      "n": 1547,
+      "token_accuracy": 0.9896,
+      "macro_f1": 0.974,
+      "required_field_exact_match": 0.9756,
+      "address_exact_match": 0.9703
+    },
+    "synthetic": {
+      "n": 3790,
+      "token_accuracy": 0.9982,
+      "macro_f1": 0.9959,
+      "required_field_exact_match": 0.9973,
+      "address_exact_match": 0.9887
+    }
+  },
+  "test_by_noise": {
+    "clean": {
+      "n": 4231,
+      "token_accuracy": 0.9981,
+      "macro_f1": 0.997,
+      "required_field_exact_match": 0.9962,
+      "address_exact_match": 0.9891
+    },
+    "ocr_noise": {
+      "n": 1106,
+      "token_accuracy": 0.9919,
+      "macro_f1": 0.9866,
+      "required_field_exact_match": 0.9869,
+      "address_exact_match": 0.9611
+    }
+  },
+  "baseline_rules_test": {
+    "token_accuracy": 0.7457,
+    "macro_f1": 0.6268,
+    "per_label": {
+      "NAME": {
+        "precision": 0.986,
+        "recall": 0.7949,
+        "f1": 0.8802,
+        "support": 13712
+      },
+      "HOUSE": {
+        "precision": 0.954,
+        "recall": 0.986,
+        "f1": 0.9698,
+        "support": 7025
+      },
+      "STREET": {
+        "precision": 0.9658,
+        "recall": 0.5887,
+        "f1": 0.7315,
+        "support": 10696
+      },
+      "LOCALITY": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1582
+      },
+      "CITY": {
+        "precision": 0.326,
+        "recall": 0.9649,
+        "f1": 0.4874,
+        "support": 5521
+      },
+      "REGION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2343
+      },
+      "POSTCODE": {
+        "precision": 1.0,
+        "recall": 0.963,
+        "f1": 0.9812,
+        "support": 2786
+      },
+      "COUNTRY": {
+        "precision": 0.9633,
+        "recall": 0.9659,
+        "f1": 0.9646,
+        "support": 2610
+      },
+      "O": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 199
+      }
+    },
+    "field_exact_match": {
+      "name": 0.752,
+      "house_number": 0.9008,
+      "street": 0.265,
+      "city": 0.215,
+      "region": 0.0,
+      "postcode": 0.963,
+      "country": 0.9007,
+      "locality": 0.0
+    },
+    "field_support": {
+      "name": 3790,
+      "house_number": 4063,
+      "street": 4506,
+      "city": 5334,
+      "region": 845,
+      "postcode": 2786,
+      "country": 1681,
+      "locality": 1438
+    },
+    "required_field_exact_match": 0.5754,
+    "address_exact_match": 0.1964
+  },
+  "baseline_rules_by_script": {
+    "en": {
+      "n": 2691,
+      "token_accuracy": 0.6901,
+      "macro_f1": 0.6093,
+      "required_field_exact_match": 0.517,
+      "address_exact_match": 0.1996
+    },
+    "mixed": {
+      "n": 301,
+      "token_accuracy": 0.7785,
+      "macro_f1": 0.6334,
+      "required_field_exact_match": 0.6091,
+      "address_exact_match": 0.1661
+    },
+    "si": {
+      "n": 1195,
+      "token_accuracy": 0.7777,
+      "macro_f1": 0.629,
+      "required_field_exact_match": 0.6143,
+      "address_exact_match": 0.2067
+    },
+    "ta": {
+      "n": 1150,
+      "token_accuracy": 0.7945,
+      "macro_f1": 0.6352,
+      "required_field_exact_match": 0.6154,
+      "address_exact_match": 0.1861
+    }
+  }
+}

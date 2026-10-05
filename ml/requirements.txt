@@ -1,0 +1,23 @@
+# Training / dataset environment (Python 3.14 tested; GPU optional).
+# PyTorch with CUDA 12.8 (RTX GPUs):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+# CPU only:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+numpy
+pillow
+opencv-python-headless
+scikit-learn
+python-crfsuite
+pyarrow
+onnx
+onnxruntime
+uharfbuzz
+freetype-py
+matplotlib
+# the backend's address/OCR modules are imported directly from ../backend
+fastapi
+pymongo
+PyJWT
+python-barcode
+qrcode
+pytesseract

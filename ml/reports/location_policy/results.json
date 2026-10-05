@@ -1,0 +1,88 @@
+{
+  "n_per_scenario": 20000,
+  "zone_radius_m": 150,
+  "policy": {
+    "policy_version": "LOC-2026.10-L2",
+    "mode": "L2",
+    "accuracy_confidence": 0.68,
+    "max_fix_age_s": 120,
+    "max_accuracy_m": 250,
+    "p_consistent": 0.8,
+    "p_mismatch": 0.05,
+    "future_tolerance_s": 300,
+    "mock_location_action": "hold",
+    "delivered_requires_acknowledgement": true
+  },
+  "summary": {
+    "L0": {
+      "false_acceptance_clearly_outside": 1.0,
+      "valid_inside_flagged_or_held": 0.0,
+      "valid_inside_held_as_mismatch": 0.0,
+      "boundary_uncertain": 0.0,
+      "stale_reported_consistent": 1.0,
+      "raw": {
+        "inside": {
+          "not_assessed": 20000
+        },
+        "outside": {
+          "not_assessed": 20000
+        },
+        "boundary": {
+          "not_assessed": 20000
+        },
+        "stale": {
+          "not_assessed": 20000
+        }
+      }
+    },
+    "L1": {
+      "false_acceptance_clearly_outside": 0.0,
+      "valid_inside_flagged_or_held": 0.0688,
+      "valid_inside_held_as_mismatch": 0.0688,
+      "boundary_uncertain": 0.0,
+      "stale_reported_consistent": 0.9036,
+      "raw": {
+        "inside": {
+          "consistent": 18625,
+          "mismatch": 1375
+        },
+        "outside": {
+          "mismatch": 20000
+        },
+        "boundary": {
+          "mismatch": 12275,
+          "consistent": 7725
+        },
+        "stale": {
+          "consistent": 18072,
+          "mismatch": 1928
+        }
+      }
+    },
+    "L2": {
+      "false_acceptance_clearly_outside": 0.0,
+      "valid_inside_flagged_or_held": 0.1865,
+      "valid_inside_held_as_mismatch": 0.0167,
+      "boundary_uncertain": 0.4145,
+      "stale_reported_consistent": 0.0,
+      "raw": {
+        "inside": {
+          "consistent": 16271,
+          "uncertain": 3396,
+          "mismatch": 333
+        },
+        "outside": {
+          "mismatch": 20000
+        },
+        "boundary": {
+          "uncertain": 8290,
+          "consistent": 4802,
+          "mismatch": 6908
+        },
+        "stale": {
+          "uncertain": 20000
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+si: 120 envelopes
+Traceback (most recent call last):
+  File "C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\synthetic_envelopes\generate.py", line 167, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\synthetic_envelopes\generate.py", line 148, in main
+    draw_text_block(env, lines, int(W * rng.uniform(0.36, 0.45)), int(H * rng.uniform(0.42, 0.5)), [font],
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    fallback, rng.randint(40, 52), ink, rng, handwriting)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\synthetic_envelopes\generate.py", line 60, in draw_text_block
+    mask, _ = render_line(line, font_list + fallback, px)
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\common\textrender.py", line 120, in render_line
+    raise ValueError(f"no font covers {run!r}")
+ValueError: no font covers 'দ'

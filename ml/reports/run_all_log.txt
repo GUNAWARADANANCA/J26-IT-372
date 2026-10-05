@@ -1,0 +1,161 @@
+[gazetteer]
+  skip  gazetteer_madurapa/cities.sql (exists)
+  skip  gazetteer_madurapa/districts.sql (exists)
+  skip  gazetteer_madurapa/provinces.sql (exists)
+  skip  gazetteer_madurapa/LICENSE (exists)
+[deepparse]
+  skip  deepparse_worldwide/lk.parquet (exists)
+[tariff]
+  skip  slpost/domestic_postage_revision_2026-02-09.pdf (exists)
+[fonts]
+  skip  fonts/NotoSansSinhala.ttf (exists)
+  skip  fonts/NotoSerifSinhala.ttf (exists)
+  skip  fonts/AbhayaLibre-Regular.ttf (exists)
+  skip  fonts/AbhayaLibre-Bold.ttf (exists)
+  skip  fonts/Yaldevi.ttf (exists)
+  skip  fonts/GemunuLibre.ttf (exists)
+  skip  fonts/StickNoBills.ttf (exists)
+  skip  fonts/OFL-NotoSansSinhala.txt (exists)
+  skip  fonts/NotoSansTamil.ttf (exists)
+  skip  fonts/NotoSerifTamil.ttf (exists)
+  skip  fonts/HindMadurai-Regular.ttf (exists)
+  skip  fonts/MuktaMalar-Regular.ttf (exists)
+  skip  fonts/Catamaran.ttf (exists)
+  skip  fonts/Kavivanar-Regular.ttf (exists)
+  skip  fonts/Pavanam-Regular.ttf (exists)
+  skip  fonts/MeeraInimai-Regular.ttf (exists)
+  skip  fonts/BalooThambi2.ttf (exists)
+  skip  fonts/TiroTamil-Regular.ttf (exists)
+  skip  fonts/NotoSans.ttf (exists)
+  skip  fonts/NotoSerif.ttf (exists)
+  skip  fonts/SourceSans3.ttf (exists)
+  skip  fonts/Merriweather.ttf (exists)
+  skip  fonts/CourierPrime-Regular.ttf (exists)
+  skip  fonts/Caveat.ttf (exists)
+  skip  fonts/Kalam-Regular.ttf (exists)
+  skip  fonts/IndieFlower-Regular.ttf (exists)
+  skip  fonts/PatrickHand-Regular.ttf (exists)
+  skip  fonts/ShadowsIntoLight.ttf (exists)
+[osm]
+  skip  osm/post_offices.json (exists)
+  skip  osm/streets_si_ta.json (exists)
+[wikidata]
+  skip  wikidata/sri_lankan_person_names.csv (exists)
+
+Manifest written to C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\Datasets\raw\MANIFEST.json
+  wrote Datasets\processed\reference\lk_localities.csv  (2155 rows)
+  wrote Datasets\processed\reference\lk_post_offices_osm.csv  (797 rows)
+  wrote Datasets\processed\reference\lk_streets_osm.csv  (358 rows)
+  wrote Datasets\processed\reference\person_names.csv  (1323 rows)
+  copied runtime reference files to C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\backend\app\reference
+
+Localities with postcode: 2054/2155
+{
+  "test": {
+    "examples": 5337,
+    "groups": 606,
+    "by_source": {
+      "synthetic": 3790,
+      "deepparse_lk": 1547
+    },
+    "by_script": {
+      "si": 1195,
+      "en": 2691,
+      "ta": 1150,
+      "mixed": 301
+    },
+    "noisy": 1106
+  },
+  "train": {
+    "examples": 24245,
+    "groups": 2750,
+    "by_source": {
+      "synthetic": 16887,
+      "deepparse_lk": 7358
+    },
+    "by_script": {
+      "si": 5137,
+      "en": 12583,
+      "ta": 5219,
+      "mixed": 1305,
+      "none": 1
+    },
+    "noisy": 4891
+  },
+  "val": {
+    "examples": 4878,
+    "groups": 623,
+    "by_source": {
+      "synthetic": 3760,
+      "deepparse_lk": 1118
+    },
+    "by_script": {
+      "ta": 1191,
+      "si": 1145,
+      "en": 2238,
+      "mixed": 304
+    },
+    "noisy": 975
+  }
+}
+group overlap: {'test-train': 0, 'test-val': 0, 'train-val': 0}
+featurised train=24245 val=4878 test=5337 in 13s
+  grid c1=0.05 c2=0.01: val macro-F1=0.9933 required-field EM=0.9919
+  grid c1=0.1 c2=0.01: val macro-F1=0.9934 required-field EM=0.9921
+  grid c1=0.1 c2=0.05: val macro-F1=0.9930 required-field EM=0.9919
+  grid c1=0.3 c2=0.01: val macro-F1=0.9927 required-field EM=0.9916
+  grid c1=0.5 c2=0.05: val macro-F1=0.9929 required-field EM=0.9918
+selected c1=0.1 c2=0.01
+trained final model in 47s -> C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\backend\models\address_crf.crfsuite
+review threshold (val) = 0.974 -> {'threshold': 0.974, 'share_not_flagged': 0.9828, 'accuracy_not_flagged': 0.997, 'flagged': 382, 'accuracy_flagged': 0.7958, 'errors_caught_by_flag': 0.5455, 'target_accuracy': 0.997}
+{
+  "token_accuracy": 0.9968,
+  "macro_f1": 0.9948,
+  "required_field_exact_match": 0.9943,
+  "address_exact_match": 0.9833,
+  "ece": 0.0024
+}
+train: 45000 lines, fonts=['AbhayaLibre-Bold', 'AbhayaLibre-Regular', 'BalooThambi2', 'Catamaran', 'Caveat', 'CourierPrime-Regular', 'GemunuLibre', 'HindMadurai-Regular', 'Kalam-Regular', 'Kavivanar-Regular', 'MeeraInimai-Regular', 'MuktaMalar-Regular', 'NotoSans', 'NotoSansSinhala', 'NotoSansTamil', 'NotoSerif', 'NotoSerifSinhala', 'NotoSerifTamil', 'PatrickHand-Regular', 'ShadowsIntoLight', 'SourceSans3', 'StickNoBills']
+val: 4500 lines, fonts=['AbhayaLibre-Bold', 'AbhayaLibre-Regular', 'BalooThambi2', 'Catamaran', 'Caveat', 'CourierPrime-Regular', 'GemunuLibre', 'HindMadurai-Regular', 'Kalam-Regular', 'Kavivanar-Regular', 'MeeraInimai-Regular', 'MuktaMalar-Regular', 'NotoSans', 'NotoSansSinhala', 'NotoSansTamil', 'NotoSerif', 'NotoSerifSinhala', 'NotoSerifTamil', 'PatrickHand-Regular', 'ShadowsIntoLight', 'SourceSans3', 'StickNoBills']
+test: 4500 lines, fonts=['IndieFlower-Regular', 'Merriweather', 'Nirmala', 'Pavanam-Regular', 'TiroTamil-Regular', 'Yaldevi']
+input size 32x256; written to C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\Datasets\processed\script_id
+C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\script_id\train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return float(log_t.exp())
+C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\script_id\train.py:219: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(model_cpu, dummy, str(onnx_path), input_names=["image"], output_names=["logits"],
+device: cuda (NVIDIA GeForce RTX 2050)
+train (45000, 1, 32, 256) val (4500, 1, 32, 256) test (4500, 1, 32, 256)
+epoch  1 loss 0.5212 val_acc 0.7662
+epoch  2 loss 0.2862 val_acc 0.9560
+epoch  3 loss 0.2502 val_acc 0.9658
+epoch  4 loss 0.2315 val_acc 0.9578
+epoch  5 loss 0.2214 val_acc 0.9920
+epoch  6 loss 0.2144 val_acc 0.9936
+epoch  7 loss 0.2097 val_acc 0.9949
+epoch  8 loss 0.2054 val_acc 0.9427
+epoch  9 loss 0.2019 val_acc 0.9951
+epoch 10 loss 0.1983 val_acc 0.9964
+epoch 11 loss 0.1962 val_acc 0.9949
+epoch 12 loss 0.1932 val_acc 0.9956
+epoch 13 loss 0.1911 val_acc 0.9960
+epoch 14 loss 0.1903 val_acc 0.9960
+{
+  "best_val_accuracy": 0.9964,
+  "test_accuracy": 0.9767,
+  "temperature": 0.3577,
+  "test_ece_raw": 0.0969,
+  "test_ece_calibrated": 0.0061,
+  "onnx_max_abs_logit_diff": 1.9073486328125e-06,
+  "onnx_cpu_ms_per_line": 2.02
+}
+si: 120 envelopes
+ta: 120 envelopes
+en: 120 envelopes
+wrote 360 envelopes to C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\Datasets\processed\synthetic_envelopes
+| Policy | False acceptance, clearly outside (target <= 5 %) | Valid inside scans flagged/held | Valid inside held as mismatch | Boundary -> uncertain | Stale fix reported consistent |
+|---|---|---|---|---|---|
+| L0 | 100.00% | 0.00% | 0.00% | 0.00% | 100.00% |
+| L1 | 0.00% | 6.88% | 6.88% | 0.00% | 90.36% |
+| L2 | 0.00% | 18.65% | 1.67% | 41.45% | 0.00% |
+All done. Reports are in ml/reports/.
