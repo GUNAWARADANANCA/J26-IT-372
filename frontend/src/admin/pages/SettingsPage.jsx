@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -17,6 +17,30 @@ import {
 } from '../data/repository'
 
 const QR_URL = 'https://localhost:5173/attendance-qr/token'
+
+function downloadQrImage(svg) {
+  if (!svg) return
+  const xml = new XMLSerializer().serializeToString(svg)
+  const blob = new Blob([xml], { type: 'image/svg+xml;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const image = new Image()
+  image.onload = () => {
+    const size = 720
+    const canvas = document.createElement('canvas')
+    canvas.width = size
+    canvas.height = size
+    const context = canvas.getContext('2d')
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, size, size)
+    context.drawImage(image, 0, 0, size, size)
+    const link = document.createElement('a')
+    link.href = canvas.toDataURL('image/png')
+    link.download = 'attendance-qr.png'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+  image.src = url
+}
 
 const DAYS = [
   { value: 0, label: 'Monday' },
@@ -63,6 +87,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const qrRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
@@ -269,12 +294,20 @@ export default function SettingsPage() {
           <Typography variant="h6" sx={{ mb: 1 }}>
             Door QR
           </Typography>
-          <Box sx={{ display: 'grid', placeItems: 'center', py: 1 }}>
+          <Box ref={qrRef} sx={{ display: 'grid', placeItems: 'center', py: 1 }}>
             <QRCodeSVG value={QR_URL} size={180} />
           </Box>
           <Typography variant="body2" sx={{ wordBreak: 'break-all', mb: 1 }}>
             {QR_URL}
           </Typography>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ mb: 1 }}
+            onClick={() => downloadQrImage(qrRef.current?.querySelector('svg'))}
+          >
+            Download QR
+          </Button>
           <Typography variant="caption" color="text.secondary">
             On a phone, replace localhost with this laptop’s IP address. Accept the certificate warning once so the browser can read location.
           </Typography>
