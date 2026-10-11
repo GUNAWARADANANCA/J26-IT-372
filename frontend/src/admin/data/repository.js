@@ -127,6 +127,10 @@ export function getPayroll(month) {
   return request(`/api/payroll?month=${encodeURIComponent(month)}`)
 }
 
+export function getProductivity(employeeId) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}`)
+}
+
 export function listEntitlements(module) {
   return request(`/api/entitlements/${module}`)
 }

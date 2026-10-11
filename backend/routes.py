@@ -14,6 +14,7 @@ from attendance import (
 )
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
+from productivity import productivity_for
 from payroll import (
     create_entitlement,
     delete_entitlement,
@@ -185,6 +186,11 @@ def add_entitlement(module: str, body: dict):
 @router.delete("/entitlements/{module}/{item_id}")
 def remove_entitlement(module: str, item_id: str):
     return delete_entitlement(module, item_id)
+
+
+@router.get("/productivity/{employee_id}")
+def read_productivity(employee_id: str):
+    return productivity_for(employee_id)
 
 
 @router.get("/{doctype}")
