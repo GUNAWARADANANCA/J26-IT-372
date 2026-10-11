@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -7,30 +7,22 @@ import TextField from '@mui/material/TextField'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
 import {
   checkAttendanceLocation,
   list,
   scanAttendance,
 } from '../admin/data/repository'
 
-const MAX_ACCURACY_METERS = 150
-
 const LOCATION_OPTIONS = {
   enableHighAccuracy: true,
   timeout: 20000,
-  maximumAge: 0,
+  maximumAge: 15000,
 }
 
 function requestLocation() {
   return new Promise((resolve, reject) => {
     if (!window.isSecureContext) {
-      reject(
-        new Error(
-          'Open this page with https, then tap Check my location again so the phone can ask for permission.',
-        ),
-      )
+      reject(new Error('Open the page with https, then allow location.'))
       return
     }
     if (!navigator.geolocation) {
@@ -54,10 +46,7 @@ function requestLocation() {
         finish(false, new Error('Tap Allow when the phone asks for location.'))
         return
       }
-      finish(
-        false,
-        new Error('Could not read this phone’s location. Try again nearer the door.'),
-      )
+      finish(false, new Error('Could not read location. Stand nearer the door and try again.'))
     }
 
     watchId = navigator.geolocation.watchPosition(onSuccess, onError, LOCATION_OPTIONS)
@@ -65,70 +54,100 @@ function requestLocation() {
   })
 }
 
+function employeeLabel(employee) {
+  return employee.employee_name || employee.employee_id || employee.name
+}
+
 export default function AttendanceQrPage() {
-  const [step, setStep] = useState('start')
+  const [step, setStep] = useState('locating')
   const [position, setPosition] = useState(null)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [employees, setEmployees] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [saving, setSaving] = useState(false)
+  const [savingName, setSavingName] = useState('')
   const [result, setResult] = useState(null)
+  const errorRef = useRef(null)
+
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [error])
 
   const matches = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return []
-    return employees
-      .filter((employee) =>
-        `${employee.employee_name} ${employee.employee_id} ${employee.post_office}`
-          .toLowerCase()
-          .includes(query),
-      )
-      .slice(0, 8)
+    const rows = [...employees].sort((a, b) =>
+      employeeLabel(a).localeCompare(employeeLabel(b)),
+    )
+    if (!query) return rows
+    return rows.filter((employee) =>
+      `${employee.employee_name} ${employee.employee_id} ${employee.post_office}`
+        .toLowerCase()
+        .includes(query),
+    )
   }, [employees, search])
 
-  async function handleLocate() {
+  useEffect(() => {
+    let cancelled = false
+    async function begin() {
+      try {
+        const reading = await requestLocation()
+        if (cancelled) return
+        const { latitude, longitude, accuracy } = reading.coords
+        await checkAttendanceLocation(latitude, longitude)
+        if (cancelled) return
+        const rows = await list('employee')
+        if (cancelled) return
+        setEmployees(Array.isArray(rows) ? rows : [])
+        setPosition({ latitude, longitude, accuracy })
+        setStep('pick')
+      } catch (err) {
+        if (cancelled) return
+        setError(err.message || 'Location check failed')
+        setStep('blocked')
+      }
+    }
+    begin()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function retryLocation() {
     setError('')
-    const readingPromise = requestLocation()
     setStep('locating')
     try {
-      const reading = await readingPromise
+      const reading = await requestLocation()
       const { latitude, longitude, accuracy } = reading.coords
-      if (accuracy != null && accuracy > MAX_ACCURACY_METERS) {
-        setError(
-          `Location is only accurate to ${Math.round(accuracy)} m. Step outside near the door and try again.`,
-        )
-        setStep('start')
-        return
-      }
       await checkAttendanceLocation(latitude, longitude)
-      const rows = await list('employee')
-      setEmployees(rows)
+      if (employees.length === 0) {
+        const rows = await list('employee')
+        setEmployees(Array.isArray(rows) ? rows : [])
+      }
       setPosition({ latitude, longitude, accuracy })
-      setStep('search')
+      setStep('pick')
     } catch (err) {
       setError(err.message || 'Location check failed')
-      setStep('start')
+      setStep('blocked')
     }
   }
 
-  async function handleConfirm() {
-    if (!selected || !position) return
-    setSaving(true)
+  async function record(employee) {
+    if (!position || savingName) return
+    const id = employee.name || employee.employee_id
+    setSavingName(id)
     setError('')
     try {
       const saved = await scanAttendance({
-        employeeId: selected.name,
+        employeeId: id,
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
       })
-      setResult(saved)
+      setResult({ ...saved, employee_name: saved.employee_name || employeeLabel(employee) })
       setStep('done')
     } catch (err) {
       setError(err.message || 'Could not save attendance')
     } finally {
-      setSaving(false)
+      setSavingName('')
     }
   }
 
@@ -137,102 +156,110 @@ export default function AttendanceQrPage() {
       sx={{
         minHeight: '100vh',
         bgcolor: '#f4f7fb',
-        display: 'grid',
-        placeItems: 'center',
         px: 2,
-        py: 4,
+        py: 3,
       }}
     >
-      <Paper sx={{ width: '100%', maxWidth: 420, p: 3 }}>
-        <Typography variant="overline" color="text.secondary">
-          Postal KPI
-        </Typography>
-        <Typography variant="h5" sx={{ mb: 0.5 }}>
+      <Paper sx={{ width: '100%', maxWidth: 480, mx: 'auto', p: 2.5 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
           Attendance
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Stand at the post office door. Your phone’s location is checked before the time is saved.
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          Tap your name. That saves today’s time.
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert ref={errorRef} severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
 
-        {step === 'start' && (
-          <Button variant="contained" size="large" fullWidth onClick={handleLocate}>
-            Check my location
+        {step === 'locating' && (
+          <Stack alignItems="center" spacing={1.5} sx={{ py: 4 }}>
+            <CircularProgress size={36} />
+            <Typography variant="h6" align="center">
+              Allow location
+            </Typography>
+            <Typography color="text.secondary" align="center">
+              The phone checks that you are at the post office.
+            </Typography>
+          </Stack>
+        )}
+
+        {step === 'blocked' && (
+          <Button variant="contained" size="large" fullWidth onClick={retryLocation} sx={{ py: 1.5 }}>
+            Try again
           </Button>
         )}
 
-        {step === 'locating' && (
-          <Stack alignItems="center" spacing={1.5} sx={{ py: 2 }}>
-            <CircularProgress size={28} />
-            <Typography color="text.secondary">Checking if you are at the post office...</Typography>
+        {(step === 'pick' || (step === 'done' && error)) && (
+          <Stack spacing={1.5}>
+            <TextField
+              placeholder="Find a name"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              fullWidth
+            />
+            {matches.length === 0 && (
+              <Typography color="text.secondary">No matching employee</Typography>
+            )}
+            {matches.map((employee) => {
+              const id = employee.name || employee.employee_id
+              const busy = savingName === id
+              return (
+                <Button
+                  key={id}
+                  variant="contained"
+                  size="large"
+                  disabled={Boolean(savingName)}
+                  onClick={() => record(employee)}
+                  sx={{
+                    justifyContent: 'flex-start',
+                    textAlign: 'left',
+                    py: 1.75,
+                    px: 2,
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box sx={{ width: '100%' }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '1.15rem' }}>
+                      {busy ? 'Saving…' : employeeLabel(employee)}
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      {employee.employee_id}
+                      {employee.designation ? ` · ${employee.designation}` : ''}
+                    </Typography>
+                  </Box>
+                </Button>
+              )
+            })}
           </Stack>
         )}
 
-        {step === 'search' && (
-          <Stack spacing={2}>
-            <TextField
-              autoFocus
-              placeholder="Search your name"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value)
-                setSelected(null)
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Stack spacing={1}>
-              {search.trim() && matches.length === 0 && (
-                <Typography color="text.secondary">No matching employee</Typography>
-              )}
-              {matches.map((employee) => {
-                const active = selected?.name === employee.name
-                return (
-                  <Button
-                    key={employee.name}
-                    variant={active ? 'contained' : 'outlined'}
-                    onClick={() => setSelected(employee)}
-                    sx={{ justifyContent: 'flex-start', textAlign: 'left' }}
-                  >
-                    <Box>
-                      <Typography sx={{ fontWeight: 600 }}>
-                        {employee.employee_name}
-                      </Typography>
-                      <Typography variant="caption" color={active ? 'inherit' : 'text.secondary'}>
-                        {employee.employee_id}
-                        {employee.post_office ? ` · ${employee.post_office}` : ''}
-                      </Typography>
-                    </Box>
-                  </Button>
-                )
-              })}
-            </Stack>
+        {step === 'done' && result && !error && (
+          <Stack spacing={2} sx={{ py: 2 }}>
+            <Typography variant="h3" sx={{ fontWeight: 800 }}>
+              {result.action === 'in' ? 'Checked in' : 'Checked out'}
+            </Typography>
+            <Typography variant="h5">{result.employee_name}</Typography>
+            <Typography variant="h6" color="text.secondary">
+              {result.time}
+              {result.status ? ` · ${result.status}` : ''}
+            </Typography>
             <Button
               variant="contained"
               size="large"
-              disabled={!selected || saving}
-              onClick={handleConfirm}
+              fullWidth
+              sx={{ py: 1.5 }}
+              onClick={() => {
+                setResult(null)
+                setSearch('')
+                setStep('pick')
+              }}
             >
-              {saving ? 'Saving…' : 'Record my time'}
+              Next person
             </Button>
           </Stack>
-        )}
-
-        {step === 'done' && result && (
-          <Alert severity="success">
-            {result.action === 'in' ? 'Checked in' : 'Checked out'} at {result.time}
-            {result.status ? ` (${result.status})` : ''} for {result.employee_name}.
-          </Alert>
         )}
       </Paper>
     </Box>

@@ -131,6 +131,39 @@ export function getProductivity(employeeId) {
   return request(`/api/productivity/${encodeURIComponent(employeeId)}`)
 }
 
+export function getPromotionReview() {
+  return request('/api/promotion-review')
+}
+
+export function getAllocation(date, checklist) {
+  return request('/api/allocation/review', {
+    method: 'POST',
+    body: JSON.stringify({ date, checklist }),
+  })
+}
+
+export function approveAllocation(date, checklist) {
+  return request('/api/allocation/approve', {
+    method: 'POST',
+    body: JSON.stringify({ date, checklist }),
+  })
+}
+
+export function confirmOvertime(date, checklist) {
+  return request('/api/allocation/overtime', {
+    method: 'POST',
+    body: JSON.stringify({ date, checklist }),
+  })
+}
+
+export function getGratuity() {
+  return request('/api/gratuity')
+}
+
+export function saveGratuity() {
+  return request('/api/gratuity', { method: 'POST' })
+}
+
 export function listEntitlements(module) {
   return request(`/api/entitlements/${module}`)
 }

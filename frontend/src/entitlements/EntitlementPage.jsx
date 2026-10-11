@@ -23,6 +23,9 @@ import {
   list,
   listEntitlements,
 } from '../admin/data/repository'
+import GratuityFromService from './GratuityFromService'
+import OvertimeFromDay from './OvertimeFromDay'
+import PromotionReview from './PromotionReview'
 
 const MODULES = {
   leave: {
@@ -57,6 +60,7 @@ const MODULES = {
     fields: [
       { name: 'date', label: 'Date', type: 'date' },
       { name: 'hours', label: 'Hours', type: 'number' },
+      { name: 'amount', label: 'Amount', type: 'number' },
       { name: 'status', label: 'Status', type: 'select', options: ['Pending', 'Approved', 'Rejected'] },
     ],
   },
@@ -216,6 +220,9 @@ export default function EntitlementPage({ pageKey }) {
           Add
         </Button>
       </Stack>
+      {pageKey === 'promotions' ? <PromotionReview /> : null}
+      {pageKey === 'overtime' ? <OvertimeFromDay onSaved={reload} /> : null}
+      {pageKey === 'gratuity' ? <GratuityFromService onSaved={reload} /> : null}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 2 }}>
         <TextField
           label="Search employee"

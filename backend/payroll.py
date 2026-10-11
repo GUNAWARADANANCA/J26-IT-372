@@ -8,6 +8,8 @@ from fastapi import HTTPException
 from attendance import get_settings
 from db import get_db
 
+MIN_GRATUITY_YEARS = 5
+
 ENTITLEMENTS = {
     "leave",
     "holiday-pay",
@@ -46,10 +48,18 @@ def payroll_rows(month: str) -> dict:
             late_counts[employee_id] = late_counts.get(employee_id, 0) + 1
 
     ot_hours: dict[str, float] = {}
+    ot_amounts: dict[str, float] = {}
     for row in db["overtime"].find({"date": {"$regex": f"^{month}"}, "status": "Approved"}):
         employee_id = row.get("employee_id")
-        if employee_id:
-            ot_hours[employee_id] = ot_hours.get(employee_id, 0) + float(row.get("hours") or 0)
+        if not employee_id:
+            continue
+        hours_row = float(row.get("hours") or 0)
+        ot_hours[employee_id] = ot_hours.get(employee_id, 0) + hours_row
+        if row.get("amount") not in (None, ""):
+            pay_row = float(row.get("amount") or 0)
+        else:
+            pay_row = hours_row * settings["ot_rate_lkr"]
+        ot_amounts[employee_id] = ot_amounts.get(employee_id, 0) + pay_row
 
     pending_overtime = db["overtime"].count_documents(
         {"date": {"$regex": f"^{month}"}, "status": "Pending"}
@@ -61,7 +71,7 @@ def payroll_rows(month: str) -> dict:
         basic = _money(employee.get("basic_salary"))
         late_days = late_counts.get(employee_id, 0)
         hours = round(ot_hours.get(employee_id, 0), 2)
-        overtime_pay = _money(hours * settings["ot_rate_lkr"])
+        overtime_pay = _money(ot_amounts.get(employee_id, 0))
         late_deduction = _money(late_days * settings["late_deduction_lkr"])
         epf_employee = _money(basic * settings["epf_employee_percent"] / 100)
         epf_employer = _money(basic * settings["epf_employer_percent"] / 100)
@@ -102,6 +112,92 @@ def payroll_rows(month: str) -> dict:
         },
         "rows": rows,
     }
+
+
+def _years(employee: dict) -> int | None:
+    value = employee.get("years_of_experience")
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def gratuity_for(employee: dict) -> dict:
+    """Half a month of basic salary for each completed year. Eligible from 5 years."""
+    employee_id = employee.get("employee_id") or employee.get("name") or employee.get("_id")
+    years = _years(employee)
+    salary = employee.get("basic_salary")
+    try:
+        salary_value = float(salary) if salary not in (None, "") else None
+    except (TypeError, ValueError):
+        salary_value = None
+    amount = None
+    if years is None or salary_value is None:
+        status = "Not eligible"
+        note = "Years of experience or basic salary is missing, so gratuity cannot be calculated."
+    else:
+        amount = _money((salary_value / 2) * years)
+        status = "Eligible" if years >= MIN_GRATUITY_YEARS else "Not eligible"
+        note = (
+            f"{years} completed years. Estimated gratuity is half a month of salary "
+            f"for each year. Eligibility starts at {MIN_GRATUITY_YEARS} years."
+        )
+    return {
+        "employee_id": employee_id,
+        "employee_name": employee.get("employee_name") or "",
+        "designation": employee.get("designation") or "",
+        "years_of_experience": years,
+        "basic_salary": None if salary_value is None else _money(salary_value),
+        "estimated_amount": amount,
+        "status": status,
+        "service_note": note,
+    }
+
+
+def gratuity_board() -> dict:
+    rows = [gratuity_for(employee) for employee in get_db()["employee"].find()]
+    rows.sort(key=lambda row: row["employee_name"])
+    return {
+        "minimum_years": MIN_GRATUITY_YEARS,
+        "formula_note": (
+            "Example desk formula, not an official Sri Lanka Post scale. "
+            "Estimated gratuity = (monthly basic salary / 2) × completed years of experience. "
+            f"A person is marked eligible after {MIN_GRATUITY_YEARS} completed years."
+        ),
+        "rows": rows,
+    }
+
+
+def save_gratuity() -> dict:
+    """Store one gratuity row per employee. Saving again replaces that row."""
+    board = gratuity_board()
+    collection = _collection("gratuity")
+    saved = []
+    for row in board["rows"]:
+        if not row["employee_id"] or row["estimated_amount"] is None:
+            continue
+        doc_id = f"gratuity-{row['employee_id']}"
+        doc = {
+            "_id": doc_id,
+            "name": doc_id,
+            "employee_id": row["employee_id"],
+            "employee_name": row["employee_name"],
+            "service_note": row["service_note"],
+            "estimated_amount": row["estimated_amount"],
+            "status": row["status"],
+        }
+        collection.replace_one({"_id": doc_id}, doc, upsert=True)
+        saved.append(
+            {
+                "employee_id": row["employee_id"],
+                "employee_name": row["employee_name"],
+                "estimated_amount": row["estimated_amount"],
+                "status": row["status"],
+            }
+        )
+    return {"ok": True, "saved": saved, "board": board}
 
 
 def _collection(module: str):

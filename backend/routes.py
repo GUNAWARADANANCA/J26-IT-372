@@ -14,12 +14,15 @@ from attendance import (
 )
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
+from performance_review import allocation_plan, approve_allocation, confirm_overtime, promotion_board
 from productivity import productivity_for
 from payroll import (
     create_entitlement,
     delete_entitlement,
+    gratuity_board,
     list_entitlements,
     payroll_rows,
+    save_gratuity,
 )
 
 router = APIRouter(prefix="/api")
@@ -173,6 +176,16 @@ def read_payroll(month: str):
     return payroll_rows(month)
 
 
+@router.get("/gratuity")
+def read_gratuity():
+    return gratuity_board()
+
+
+@router.post("/gratuity")
+def store_gratuity():
+    return save_gratuity()
+
+
 @router.get("/entitlements/{module}")
 def read_entitlements(module: str):
     return list_entitlements(module)
@@ -191,6 +204,31 @@ def remove_entitlement(module: str, item_id: str):
 @router.get("/productivity/{employee_id}")
 def read_productivity(employee_id: str):
     return productivity_for(employee_id)
+
+
+@router.get("/promotion-review")
+def read_promotion_review():
+    return promotion_board()
+
+
+@router.get("/allocation")
+def read_allocation(date: str):
+    return allocation_plan(date)
+
+
+@router.post("/allocation/review")
+def review_allocation(body: dict):
+    return allocation_plan(str(body.get("date") or ""), body.get("checklist"))
+
+
+@router.post("/allocation/approve")
+def accept_allocation(body: dict):
+    return approve_allocation(str(body.get("date") or ""), body.get("checklist"))
+
+
+@router.post("/allocation/overtime")
+def accept_overtime(body: dict):
+    return confirm_overtime(str(body.get("date") or ""), body.get("checklist"))
 
 
 @router.get("/{doctype}")

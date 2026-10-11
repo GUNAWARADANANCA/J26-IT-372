@@ -16,7 +16,31 @@ import {
   saveAttendanceSettings,
 } from '../data/repository'
 
-const QR_URL = 'https://localhost:5173/attendance-qr/token'
+function localNetworkAddress() {
+  return new Promise((resolve) => {
+    const peer = new RTCPeerConnection({ iceServers: [] })
+    peer.createDataChannel('')
+    peer.createOffer().then((offer) => peer.setLocalDescription(offer))
+    peer.onicecandidate = (event) => {
+      const candidate = event.candidate?.candidate || ''
+      const match = candidate.match(/(\d{1,3}(?:\.\d{1,3}){3})/)
+      if (match && !match[1].startsWith('127.')) {
+        resolve(match[1])
+        peer.close()
+      }
+    }
+    setTimeout(() => {
+      peer.close()
+      resolve('')
+    }, 1200)
+  })
+}
+
+function attendanceUrl(host) {
+  const { protocol, port } = window.location
+  const resolvedPort = port || (protocol === 'https:' ? '443' : '80')
+  return `${protocol}//${host}:${resolvedPort}/attendance-qr/token`
+}
 
 function downloadQrImage(svg) {
   if (!svg) return
@@ -40,6 +64,27 @@ function downloadQrImage(svg) {
     URL.revokeObjectURL(url)
   }
   image.src = url
+}
+
+function useDoorQrUrl() {
+  const [url, setUrl] = useState(() => attendanceUrl(window.location.hostname))
+
+  useEffect(() => {
+    const host = window.location.hostname
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      setUrl(attendanceUrl(host))
+      return undefined
+    }
+    let cancelled = false
+    localNetworkAddress().then((address) => {
+      if (!cancelled && address) setUrl(attendanceUrl(address))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return url
 }
 
 const DAYS = [
@@ -88,6 +133,7 @@ export default function SettingsPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const qrRef = useRef(null)
+  const qrUrl = useDoorQrUrl()
 
   useEffect(() => {
     let cancelled = false
@@ -295,10 +341,10 @@ export default function SettingsPage() {
             Door QR
           </Typography>
           <Box ref={qrRef} sx={{ display: 'grid', placeItems: 'center', py: 1 }}>
-            <QRCodeSVG value={QR_URL} size={180} />
+            <QRCodeSVG value={qrUrl} size={280} level="M" includeMargin marginSize={2} />
           </Box>
           <Typography variant="body2" sx={{ wordBreak: 'break-all', mb: 1 }}>
-            {QR_URL}
+            {qrUrl}
           </Typography>
           <Button
             variant="outlined"
@@ -309,7 +355,7 @@ export default function SettingsPage() {
             Download QR
           </Button>
           <Typography variant="caption" color="text.secondary">
-            On a phone, replace localhost with this laptop’s IP address. Accept the certificate warning once so the browser can read location.
+            Scan this from a phone on the same Wi-Fi. If the browser warns about the certificate, continue once so it can read the location.
           </Typography>
         </Paper>
       </Stack>
