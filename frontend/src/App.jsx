@@ -13,6 +13,7 @@ import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import SettingsPage from './admin/pages/SettingsPage'
 import AttendanceQrPage from './attendance/AttendanceQrPage'
+import ProductivityPage from './admin/pages/ProductivityPage'
 import EntitlementDashboard from './entitlements/EntitlementDashboard'
 import PayrollPage from './entitlements/PayrollPage'
 import EntitlementPage from './entitlements/EntitlementPage'
@@ -146,6 +147,7 @@ export default function App() {
           element={<AttendanceLogFormRoute onSaved={bump} />}
         />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="productivity" element={<ProductivityPage />} />
         <Route path="entitlements" element={<EntitlementDashboard />} />
         <Route path="entitlements/payroll" element={<PayrollPage />} />
         <Route path="entitlements/epf" element={<PayrollPage mode="epf" />} />

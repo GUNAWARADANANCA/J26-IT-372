@@ -4,3 +4,5 @@ pymongo
 python-dotenv
 openpyxl
 python-multipart
+scikit-learn==1.6.1
+pandas==3.0.6

@@ -19,6 +19,7 @@ import {
   UserRound,
   HandCoins,
   ClipboardList,
+  Activity,
 } from 'lucide-react'
 import {
   Collapsible,
@@ -46,6 +47,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 const modules = [
   { to: '/employee', label: 'Employee', icon: Users },
   { to: '/daily-kpi-log', label: 'Daily KPI Log', icon: ClipboardList },
+  { to: '/productivity', label: 'Productivity', icon: Activity },
   { to: '/attendance-log', label: 'Attendance Logs', icon: Fingerprint },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
