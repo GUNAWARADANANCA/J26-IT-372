@@ -8,12 +8,14 @@ import DeskLayout from './admin/layout/DeskLayout'
 import EmployeeList from './admin/pages/EmployeeList'
 import EmployeeForm from './admin/pages/EmployeeForm'
 import DailyKpiList from './admin/pages/DailyKpiList'
+import ChecklistPage from './admin/pages/ChecklistPage'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import SettingsPage from './admin/pages/SettingsPage'
 import AttendanceQrPage from './attendance/AttendanceQrPage'
 import ProductivityPage from './admin/pages/ProductivityPage'
+import WorkAllocationPage from './admin/pages/WorkAllocationPage'
 import EntitlementDashboard from './entitlements/EntitlementDashboard'
 import PayrollPage from './entitlements/PayrollPage'
 import EntitlementPage from './entitlements/EntitlementPage'
@@ -134,6 +136,7 @@ export default function App() {
           path="daily-kpi-log"
           element={<DailyKpiList refreshKey={refreshKey} />}
         />
+        <Route path="checklist" element={<ChecklistPage />} />
         <Route
           path="daily-kpi-log/:id"
           element={<DailyKpiFormRoute onSaved={bump} />}
@@ -148,6 +151,7 @@ export default function App() {
         />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="productivity" element={<ProductivityPage />} />
+        <Route path="work-allocation" element={<WorkAllocationPage />} />
         <Route path="entitlements" element={<EntitlementDashboard />} />
         <Route path="entitlements/payroll" element={<PayrollPage />} />
         <Route path="entitlements/epf" element={<PayrollPage mode="epf" />} />

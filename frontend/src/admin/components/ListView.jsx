@@ -36,7 +36,7 @@ function labelize(col) {
   return col.replaceAll('_', ' ')
 }
 
-export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
+export default function ListView({ meta, basePath, title, addLabel, extraActions, refreshKey = 0 }) {
   const navigate = useNavigate()
   const { extra, mergeOptions } = useFieldOptions()
   const [search, setSearch] = useState('')
@@ -165,12 +165,13 @@ export default function ListView({ meta, basePath, title, refreshKey = 0 }) {
               </Button>
             </>
           )}
+          {extraActions}
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigate(`${basePath}/new`)}
           >
-            Add {meta.name}
+            {addLabel || `Add ${meta.name}`}
           </Button>
         </Stack>
       </Stack>

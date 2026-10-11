@@ -100,6 +100,7 @@ export default function ProductivityPage() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Measured score for the latest week, a next-week estimate, and what
         pulled the score down. The estimate is advice for the postmaster.
+        Promotion review for the last 24 months is a separate list and does not use this forecast.
       </Typography>
 
       <TextField
