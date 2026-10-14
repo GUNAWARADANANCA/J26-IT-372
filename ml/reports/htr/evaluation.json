@@ -1,0 +1,222 @@
+{
+ "results": {
+  "sinocr": {
+   "handwriting_model": {
+    "cer": 0.1812,
+    "wer": 0.5554,
+    "exact_lines": 0.2555,
+    "lines": 227,
+    "ms_per_line": 13.1
+   },
+   "tesseract": {
+    "cer": 0.9072,
+    "wer": 1.1866,
+    "exact_lines": 0.0,
+    "lines": 227,
+    "lang": "sin+eng",
+    "ms_per_line": 160.6
+   },
+   "tesseract_cleaned": {
+    "cer": 0.9115,
+    "wer": 1.1836,
+    "exact_lines": 0.0,
+    "lines": 227
+   }
+  },
+  "iam": {
+   "handwriting_model": {
+    "cer": 0.0924,
+    "wer": 0.3107,
+    "exact_lines": 0.1475,
+    "lines": 400,
+    "ms_per_line": 18.1
+   },
+   "tesseract": {
+    "cer": 0.5617,
+    "wer": 0.9483,
+    "exact_lines": 0.0025,
+    "lines": 400,
+    "lang": "eng",
+    "ms_per_line": 172.0
+   },
+   "tesseract_cleaned": {
+    "cer": 0.554,
+    "wer": 0.9467,
+    "exact_lines": 0.0,
+    "lines": 400
+   }
+  },
+  "ta_font": {
+   "handwriting_model": {
+    "cer": 0.0039,
+    "wer": 0.0244,
+    "exact_lines": 0.9467,
+    "lines": 300
+   }
+  },
+  "en_font": {
+   "handwriting_model": {
+    "cer": 0.0203,
+    "wer": 0.1305,
+    "exact_lines": 0.7533,
+    "lines": 300
+   }
+  }
+ },
+ "examples": {
+  "sinocr": [
+   {
+    "truth": "හෘද සැත්කමක්",
+    "handwriting_model": "හෘද සැන්කම්ක්",
+    "tesseract": "හෘද සෑන්කම්ක්‌",
+    "tesseract_cleaned": "හෘද සෑන්කමික්‌"
+   },
+   {
+    "truth": "රෙදි මැසීම",
+    "handwriting_model": "කරදි මැසීම",
+    "tesseract": "මුරැවු..ගදහිත",
+    "tesseract_cleaned": "අවු... Ba"
+   },
+   {
+    "truth": "මානසික",
+    "handwriting_model": "මානසික",
+    "tesseract": "D Der",
+    "tesseract_cleaned": "බා »Sem"
+   },
+   {
+    "truth": "සුරසිංහ ආරච්චිගේ නිපුන් තේජාන් ෆොන්සේකා",
+    "handwriting_model": "සුරසිංක ආරච්ටිගේ නිසක් තේෂාන් ෆොන්සේකා",
+    "tesseract": "KOSon...qbidach...Suat..clded....eeraalene",
+    "tesseract_cleaned": "තුර... ඇව න්‌... ගණන්‌... පය අත්තට"
+   },
+   {
+    "truth": "නො 304, ශ්රී වික්රම රාජ සිංහ පාර, 3 වන කුරණ, මීගමුව",
+    "handwriting_model": "නො ද07, පු විබුම රාජ සිංහ පාර, නවන කුරණ, මීකලුව",
+    "tesseract": "om..20tt.,...». S90. Lad Sr ඈර්‌.....2002- 2:20, Sep",
+    "tesseract_cleaned": "ණෲ... 32... 344%. ඈද... 47, 7207"
+   },
+   {
+    "truth": "විදුලි ඉංජිනේරු ii පංතිය",
+    "handwriting_model": "බිදුලි ඉජ්නේරු පී පංතිය",
+    "tesseract": "Sax ගං 2616 .ඇ' තිරණ",
+    "tesseract_cleaned": "ඈ ලි go ණ්ගෝදව RF vedo"
+   },
+   {
+    "truth": "බොජ්ඣංග පිපිඤ්ඤා ගූඪ ඖෂධ මඬුළු එළු ආරූඪ",
+    "handwriting_model": "බෝජ්සඩංග හිපිඤ්ඤා ගූඪ වෂ්ධ මඩුව එඬු ආරූඪ",
+    "tesseract": "6S Don ORaPaer yo dod DAY BD ඈව",
+    "tesseract_cleaned": "COB wDan Orgwer yO මා DAY BD ආව්‌"
+   },
+   {
+    "truth": "ඥාතව්ය ඡටාව අඹ හඳ හඬ ඉඦූ උඩඟු ඨාන",
+    "handwriting_model": "පදාකව්‍ය ඡටාව අඹ හඳ ඬ ඉඦූ උඩඟු ඨාන",
+    "tesseract": "ලන 9332 @ Se ආඞ OF ඌණ ඨ්‍යෲ",
+    "tesseract_cleaned": "ලන 9332 @ Se ආඞ OF ඌණ dH"
+   }
+  ],
+  "iam": [
+   {
+    "truth": "assuredness \" Bella Bella Marie \" (Parlophone), a lively song that changes tempo mid-way.",
+    "handwriting_model": "assuredness \" Bella Bella Marie \" (larlophone), a lively song that chronges tempo mid-way.",
+    "tesseract": "xssuredness \"Bella Bella Narie” ( Rarlophone ), a lively song that chonge 5 tempo mid-way.",
+    "tesseract_cleaned": "xssuredness \"Bella Bella Marie” ( farlophone }, 0 lively song that chonge tempo mid-way."
+   },
+   {
+    "truth": "writer. He writes with Tolchard Evans, composer of \" Lady of Spain \" and other big hits.",
+    "handwriting_model": "writer. He writes with Tolchard Evans, composer of \" Lady of Spain \" and other big hits.",
+    "tesseract": "writer. He wrikes with Tolchard Evans, COMPOSE FOF i Lady of Spain’ and olher big hits.",
+    "tesseract_cleaned": "writer. He writes with Tolchard Evens, COMPOSE FOF N Lady of Spain\" and olher big hits."
+   },
+   {
+    "truth": "\" McNamara's Band, \" \" Greensleeves \" and \" English Rose. \"",
+    "handwriting_model": "' He Vamara's tand, \" \" breepsleves and \" tnglish bose. \"",
+    "tesseract": "‘\" VYawara’s Pant, - dreeys Leeves” and ” bag bh bose,”",
+    "tesseract_cleaned": "\"He Vawara’s bound,” ” Greeys Leeves” and » bagi bose. ”"
+   },
+   {
+    "truth": "I T V have postponed Malcolm Muggeridge's \" Appointment with",
+    "handwriting_model": "I TV have portponed Malcolen Mnggeridge's \" A ppointment with",
+    "tesseract": "{Tv Laue post poqed Malto tq Musser dee’ s “A py org tia cad wilh",
+    "tesseract_cleaned": "T TV have pot poqed Malic tts Maageri dye’ s A py ovgtiacad with"
+   },
+   {
+    "truth": "first big T V part. The play was a brilliantly-written",
+    "handwriting_model": "Atrst big 7V part. TThe play was a builliontly-witther",
+    "tesseract": "AN ves big TW yok The (hey Wey a IA Ucar Dy -whe",
+    "tesseract_cleaned": "Ayer bq TW yok We sony wos a ber teat hy-wily"
+   },
+   {
+    "truth": "what he was - Potter, a frightened boy who had a",
+    "handwriting_model": "what he was - ltter, a frightened bey who had a",
+    "tesseract": "",
+    "tesseract_cleaned": "wok he WOR - Uber o Ieigitened boy elre liad o"
+   },
+   {
+    "truth": "British personalities. Among them - Professor",
+    "handwriting_model": "British personalities. Among them-Professor",
+    "tesseract": "B xi ish peYsona ities, Among them ~ Fro fessor",
+    "tesseract_cleaned": "By tsh pe YSona BAI es Among Lem _ Pro Fessoy"
+   },
+   {
+    "truth": "Shelagh Delaney and Alan Sillitoe attacked",
+    "handwriting_model": "Shelagh Delaney and Alan Sillitoe attaceed",
+    "tesseract": "Shelagh De Leaner, amd A Mla, Sillitee atte Coe]",
+    "tesseract_cleaned": "Shelagh Do Mermeey amd Alor Silllitoe ottoacuce"
+   }
+  ],
+  "ta_font": [
+   {
+    "truth": "கோமிலமவரல 81072",
+    "handwriting_model": "கோமிலமவரல 81072"
+   },
+   {
+    "truth": "பொல்லட் (WP)",
+    "handwriting_model": "பொல்லட் (WP)"
+   },
+   {
+    "truth": "டாக்டர் ம. கே. ந. இரேஷா கமகே இல: 86/D மதஹபொல",
+    "handwriting_model": "டாக்டர் ம. கே. ந. இரேஷா கமகே இல: 86/D மதஹபொல"
+   },
+   {
+    "truth": "காளி கோவில் வீதி",
+    "handwriting_model": "காளி கோவில் வீதி"
+   },
+   {
+    "truth": "இலக்கம் 256/5.",
+    "handwriting_model": "இலக்கம் 256/5."
+   },
+   {
+    "truth": "எம். எஸ். இசுரு ஹேரத் அவர்கள்",
+    "handwriting_model": "எம். எஸ். இசுரு ஹேரத் அவர்கள்"
+   }
+  ],
+  "en_font": [
+   {
+    "truth": "Welipennagahamulla",
+    "handwriting_model": "Welipennagahamulla"
+   },
+   {
+    "truth": "Dunkannawa 61192",
+    "handwriting_model": "Dunkannawa 61192"
+   },
+   {
+    "truth": "Yatadolawatta 12104",
+    "handwriting_model": "Yatadolawatta 12104"
+   },
+   {
+    "truth": "Mankulam,",
+    "handwriting_model": "Mankulam,"
+   },
+   {
+    "truth": "225/17 KALATUWAWA MW,",
+    "handwriting_model": "225/17 KALATUWAWA MW,"
+   },
+   {
+    "truth": "Demalagama,",
+    "handwriting_model": "Demolagama,"
+   }
+  ]
+ },
+ "tesseract": "5.5.3.20260724",
+ "model_trained_at": "2026-10-11T12:15:46+00:00"
+}
