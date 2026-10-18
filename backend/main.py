@@ -29,6 +29,11 @@ async def lifespan(_app: FastAPI):
     disconnect()
 
 
+_extra_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.environ.get("PUBLIC_APP_URL", "").split(",")
+    if origin.strip()
+]
 app = FastAPI(title="PostAssist", lifespan=lifespan)
 app.include_router(router)
 app.add_middleware(
@@ -38,7 +43,13 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "https://localhost:5173",
         "https://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "https://localhost:5174",
+        "https://127.0.0.1:5174",
+        *_extra_origins,
     ],
+    allow_origin_regex=r"^https?://(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "X-CSRF-Token"],

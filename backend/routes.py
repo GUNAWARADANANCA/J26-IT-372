@@ -11,13 +11,18 @@ from attendance import (
     assert_at_office,
     assert_attendance_writable,
     close_attendance_day,
+    colombo_today,
     daily_attendance,
+    get_location_config,
     get_settings,
     issue_door_token,
+    manage_qr_location,
     open_attendance_day,
     parse_attendance_date,
     save_settings,
     submit_scan,
+    validate_gps_location,
+    verify_door_token,
 )
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
@@ -168,6 +173,47 @@ def update_attendance_settings(request: Request, body: dict):
     return save_settings(body)
 
 
+@router.get("/attendance/location-info")
+def read_attendance_location_info(location_id: str = ""):
+    return get_location_config(location_id or None)
+
+
+@router.get("/attendance/location/{location_id}")
+def read_attendance_location_by_id(location_id: str):
+    return get_location_config(location_id)
+
+
+@router.post("/attendance/validate-location")
+def validate_attendance_gps(body: dict):
+    try:
+        latitude = float(body.get("latitude"))
+        longitude = float(body.get("longitude"))
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail="Location is required") from exc
+    accuracy = body.get("accuracy")
+    if accuracy is not None:
+        try:
+            accuracy = float(accuracy)
+        except (TypeError, ValueError):
+            accuracy = None
+    return validate_gps_location(
+        latitude,
+        longitude,
+        accuracy,
+        str(body.get("qr_location_id") or body.get("location_id") or "").strip() or None,
+    )
+
+
+@router.post("/attendance/qr-manage")
+def update_qr_location(request: Request, body: dict):
+    require_postmaster(request)
+    return manage_qr_location(
+        str(body.get("action") or ""),
+        body.get("office_name"),
+        body.get("office_id"),
+    )
+
+
 @router.post("/attendance/location")
 def check_attendance_location(body: dict):
     try:
@@ -175,14 +221,55 @@ def check_attendance_location(body: dict):
         longitude = float(body.get("longitude"))
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail="Location is required") from exc
-    result = assert_at_office(latitude, longitude)
-    return {"ok": True, "distance_meters": result["distance_meters"]}
+    accuracy = body.get("accuracy")
+    if accuracy is not None:
+        try:
+            accuracy = float(accuracy)
+        except (TypeError, ValueError):
+            accuracy = None
+    location_id = str(body.get("qr_location_id") or body.get("location_id") or "").strip() or None
+    result = assert_at_office(latitude, longitude, accuracy, location_id)
+    return {
+        "ok": True,
+        "distance_meters": result["distance_meters"],
+        "radius_meters": result["radius_meters"],
+        "geofence_status": result.get("geofence_status", "Passed"),
+        "office_id": result.get("office_id"),
+        "office_name": result.get("office_name"),
+        "qr_location_id": result.get("qr_location_id"),
+    }
 
 
 @router.get("/attendance/door-token")
-def read_door_token(request: Request):
+def read_door_token(request: Request, port: str = "", location_id: str = ""):
     require_postmaster(request)
-    return issue_door_token()
+    detected_port = port.strip()
+    if not detected_port:
+        referer = str(request.headers.get("referer") or request.headers.get("origin") or "")
+        match = re.search(r":(\d{2,5})(?:/|$)", referer)
+        if match:
+            detected_port = match.group(1)
+    return issue_door_token(location_id or None, detected_port or None)
+
+
+@router.post("/attendance/verify-token")
+def verify_attendance_token(body: dict):
+    token = str(body.get("door_token") or body.get("code") or "").strip()
+    location_id = str(body.get("qr_location_id") or body.get("location_id") or "").strip() or None
+    verified = verify_door_token(token)
+    config = get_location_config(location_id)
+    parts = verified.split(".")
+    expires_at = int(parts[1])
+    now = int(datetime.now().timestamp())
+    return {
+        "valid": True,
+        "expires_at": expires_at,
+        "expires_in_seconds": max(0, expires_at - now),
+        "qr_location_id": config["qr_location_id"],
+        "office_id": config["office_id"],
+        "office_name": config["office_name"],
+        "radius_meters": config["radius_meters"],
+    }
 
 
 @router.post("/attendance/scan")
@@ -202,6 +289,9 @@ def scan_attendance(request: Request, body: dict):
         except (TypeError, ValueError):
             accuracy = None
     client = request.client.host if request.client else "unknown"
+    qr_location_id = str(body.get("qr_location_id") or "").strip() or None
+    requested_action = str(body.get("action") or "").strip().lower() or None
+    device_info = str(body.get("device_info") or request.headers.get("user-agent") or "").strip()
     return submit_scan(
         employee_id,
         latitude,
@@ -210,20 +300,32 @@ def scan_attendance(request: Request, body: dict):
         body.get("door_token"),
         client,
         str(request.headers.get("x-request-id") or ""),
+        qr_location_id=qr_location_id,
+        requested_action=requested_action,
+        device_info=device_info,
     )
 
 
 @router.get("/attendance/roster")
 def attendance_roster():
     """Names for the door page. Salary and KPI fields are not included."""
+    today = colombo_today()
+    today_logs = {
+        str(log.get("employee_id") or ""): log
+        for log in get_db()["attendance_log"].find({"date": today})
+    }
     rows = []
     for doc in get_db()["employee"].find({}):
+        emp_id = doc.get("employee_id") or doc.get("_id")
+        log = today_logs.get(str(emp_id)) or today_logs.get(str(doc.get("_id"))) or {}
         rows.append(
             {
                 "name": doc.get("_id"),
-                "employee_id": doc.get("employee_id") or doc.get("_id"),
+                "employee_id": emp_id,
                 "employee_name": doc.get("employee_name") or "",
                 "post_office": doc.get("post_office") or "",
+                "today_check_in": log.get("fingerprint_in") or log.get("check_in_time") or None,
+                "today_check_out": log.get("fingerprint_out") or log.get("check_out_time") or None,
             }
         )
     return rows
