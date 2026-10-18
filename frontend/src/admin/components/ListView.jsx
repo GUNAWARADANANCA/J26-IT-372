@@ -22,7 +22,7 @@ import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
-import { exportExcel, importExcel, list } from '../data/repository'
+import { exportExcel, importExcel, list, remove } from '../data/repository'
 import { useFieldOptions } from '../data/fieldOptions'
 
 const PAGE_SIZE = 50
@@ -36,7 +36,7 @@ function labelize(col) {
   return col.replaceAll('_', ' ')
 }
 
-export default function ListView({ meta, basePath, title, addLabel, extraActions, refreshKey = 0 }) {
+export default function ListView({ meta, basePath, title, addLabel, extraActions, renderActions, refreshKey = 0, canDelete = false }) {
   const navigate = useNavigate()
   const { extra, mergeOptions } = useFieldOptions()
   const [search, setSearch] = useState('')
@@ -116,6 +116,21 @@ export default function ListView({ meta, basePath, title, addLabel, extraActions
   useEffect(() => {
     setPage(0)
   }, [search, filters, refreshKey])
+
+  async function handleDelete(event, row) {
+    event.stopPropagation()
+    const label = row.employee_name || row.name
+    if (!window.confirm(`Delete ${label}? This removes the employee record.`)) return
+    setError('')
+    setNotice('')
+    try {
+      await remove(meta.doctype, row.name)
+      setNotice(`${label} was deleted.`)
+      setReload((value) => value + 1)
+    } catch (err) {
+      setError(err.message || 'Could not delete this record')
+    }
+  }
 
   const columns = meta.list_fields
   const pageRows = rows.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
@@ -264,12 +279,13 @@ export default function ListView({ meta, basePath, title, addLabel, extraActions
                 {columns.map((col) => (
                   <TableCell key={col}>{labelize(col)}</TableCell>
                 ))}
+                {renderActions || canDelete ? <TableCell align="right"> </TableCell> : null}
               </TableRow>
             </TableHead>
             <TableBody>
               {pageRows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={columns.length + (renderActions || canDelete ? 1 : 0)} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">No records found</Typography>
                   </TableCell>
                 </TableRow>
@@ -286,6 +302,23 @@ export default function ListView({ meta, basePath, title, addLabel, extraActions
                   {columns.map((col) => (
                     <TableCell key={col}>{formatCell(row[col])}</TableCell>
                   ))}
+                  {renderActions ? (
+                    <TableCell align="right" onClick={(event) => event.stopPropagation()}>
+                      {renderActions(row)}
+                    </TableCell>
+                  ) : null}
+                  {canDelete ? (
+                    <TableCell align="right">
+                      <Button
+                        size="small"
+                        color="error"
+                        variant="outlined"
+                        onClick={(event) => handleDelete(event, row)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  ) : null}
                 </TableRow>
               ))}
             </TableBody>

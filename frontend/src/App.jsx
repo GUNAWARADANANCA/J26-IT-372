@@ -8,19 +8,32 @@ import DeskLayout from './admin/layout/DeskLayout'
 import EmployeeList from './admin/pages/EmployeeList'
 import EmployeeForm from './admin/pages/EmployeeForm'
 import DailyKpiList from './admin/pages/DailyKpiList'
-import ChecklistPage from './admin/pages/ChecklistPage'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import SettingsPage from './admin/pages/SettingsPage'
 import AttendanceQrPage from './attendance/AttendanceQrPage'
 import ProductivityPage from './admin/pages/ProductivityPage'
+import KpiSimulatorPage from './admin/pages/KpiSimulatorPage'
+import ForecastMonitoringPage from './admin/pages/ForecastMonitoringPage'
+import KpiForecastPage from './admin/pages/KpiForecastPage'
+import PostalKpiDashboard from './admin/pages/PostalKpiDashboard'
+import SignInPage from './admin/pages/SignInPage'
 import WorkAllocationPage from './admin/pages/WorkAllocationPage'
 import EntitlementDashboard from './entitlements/EntitlementDashboard'
 import PayrollPage from './entitlements/PayrollPage'
 import EntitlementPage from './entitlements/EntitlementPage'
+import { AuthProvider, useAuth } from './admin/data/auth'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
+
+function RequirePostmaster({ children }) {
+  const { user } = useAuth()
+  if (user?.role !== 'postmaster') {
+    return <Navigate to="/employee" replace />
+  }
+  return children
+}
 
 function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
@@ -115,15 +128,17 @@ export default function App() {
   }
 
   return (
+    <AuthProvider>
     <FieldOptionsProvider>
     <Routes>
       <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
+      <Route path="sign-in" element={<SignInPage />} />
+      <Route index element={<Navigate to="/sign-in" replace />} />
       <Route
         element={
           <DeskLayout />
         }
       >
-        <Route index element={<Navigate to="/employee" replace />} />
         <Route
           path="employee"
           element={<EmployeeList refreshKey={refreshKey} />}
@@ -136,7 +151,6 @@ export default function App() {
           path="daily-kpi-log"
           element={<DailyKpiList refreshKey={refreshKey} />}
         />
-        <Route path="checklist" element={<ChecklistPage />} />
         <Route
           path="daily-kpi-log/:id"
           element={<DailyKpiFormRoute onSaved={bump} />}
@@ -151,6 +165,10 @@ export default function App() {
         />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="productivity" element={<ProductivityPage />} />
+        <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
+        <Route path="forecast-monitoring" element={<RequirePostmaster><ForecastMonitoringPage /></RequirePostmaster>} />
+        <Route path="kpi-forecasts" element={<RequirePostmaster><KpiForecastPage /></RequirePostmaster>} />
+        <Route path="postal-kpi-dashboard" element={<RequirePostmaster><PostalKpiDashboard /></RequirePostmaster>} />
         <Route path="work-allocation" element={<WorkAllocationPage />} />
         <Route path="entitlements" element={<EntitlementDashboard />} />
         <Route path="entitlements/payroll" element={<PayrollPage />} />
@@ -169,5 +187,6 @@ export default function App() {
       </Route>
     </Routes>
     </FieldOptionsProvider>
+    </AuthProvider>
   )
 }

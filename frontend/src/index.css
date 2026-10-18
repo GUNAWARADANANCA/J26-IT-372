@@ -129,6 +129,22 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.desk-shell {
+  --sidebar: #0B1F3A;
+  --sidebar-foreground: #A9BDD3;
+  --sidebar-primary: #1677D2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(22, 119, 210, 0.18);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #1677D2;
+  background: #f3f6fb;
+}
+
+.desk-shell [data-sidebar="menu-button"] {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

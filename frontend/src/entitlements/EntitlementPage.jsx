@@ -24,6 +24,7 @@ import {
   listEntitlements,
 } from '../admin/data/repository'
 import GratuityFromService from './GratuityFromService'
+import LeaveCalendars from './LeaveCalendars'
 import OvertimeFromDay from './OvertimeFromDay'
 import PromotionReview from './PromotionReview'
 
@@ -140,6 +141,7 @@ export default function EntitlementPage({ pageKey }) {
   const meta = MODULES[pageKey]
   const [rows, setRows] = useState([])
   const [employees, setEmployees] = useState([])
+  const [attendance, setAttendance] = useState([])
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
@@ -149,12 +151,15 @@ export default function EntitlementPage({ pageKey }) {
   const [saving, setSaving] = useState(false)
 
   async function reload() {
-    const [records, people] = await Promise.all([
+    const requests = [
       listEntitlements(meta.module),
       list('employee'),
-    ])
+    ]
+    if (meta.module === 'leave') requests.push(list('attendance_log'))
+    const [records, people, logs] = await Promise.all(requests)
     setRows(records)
     setEmployees(people)
+    setAttendance(Array.isArray(logs) ? logs : [])
   }
 
   useEffect(() => {
@@ -220,6 +225,9 @@ export default function EntitlementPage({ pageKey }) {
           Add
         </Button>
       </Stack>
+      {pageKey === 'leave' && !loading ? (
+        <LeaveCalendars employees={employees} leaves={rows} attendance={attendance} />
+      ) : null}
       {pageKey === 'promotions' ? <PromotionReview /> : null}
       {pageKey === 'overtime' ? <OvertimeFromDay onSaved={reload} /> : null}
       {pageKey === 'gratuity' ? <GratuityFromService onSaved={reload} /> : null}
