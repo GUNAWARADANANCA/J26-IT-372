@@ -4,9 +4,13 @@
 cell** through a **3.3 V ↔ 5 V level shifter**.
 
 1. Copy `config.example.h` → `config.h` and fill in Wi-Fi, `API_BASE_URL`, `DEVICE_ID`, `DEVICE_KEY`.
-2. Board **AI Thinker ESP32-CAM**, partition **Huge APP**, libraries **HX711 Arduino Library** (Bogdan Necula) and
-   **ArduinoJson 7**.
+2. Board **AI Thinker ESP32-CAM**, partition **Huge APP**, PSRAM enabled, library **ArduinoJson 7** (the HX711 is read
+   by the sketch itself since 1.1).
 3. Upload with the ESP32-CAM-MB USB board, then wire as shown in the guide.
+4. Focus the lens for the 30 cm working distance with the **Focus helper** on `http://<device-IP>/`.
+
+Files: `postassist_scale_cam.ino` (firmware), `device_page.h` (the board's own web page), `camera_pins.h`,
+`config.example.h`.
 
 Step-by-step assembly, wiring table, calibration, camera mounting and troubleshooting:
 **[../Documents/IoT_Hardware_Setup_Guide.md](../Documents/IoT_Hardware_Setup_Guide.md)**.
@@ -15,5 +19,5 @@ A board that runs a different, pull-only sketch (it serves `/weight`, `/tare`, `
 push readings) works with the same backend through `backend/tools/device_bridge.py` – see
 [../Documents/IoT_Integration_Test_Flow.md](../Documents/IoT_Integration_Test_Flow.md).
 
-Verified build: `arduino-cli compile -b "esp32:esp32:esp32cam:PartitionScheme=huge_app"` with ESP32 core 3.3.12 →
-1,196,557 bytes (38 %).
+Verified build (1.1.0): `arduino-cli compile -b "esp32:esp32:esp32cam:PartitionScheme=huge_app"` with ESP32 core 3.3.12
+and ArduinoJson 7.4.3 → 1,203,921 bytes (38 %). With 1.1 flashed, leave `BRIDGE_DEVICE_URL` empty in `backend/.env`.

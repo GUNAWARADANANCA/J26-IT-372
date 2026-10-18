@@ -2,7 +2,7 @@
 
 **Component:** Smart Registered Mail Intake and Tracking (PostAssist LK, J26-IT-372, IT23324138)
 **Device:** one ESP32-CAM (OV3660) that **weighs** the letter (HX711 + 1 kg load cell) **and photographs** the envelope lying on the platform, connected to the FastAPI backend over Wi-Fi.
-**Firmware:** [`iot/postassist_scale_cam/`](../iot/postassist_scale_cam/) – compiled and verified with ESP32 Arduino core 3.3.12, ArduinoJson 7.4.3 and HX711 Arduino Library 0.7.5 (1.19 MB, 38 % of the "Huge APP" partition).
+**Firmware:** [`iot/postassist_scale_cam/`](../iot/postassist_scale_cam/) version 1.1.0 – compiled with ESP32 Arduino core 3.3.12 and ArduinoJson 7.4.3 (1.20 MB, 38 % of the "Huge APP" partition). It reads the HX711 itself, so no HX711 library is needed.
 
 ![Wiring diagram](images/iot_wiring_diagram.png)
 
@@ -145,9 +145,9 @@ antenna, a separate FTDI/CP2102 USB-TTL module (MD0699 replaces it), a relay or 
 2. *File → Preferences → Additional boards manager URLs*, add:
    `https://espressif.github.io/arduino-esp32/package_esp32_index.json`
 3. *Tools → Board → Boards Manager*, search **esp32**, install **"esp32 by Espressif Systems"** (version 3.x).
-4. *Tools → Manage Libraries*, install:
-   * **HX711 Arduino Library** by *Bogdan Necula* (not the library called just "HX711"),
-   * **ArduinoJson** by *Benoit Blanchon* (version 7).
+4. *Tools → Manage Libraries*, install **ArduinoJson** by *Benoit Blanchon* (version 7). (Firmware 1.0 also needed the
+   *HX711 Arduino Library*; 1.1 reads the HX711 itself with slower clock pulses, which is more reliable through the
+   level shifter.)
 5. Open `iot/postassist_scale_cam/postassist_scale_cam.ino`.
 6. Board settings (*Tools* menu):
 
@@ -191,13 +191,18 @@ arduino-cli compile -b "esp32:esp32:esp32cam:PartitionScheme=huge_app" iot/posta
    *If you see "Failed to connect to ESP32": hold the **IO0** button, press and release **RST**, release **IO0**, and press Upload again.*
 5. When upload finishes, press **RST** on the MB board. Open *Serial Monitor* at **115200 baud**. You should see:
    ```
-   PostAssist scale+camera pa-scalecam-1.0.0 (SCALECAM-01)
+   PostAssist scale+camera pa-scalecam-1.1.0 (SCALECAM-01)
    [cam] sensor PID 0x3660
    [wifi] connected, IP 192.168.1.37
    [scale] calibration NONE, factor 2000.000, offset 0
+   [api] http://192.168.1.10:8000
    ```
    Write down the **IP address**. (Without the HX711 connected yet, the scale will report `sensor_ok=false` – that is expected.)
-6. Open `http://<device-IP>/` in a browser on the same Wi-Fi and press **Test photo** – you should see a picture from the camera.
+6. Open `http://<device-IP>/` in a browser on the same Wi-Fi and press **Take test photo** – you should see a picture from the camera.
+7. **Changing networks later** needs no re-flashing: the *Network* box on that page saves a new Wi-Fi name, password
+   and backend address and restarts the board. If the board cannot join its Wi-Fi within 20 s it opens its own
+   network **PostAssist-Scale** (password `SETUP_AP_PASSWORD` in `config.h`, default `postassist`); join it with a
+   phone and open <http://192.168.4.1/> to enter the new settings.
 
 ### Flashing without the ESP32-CAM-MB board
 Use a USB-to-TTL adapter (FTDI/CP2102/CH340) set to **5 V** supply: adapter 5V→ESP32 **5V**, GND→**GND**, adapter **TX→U0R**, adapter **RX→U0T**, and connect **IO0 to GND** with a jumper during upload. Press the ESP32's RST button (underneath), upload, then remove the IO0–GND jumper and press RST again.
@@ -257,6 +262,10 @@ Connect HX711 **VCC → ESP32-CAM 3V3**, HX711 **GND → GND**, **DT → IO13** 
 
 ### Board running a pull sketch (bridge)
 
+> With firmware 1.1 flashed, the board reports to the backend itself: set `BRIDGE_DEVICE_URL=` (empty) in
+> `backend/.env` and do **not** run the bridge, or every reading arrives twice. The board still answers the bridge's
+> pages, so `device_bridge.py --check --device-url http://<device-IP>` remains a quick link test.
+
 A board flashed with a simpler sketch that only *answers* requests (`GET /weight`, `POST /tare`,
 `POST /calibrate?g=`, `GET /capture` on `http://<device-IP>/`) never contacts the backend. Connect it with the bridge
 on the laptop instead of re-flashing:
@@ -288,12 +297,19 @@ Calibration converts raw HX711 counts into grams. It is stored in the ESP32's fl
 
 1. Fix the ESP32-CAM on the stand **28–32 cm above the centre of the platform**, lens pointing **straight down**. Run the 4 signal/power wires (5V, GND, 3V3, IO13, IO14) to the breadboard with 20 cm male-to-female jumpers.
 2. On the IoT page press **Take test photo**. A C5/DL envelope should fill most of the picture with its edges just inside.
-3. Adjust:
+3. **Focus the lens for 30 cm.** ESP32-CAM lenses leave the factory focused far away, so an envelope 30 cm below
+   looks soft and handwriting turns to mush – no firmware setting can fix optics. On the device page
+   (`http://<device-IP>/`) press **Focus helper on/off**, put an addressed envelope on the platform under the usual
+   light, and turn the lens in its threaded holder a few degrees at a time (many modules have a dot of glue that has to be
+   broken first; hold the camera body, not the ribbon). Stop where the *detail* score is highest, then take a test
+   photo on the IoT page: the quality check should no longer say BLURRY.
+4. Adjust:
    * picture upside down / mirrored → change `CAMERA_VFLIP` / `CAMERA_HMIRROR` in `config.h` and re-flash;
-   * blurry → move the camera up/down a little (the OV3660 lens has a fixed focus);
+   * still soft after focusing → hold the platform still while the photo is taken (each photo is the sharpest of a
+     burst of 3 frames, `CAMERA_BURST`), add light so the exposure is short, or try `CAMERA_JPEG_QUALITY 8`;
    * glare spots → move the lamp to the side; keep `flash` off for glossy envelopes;
    * slow uploads / timeouts → set `CAMERA_FRAME_SIZE` to `FRAMESIZE_UXGA`.
-4. The photo also gets an automatic **quality check** (sharpness, brightness, contrast, glare); warnings appear in the intake screen.
+5. The photo also gets an automatic **quality check** (sharpness, brightness, contrast, glare); warnings appear in the intake screen.
 
 ## Step 11 – Weighing trials and measurement uncertainty
 
@@ -329,6 +345,7 @@ The proposal's SO2 target is a mean absolute error ≤ 1 g over 5–500 g (10 re
 | Board does not boot after wiring | Something connected to **IO12** or **IO0** | Use IO13/IO14 only. |
 | `sensor_ok: false`, weight missing | HX711 not answering | Check DT→HV1/LV1→IO13, SCK→HV2/LV2→IO14, LV=3.3 V, HV=5 V, HX711 VCC/GND. |
 | Weight negative when loaded | A+/A− swapped | Swap white and green, re-calibrate. |
+| Weight jumps between a few fixed values with nothing on the platform | HX711 bits misread (slow edges through the level shifter, long or loose DT/SCK jumpers) | Firmware 1.1 already clocks slowly and ignores single spikes (`spikes_ignored` on the device's `/status`). If it persists, raise `HX711_HALF_PERIOD_US` to 8, shorten DT/SCK, or wire the HX711 at 3.3 V without the shifter (Option B). |
 | Reading never becomes stable | Vibration, fan, platform touching something, loose screws | Firm table, no air flow, check the gap and screws. Increase `STABLE_SPREAD_G` only with evidence. |
 | Weight drifts slowly | Warm-up, temperature | Wait 5 min after power-on, tare again. |
 | Wi-Fi never connects | 5 GHz network, wrong password, SSID with special characters | Use a 2.4 GHz network or phone hotspot. |
