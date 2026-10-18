@@ -96,6 +96,7 @@ export async function list(doctype, { search = '', filters = {} } = {}) {
 export async function get(doctype, name) {
   const response = await fetch(
     `${API}/api/${doctype}/${encodeURIComponent(name)}`,
+    { credentials: 'include' },
   )
   if (response.status === 404) return null
   if (!response.ok) {
@@ -354,6 +355,10 @@ export function importExcel(file, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     xhr.open('POST', `${API}/api/import/excel`)
+    xhr.withCredentials = true
+    if (csrfToken) {
+      xhr.setRequestHeader('X-CSRF-Token', csrfToken)
+    }
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable) {
         onProgress?.({ phase: 'upload', percent: null })
@@ -393,7 +398,9 @@ export function importExcel(file, onProgress) {
 }
 
 export async function exportExcel(doctype, onProgress) {
-  const response = await fetch(`${API}/api/export/${doctype}`)
+  const response = await fetch(`${API}/api/export/${doctype}`, {
+    credentials: 'include',
+  })
   if (!response.ok) {
     throw new Error(`Export failed (${response.status})`)
   }
