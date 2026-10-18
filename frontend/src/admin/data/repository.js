@@ -5,13 +5,25 @@
 
 const API = import.meta.env.VITE_API_URL ?? ''
 
-async function request(path, options = {}) {
+let csrfToken = ''
+
+export function setCsrfToken(token) {
+  csrfToken = token || ''
+}
+
+async function requestOnce(path, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase()
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  }
+  if (csrfToken && method !== 'GET' && method !== 'HEAD') {
+    headers['X-CSRF-Token'] = csrfToken
+  }
   const response = await fetch(`${API}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    credentials: 'include',
+    headers,
   })
   if (response.status === 204) return null
   let body = null
@@ -26,9 +38,48 @@ async function request(path, options = {}) {
       typeof detail === 'string'
         ? detail
         : `Request failed (${response.status})`
-    throw new Error(message)
+    const error = new Error(message)
+    error.status = response.status
+    throw error
   }
   return body
+}
+
+async function request(path, options = {}) {
+  let lastError = null
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await requestOnce(path, options)
+    } catch (error) {
+      lastError = error
+      const lost = error.status === 503 || /temporarily unreachable/i.test(error.message || '')
+      if (!lost || attempt === 2) throw error
+      await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)))
+    }
+  }
+  throw lastError
+}
+
+export function dailyAttendance({ date = '', search = '' } = {}) {
+  const params = new URLSearchParams()
+  if (date) params.set('date', date)
+  if (search.trim()) params.set('search', search.trim())
+  const query = params.toString()
+  return request(`/api/attendance/daily${query ? `?${query}` : ''}`)
+}
+
+export function openAttendanceDay(date) {
+  return request('/api/attendance/daily/open', {
+    method: 'POST',
+    body: JSON.stringify({ date }),
+  })
+}
+
+export function closeAttendanceDay(date, confirm) {
+  return request('/api/attendance/daily/close', {
+    method: 'POST',
+    body: JSON.stringify({ date, confirm }),
+  })
 }
 
 export async function list(doctype, { search = '', filters = {} } = {}) {
@@ -100,6 +151,14 @@ export function saveAttendanceSettings(settings) {
   })
 }
 
+export function getDoorToken() {
+  return request('/api/attendance/door-token')
+}
+
+export function getAttendanceRoster() {
+  return request('/api/attendance/roster')
+}
+
 export function checkAttendanceLocation(latitude, longitude) {
   return request('/api/attendance/location', {
     method: 'POST',
@@ -107,7 +166,7 @@ export function checkAttendanceLocation(latitude, longitude) {
   })
 }
 
-export function scanAttendance({ employeeId, latitude, longitude, accuracy }) {
+export function scanAttendance({ employeeId, latitude, longitude, accuracy, doorToken }) {
   return request('/api/attendance/scan', {
     method: 'POST',
     body: JSON.stringify({
@@ -115,6 +174,7 @@ export function scanAttendance({ employeeId, latitude, longitude, accuracy }) {
       latitude,
       longitude,
       accuracy,
+      door_token: doorToken,
     }),
   })
 }
@@ -127,8 +187,123 @@ export function getPayroll(month) {
   return request(`/api/payroll?month=${encodeURIComponent(month)}`)
 }
 
-export function getProductivity(employeeId) {
-  return request(`/api/productivity/${encodeURIComponent(employeeId)}`)
+export function getProductivity(employeeId, week) {
+  const params = new URLSearchParams()
+  if (week) params.set('week', week)
+  const query = params.toString()
+  return request(
+    `/api/productivity/${encodeURIComponent(employeeId)}${query ? `?${query}` : ''}`,
+  )
+}
+
+export function getKpiForecasts(filters = {}) {
+  const params = new URLSearchParams()
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.set(key, value)
+  })
+  const query = params.toString()
+  return request(`/api/kpi/forecasts${query ? `?${query}` : ''}`)
+}
+
+export function getKpiForecastSummary() {
+  return request('/api/kpi/forecasts/summary')
+}
+
+export function getCoach(employeeId, week) {
+  const params = new URLSearchParams()
+  if (week) params.set('week', week)
+  const query = params.toString()
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/coach${query ? `?${query}` : ''}`)
+}
+
+export function askCoach(employeeId, week, question) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/coach/ask`, {
+    method: 'POST',
+    body: JSON.stringify({ week, question }),
+  })
+}
+
+export function followCoach(employeeId, recommendationId, status) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/coach/follow-up`, {
+    method: 'POST',
+    body: JSON.stringify({ recommendation_id: recommendationId, status }),
+  })
+}
+
+export function getPostalKpiDashboard({ employeeId = '', routeId = '', year = '' } = {}) {
+  const params = new URLSearchParams()
+  if (employeeId) params.set('employee_id', employeeId)
+  if (routeId) params.set('route_id', routeId)
+  if (year) params.set('year', year)
+  const query = params.toString()
+  return request(`/api/postal-kpi/dashboard${query ? `?${query}` : ''}`)
+}
+
+export function getPowerBiStatus() {
+  return request('/api/powerbi/status')
+}
+
+export function getPowerBiEmbed(page) {
+  return request('/api/powerbi/embed', {
+    method: 'POST',
+    body: JSON.stringify({ page }),
+  })
+}
+
+export function getKpiForecast(employeeId) {
+  return request(`/api/kpi/forecasts/${encodeURIComponent(employeeId)}`)
+}
+
+export function generateKpiForecasts(week) {
+  return request('/api/kpi/forecasts/generate', {
+    method: 'POST',
+    body: JSON.stringify(week ? { week } : {}),
+  })
+}
+
+export function saveMeasuredForecast(employeeId, week) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/forecasts`, {
+    method: 'POST',
+    body: JSON.stringify({ week }),
+  })
+}
+
+export function saveScenarioForecast(employeeId, scenario) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/forecasts`, {
+    method: 'POST',
+    body: JSON.stringify({ source: 'scenario', scenario }),
+  })
+}
+
+export function login(username, password) {
+  return request('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+}
+
+export function logout() {
+  return request('/api/auth/logout', { method: 'POST', body: '{}' })
+}
+
+export function currentUser() {
+  return request('/api/auth/me')
+}
+
+export function getForecastMonitoring({ employeeId = '', periodFrom = '', periodTo = '', status = 'all' } = {}) {
+  const params = new URLSearchParams()
+  if (employeeId) params.set('employee_id', employeeId)
+  if (periodFrom) params.set('period_from', periodFrom)
+  if (periodTo) params.set('period_to', periodTo)
+  if (status) params.set('status', status)
+  return request(`/api/forecast-monitoring?${params.toString()}`)
+}
+
+export function simulateProductivity(employeeId, scenarios) {
+  return request(`/api/productivity/${encodeURIComponent(employeeId)}/simulate`, {
+    method: 'POST',
+    body: JSON.stringify({ scenarios }),
+  })
 }
 
 export function getPromotionReview() {

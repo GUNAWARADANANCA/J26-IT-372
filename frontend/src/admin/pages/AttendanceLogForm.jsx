@@ -22,11 +22,14 @@ export default function AttendanceLogForm({ name, isNew, onSaved }) {
     }
   }
 
+  const presetDate = new URLSearchParams(window.location.search).get('date') || ''
+
   return (
     <FormView
       meta={attendanceLogDoctype}
       name={name}
       isNew={isNew}
+      initialOverrides={isNew && presetDate ? { date: presetDate } : {}}
       basePath="/attendance-log"
       prepareDoc={prepareDoc}
       onSave={async (doc, { isNew: creating }) => {

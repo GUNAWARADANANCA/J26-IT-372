@@ -1,11 +1,30 @@
 """MongoDB connection for the PostAssist backend."""
 
 import os
+import socket
+import threading
 
 from pymongo import MongoClient
 from pymongo.database import Database
 
 _client: MongoClient | None = None
+_lock = threading.Lock()
+
+# This network publishes DNS64 addresses. Atlas closes TLS on that path.
+_original_getaddrinfo = socket.getaddrinfo
+
+
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    try:
+        ipv4 = _original_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+    except socket.gaierror:
+        ipv4 = []
+    if ipv4:
+        return ipv4
+    return _original_getaddrinfo(host, port, family, type, proto, flags)
+
+
+socket.getaddrinfo = _ipv4_getaddrinfo
 
 
 def _uri() -> str:
@@ -23,19 +42,36 @@ def _uri() -> str:
 def connect() -> MongoClient:
     """Open the shared client and confirm Atlas is reachable."""
     global _client
-    if _client is None:
-        _client = MongoClient(_uri(), serverSelectionTimeoutMS=8000)
-        _client.admin.command("ping")
-        print("You successfully connected to MongoDB!")
-    return _client
+    with _lock:
+        if _client is not None:
+            return _client
+        client = MongoClient(
+            _uri(),
+            serverSelectionTimeoutMS=30000,
+            connectTimeoutMS=20000,
+        )
+        _client = client
+    try:
+        client.admin.command("ping")
+    except Exception:
+        disconnect()
+        raise
+    print("You successfully connected to MongoDB!", flush=True)
+    return client
 
 
 def disconnect() -> None:
     """Close the client. Call this when the process exits."""
     global _client
-    if _client is not None:
-        _client.close()
-        _client = None
+    with _lock:
+        if _client is not None:
+            _client.close()
+            _client = None
+
+
+def reset_client() -> None:
+    """Drop a client whose sockets were closed by Atlas so the next request reconnects."""
+    disconnect()
 
 
 def get_db() -> Database:

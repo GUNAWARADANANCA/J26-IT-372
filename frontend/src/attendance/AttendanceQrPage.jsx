@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
 import {
   checkAttendanceLocation,
-  list,
+  getAttendanceRoster,
   scanAttendance,
 } from '../admin/data/repository'
 
@@ -58,7 +58,32 @@ function employeeLabel(employee) {
   return employee.employee_name || employee.employee_id || employee.name
 }
 
+const DOOR_CODE_KEY = 'postassist-door-code'
+
+function doorCodeFromAddress() {
+  const params = new URLSearchParams(window.location.search)
+  let code = (params.get('code') || '').trim()
+  if (!code) {
+    const raw = window.location.hash.replace(/^#/, '')
+    if (raw) {
+      try {
+        code = decodeURIComponent(raw).trim()
+      } catch {
+        code = raw.trim()
+      }
+    }
+  }
+  const hashAt = code.lastIndexOf('#')
+  if (hashAt >= 0) code = code.slice(hashAt + 1).trim()
+  if (code) {
+    sessionStorage.setItem(DOOR_CODE_KEY, code)
+    return code
+  }
+  return sessionStorage.getItem(DOOR_CODE_KEY) || ''
+}
+
 export default function AttendanceQrPage() {
+  const [doorToken, setDoorToken] = useState(doorCodeFromAddress)
   const [step, setStep] = useState('locating')
   const [position, setPosition] = useState(null)
   const [error, setError] = useState('')
@@ -67,6 +92,11 @@ export default function AttendanceQrPage() {
   const [savingName, setSavingName] = useState('')
   const [result, setResult] = useState(null)
   const errorRef = useRef(null)
+
+  useEffect(() => {
+    if (!window.location.hash && !new URLSearchParams(window.location.search).get('code')) return
+    window.history.replaceState(null, '', window.location.pathname)
+  }, [])
 
   useEffect(() => {
     if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -94,7 +124,7 @@ export default function AttendanceQrPage() {
         const { latitude, longitude, accuracy } = reading.coords
         await checkAttendanceLocation(latitude, longitude)
         if (cancelled) return
-        const rows = await list('employee')
+        const rows = await getAttendanceRoster()
         if (cancelled) return
         setEmployees(Array.isArray(rows) ? rows : [])
         setPosition({ latitude, longitude, accuracy })
@@ -119,7 +149,7 @@ export default function AttendanceQrPage() {
       const { latitude, longitude, accuracy } = reading.coords
       await checkAttendanceLocation(latitude, longitude)
       if (employees.length === 0) {
-        const rows = await list('employee')
+        const rows = await getAttendanceRoster()
         setEmployees(Array.isArray(rows) ? rows : [])
       }
       setPosition({ latitude, longitude, accuracy })
@@ -141,6 +171,7 @@ export default function AttendanceQrPage() {
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
+        doorToken,
       })
       setResult({ ...saved, employee_name: saved.employee_name || employeeLabel(employee) })
       setStep('done')
@@ -165,8 +196,21 @@ export default function AttendanceQrPage() {
           Attendance
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-          Tap your name. That saves today’s time.
+          Enter the current door code, then tap your name. Selecting a name is not identity verification. The code and this phone’s location do not prove who is at the door.
         </Typography>
+        <TextField
+          label="Door code"
+          value={doorToken}
+          onChange={(event) => {
+            const value = event.target.value.trim()
+            const code = value.includes('#') ? value.slice(value.lastIndexOf('#') + 1).trim() : value
+            if (code) sessionStorage.setItem(DOOR_CODE_KEY, code)
+            setDoorToken(code)
+          }}
+          size="small"
+          fullWidth
+          sx={{ mb: 2 }}
+        />
 
         {error && (
           <Alert ref={errorRef} severity="error" sx={{ mb: 2 }}>
@@ -237,14 +281,28 @@ export default function AttendanceQrPage() {
         )}
 
         {step === 'done' && result && !error && (
-          <Stack spacing={2} sx={{ py: 2 }}>
-            <Typography variant="h3" sx={{ fontWeight: 800 }}>
+          <Stack spacing={1.5} sx={{ py: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800 }}>
               {result.action === 'in' ? 'Checked in' : 'Checked out'}
             </Typography>
-            <Typography variant="h5">{result.employee_name}</Typography>
-            <Typography variant="h6" color="text.secondary">
-              {result.time}
-              {result.status ? ` · ${result.status}` : ''}
+            <Typography variant="h6">{result.employee_name}</Typography>
+            <Box component="dl" sx={{ m: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+              {[
+                ['Employee ID', result.employee_id],
+                ['Date', result.date],
+                ['Time', result.time],
+                ['Status', result.status || 'Recorded'],
+                ['Post office', result.post_office],
+                ['Designation', result.designation],
+              ].map(([label, value]) => (
+                <Box key={label}>
+                  <Typography component="dt" variant="caption" color="text.secondary">{label}</Typography>
+                  <Typography component="dd" sx={{ m: 0, fontWeight: 700 }}>{value || 'Not recorded'}</Typography>
+                </Box>
+              ))}
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              This scan is saved on today’s attendance report.
             </Typography>
             <Button
               variant="contained"

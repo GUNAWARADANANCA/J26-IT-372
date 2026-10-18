@@ -12,7 +12,6 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { checklistLabels } from '../admin/pages/ChecklistPage'
 import { confirmOvertime, getAllocation } from '../admin/data/repository'
 
 function today() {
@@ -40,14 +39,14 @@ export default function OvertimeFromDay({ onSaved }) {
     setLoading(true)
     setError('')
     setNotice('')
-    getAllocation(date, checklistLabels(date))
+    getAllocation(date, [])
       .then((result) => {
         if (!cancelled) setPlan(result)
       })
       .catch((err) => {
         if (!cancelled) {
           setPlan(null)
-          setError(err.message || 'Could not read attendance and the checklist')
+          setError(err.message || 'Could not read attendance')
         }
       })
       .finally(() => {
@@ -63,7 +62,7 @@ export default function OvertimeFromDay({ onSaved }) {
     setError('')
     setNotice('')
     try {
-      const result = await confirmOvertime(date, checklistLabels(date))
+      const result = await confirmOvertime(date, [])
       const names = result.saved.map((row) => row.employee_name).join(', ')
       setNotice(`Saved overtime for ${names}.`)
       if (onSaved) await onSaved()
@@ -79,10 +78,10 @@ export default function OvertimeFromDay({ onSaved }) {
   return (
     <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
       <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-        From attendance and checklist
+        From attendance
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-        People who attended are given the checked checklist tasks. Extra work, including covering an absent colleague’s route, is shown here as overtime.
+        Extra work for people who attended, including covering an absent colleague’s route, is shown here as overtime.
       </Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 1.5 }}>
         <TextField

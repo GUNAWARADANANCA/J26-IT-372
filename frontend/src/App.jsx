@@ -29,13 +29,17 @@ import DeskLayout from './admin/layout/DeskLayout'
 import EmployeeList from './admin/pages/EmployeeList'
 import EmployeeForm from './admin/pages/EmployeeForm'
 import DailyKpiList from './admin/pages/DailyKpiList'
-import ChecklistPage from './admin/pages/ChecklistPage'
 import DailyKpiForm from './admin/pages/DailyKpiForm'
 import AttendanceLogList from './admin/pages/AttendanceLogList'
 import AttendanceLogForm from './admin/pages/AttendanceLogForm'
 import SettingsPage from './admin/pages/SettingsPage'
 import AttendanceQrPage from './attendance/AttendanceQrPage'
 import ProductivityPage from './admin/pages/ProductivityPage'
+import KpiSimulatorPage from './admin/pages/KpiSimulatorPage'
+import ForecastMonitoringPage from './admin/pages/ForecastMonitoringPage'
+import KpiForecastPage from './admin/pages/KpiForecastPage'
+import PostalKpiDashboard from './admin/pages/PostalKpiDashboard'
+import SignInPage from './admin/pages/SignInPage'
 import WorkAllocationPage from './admin/pages/WorkAllocationPage'
 import EntitlementDashboard from './entitlements/EntitlementDashboard'
 import PayrollPage from './entitlements/PayrollPage'
@@ -43,6 +47,7 @@ import EntitlementPage from './entitlements/EntitlementPage'
 import frappeTheme from './admin/theme'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
+import { AuthProvider, useAuth as usePostmasterAuth } from './admin/data/auth'
 
 // ------------------------------------------------------------------ registered mail (staff sign-in)
 function Protected({ children }) {
@@ -53,6 +58,13 @@ function Protected({ children }) {
 }
 
 // ------------------------------------------------------------------ Postal KPI desk
+function RequirePostmaster({ children }) {
+  const { user } = usePostmasterAuth()
+  if (user?.role !== 'postmaster') {
+    return <Navigate to="/employee" replace />
+  }
+  return children
+}
 function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
@@ -123,6 +135,7 @@ export default function App() {
   const bump = useCallback(() => setRefreshKey((k) => k + 1), [])
 
   return (
+    <AuthProvider>
     <Routes>
       {/* Registered mail intake and tracking */}
       <Route path="/login" element={<Login />} />
@@ -146,16 +159,20 @@ export default function App() {
       {/* Postal KPI desk */}
       <Route element={<KpiDeskShell />}>
         <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
+        <Route path="sign-in" element={<SignInPage />} />
         <Route element={<DeskLayout />}>
           <Route path="employee" element={<EmployeeList refreshKey={refreshKey} />} />
           <Route path="employee/:id" element={<EmployeeFormRoute onSaved={bump} />} />
           <Route path="daily-kpi-log" element={<DailyKpiList refreshKey={refreshKey} />} />
-          <Route path="checklist" element={<ChecklistPage />} />
           <Route path="daily-kpi-log/:id" element={<DailyKpiFormRoute onSaved={bump} />} />
           <Route path="attendance-log" element={<AttendanceLogList refreshKey={refreshKey} />} />
           <Route path="attendance-log/:id" element={<AttendanceLogFormRoute onSaved={bump} />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="productivity" element={<ProductivityPage />} />
+          <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
+          <Route path="forecast-monitoring" element={<RequirePostmaster><ForecastMonitoringPage /></RequirePostmaster>} />
+          <Route path="kpi-forecasts" element={<RequirePostmaster><KpiForecastPage /></RequirePostmaster>} />
+          <Route path="postal-kpi-dashboard" element={<RequirePostmaster><PostalKpiDashboard /></RequirePostmaster>} />
           <Route path="work-allocation" element={<WorkAllocationPage />} />
           <Route path="entitlements" element={<EntitlementDashboard />} />
           <Route path="entitlements/payroll" element={<PayrollPage />} />
@@ -175,5 +192,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </AuthProvider>
   )
 }
