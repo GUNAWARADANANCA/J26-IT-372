@@ -53,5 +53,5 @@ if errorlevel 1 (
 )
 
 echo.
-echo Open http://localhost:5173 in your browser.
+echo Open https://localhost:5173 in your browser.
 timeout /t 6 >nul

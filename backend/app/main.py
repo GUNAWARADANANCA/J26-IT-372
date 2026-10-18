@@ -6,7 +6,9 @@ API docs:             http://localhost:8000/docs
 from __future__ import annotations
 
 import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,8 +54,25 @@ app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins, al
 for r in (auth, intake, items, scans, review, notifications, devices, iot, public, admin, reports):
     app.include_router(r.router)
 
-
 @app.get("/api/health", tags=["meta"])
 def health():
     get_client().admin.command("ping")
     return {"status": "ok", "api_version": API_VERSION, "component": "smart-registered-mail"}
+
+
+# Postal KPI desk (employees, daily KPI, attendance, entitlements, payroll, productivity:
+# backend/routes.py). Served by this app as well, so one server on port 8000 answers both web
+# apps. Registered last (after every route above), so registered-mail paths always take precedence.
+# It can still run on its own: `python main.py` in backend/.
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from db import get_db as kpi_db  # noqa: E402
+    from routes import router as kpi_router  # noqa: E402
+except Exception as exc:  # noqa: BLE001 - registered mail must start even without the desk's packages
+    log.warning("Postal KPI desk API not loaded (%s); install backend/requirements.txt to enable it", exc)
+else:
+    app.include_router(kpi_router, tags=["kpi desk"])
+
+    @app.get("/health", tags=["kpi desk"])
+    def kpi_health():
+        return {"ok": True, "database": kpi_db().name}

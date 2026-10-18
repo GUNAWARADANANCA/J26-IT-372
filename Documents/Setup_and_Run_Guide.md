@@ -79,7 +79,7 @@ against a stand-in board (5 of them without MongoDB) and 14 tests of the handwri
 ```bash
 cd frontend
 npm install
-npm run dev            # http://localhost:5173  (also http://<laptop-IP>:5173 on the LAN)
+npm run dev            # https://localhost:5173  (also https://<laptop-IP>:5173 on the LAN; accept the self-signed certificate once)
 ```
 Vite forwards `/api` to the backend (`VITE_API_PROXY`, default `http://127.0.0.1:8000`). Production build: `npm run build`.
 

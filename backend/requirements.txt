@@ -15,3 +15,13 @@ qrcode==8.2
 # tests
 pytest==9.1.1
 httpx==0.28.1
+
+# --- Postal KPI desk (main.py / routes.py: employees, daily KPI, attendance, payroll, productivity)
+python-dotenv
+openpyxl
+pandas==3.0.6
+# the KPI forecast model (models/weekly_kpi_model.joblib) was saved with scikit-learn 1.6.1;
+# 1.6.1 has no wheels for Python 3.14, so newer versions are allowed there
+scikit-learn==1.6.1; python_version < "3.14"
+scikit-learn>=1.7; python_version >= "3.14"
+joblib

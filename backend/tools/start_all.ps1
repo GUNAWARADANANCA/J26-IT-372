@@ -83,5 +83,5 @@ if (Test-Port 5173) {
 }
 
 ''
-'Open http://localhost:5173  (counter2 for the counter and the IoT scale page)'
+'Open https://localhost:5173  (counter2 for the counter and the IoT scale page)'
 'Stop a part with Ctrl+C in its window. MongoDB runs in the background: stop it with  taskkill /IM mongod.exe'
