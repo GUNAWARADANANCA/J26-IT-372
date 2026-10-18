@@ -75,3 +75,6 @@ ml/reports/**/grid.crfsuite
 mobile_app/.expo/
 mobile_app/dist/
 firmware/*.pt
+
+# Local 91.5 MB Random Forest preview model (kept local to stay below GitHub size limits)
+backend/models/kpi_forecast_model.joblib
