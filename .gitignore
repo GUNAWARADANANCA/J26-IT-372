@@ -61,3 +61,7 @@ vite.config.ts.timestamp-*
 vite.config.js.timestamp-*
 
 .pnpm-store/
+
+# Local 91.5 MB Random Forest preview model (kept local to stay below GitHub size limits)
+backend/models/kpi_forecast_model.joblib
+
