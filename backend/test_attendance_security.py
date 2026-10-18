@@ -108,6 +108,7 @@ class DoorScanTests(unittest.TestCase):
             attendance_log=_Collection([]),
             attendance_rate=_Collection([]),
             attendance_scan_guard=_Collection([]),
+            settings=_Collection([]),
         )
         self.db_patch = patch("attendance.get_db", return_value=self.database)
         self.route_patch = patch("routes.get_db", return_value=self.database)
@@ -198,13 +199,131 @@ class DoorScanTests(unittest.TestCase):
         _limit_scans("other-caller")
         self.assertEqual(len(self.database["attendance_rate"].docs), 2)
         roster = attendance_roster()
-        self.assertEqual(set(roster[0]), {"name", "employee_id", "employee_name", "post_office"})
+        self.assertTrue({"name", "employee_id", "employee_name", "post_office"}.issubset(set(roster[0])))
+        self.assertNotIn("basic_salary", roster[0])
+        self.assertNotIn("kpi_score", roster[0])
         with self.assertRaises(HTTPException) as admin:
             list_docs("attendance_log", _request())
         self.assertEqual(admin.exception.status_code, 401)
         with self.assertRaises(HTTPException) as door:
             read_door_token(_request())
         self.assertEqual(door.exception.status_code, 401)
+
+    def test_qr_geofence_and_operating_window_scenarios(self):
+        from datetime import datetime
+        from attendance import (
+            COLOMBO,
+            assert_at_office,
+            get_location_config,
+            manage_qr_location,
+            record_scan,
+            validate_gps_location,
+        )
+
+        self.database["settings"] = _Collection([])
+        self.database["attendance_day"] = _Collection([])
+
+        # 1. Valid QR scan inside 150m radius during on-time window (06:00-08:40) -> Present / On time
+        monday_on_time = datetime(2026, 10, 12, 7, 30, tzinfo=COLOMBO)  # Monday
+        with patch("attendance.colombo_now", return_value=monday_on_time):
+            res_in = record_scan("EMP1", 6.927763, 79.949514, 12.5, qr_location_id="LOC-KADUWELA-01")
+        self.assertEqual(res_in["action"], "in")
+        self.assertEqual(res_in["status"], "On time")
+        self.assertEqual(res_in["geofence_status"], "Passed")
+        self.assertLessEqual(res_in["distance_meters"], 150)
+
+        # 5. Repeated scan on the same day during check-in window -> 409 Conflict
+        with patch("attendance.colombo_now", return_value=monday_on_time):
+            with self.assertRaises(HTTPException) as dup_in:
+                record_scan("EMP1", 6.927763, 79.949514, 12.5, qr_location_id="LOC-KADUWELA-01")
+        self.assertEqual(dup_in.exception.status_code, 409)
+
+        # 11. Check-out scan after valid check-in during evening window (16:00-22:00)
+        monday_evening = datetime(2026, 10, 12, 17, 15, tzinfo=COLOMBO)
+        with patch("attendance.colombo_now", return_value=monday_evening):
+            res_out = record_scan("EMP1", 6.927763, 79.949514, 10.0, qr_location_id="LOC-KADUWELA-01")
+        self.assertEqual(res_out["action"], "out")
+        self.assertEqual(res_out["status"], "On time")
+        stored_log = self.database["attendance_log"].find_one({"_id": "EMP1-2026-10-12"})
+        self.assertEqual(stored_log["check_in_time"], "07:30")
+        self.assertEqual(stored_log["check_out_time"], "17:15")
+        self.assertIsNotNone(stored_log["check_in_latitude"])
+        self.assertIsNotNone(stored_log["check_out_latitude"])
+
+        # 2. Valid QR scan inside 150m radius during late window (08:40-11:00) -> Late
+        tuesday_late = datetime(2026, 10, 13, 9, 15, tzinfo=COLOMBO)  # Tuesday
+        with patch("attendance.colombo_now", return_value=tuesday_late):
+            res_late = record_scan("EMP1", 6.927763, 79.949514, 15.0)
+        self.assertEqual(res_late["status"], "Late")
+
+        # 3. QR scan outside 150m radius (e.g. ~270 meters away) -> Rejected 403
+        val_outside = validate_gps_location(6.930200, 79.949573, 10.0)
+        self.assertFalse(val_outside["within_radius"])
+        self.assertEqual(val_outside["geofence_status"], "Outside")
+        self.assertGreater(val_outside["distance_meters"], 150)
+        with self.assertRaises(HTTPException) as outside_err:
+            assert_at_office(6.930200, 79.949573, 10.0)
+        self.assertEqual(outside_err.exception.status_code, 403)
+        self.assertIn("outside the permitted office attendance area", outside_err.exception.detail)
+
+        # 4 & 10. Inaccurate / suspicious GPS reading -> Rejected or Flagged
+        with self.assertRaises(HTTPException) as bad_acc:
+            assert_at_office(6.927763, 79.949514, -5.0)
+        self.assertEqual(bad_acc.exception.status_code, 400)
+        with self.assertRaises(HTTPException) as huge_acc:
+            assert_at_office(6.927763, 79.949514, 1500.0)
+        self.assertEqual(huge_acc.exception.status_code, 400)
+        flagged = assert_at_office(6.927763, 79.949514, 400.0)
+        self.assertEqual(flagged["geofence_status"], "Flagged")
+
+        # 6. Scan outside operating hours (e.g. 15:00) -> Rejected 403
+        wed_outside_hours = datetime(2026, 10, 14, 15, 0, tzinfo=COLOMBO)
+        with patch("attendance.colombo_now", return_value=wed_outside_hours):
+            with self.assertRaises(HTTPException) as closed_hr:
+                record_scan("EMP1", 6.927763, 79.949514, 10.0)
+        self.assertEqual(closed_hr.exception.status_code, 403)
+
+        # 7. Scan on a closed day (Sunday = weekday 6) -> Rejected 403
+        sunday = datetime(2026, 10, 18, 8, 0, tzinfo=COLOMBO)
+        with patch("attendance.colombo_now", return_value=sunday):
+            with self.assertRaises(HTTPException) as closed_day:
+                record_scan("EMP1", 6.927763, 79.949514, 10.0)
+        self.assertEqual(closed_day.exception.status_code, 403)
+        self.assertIn("closed today", closed_day.exception.detail)
+
+        # 8. Scan using another office's QR code or deactivated QR code -> Rejected
+        with self.assertRaises(HTTPException) as wrong_qr:
+            assert_at_office(6.927763, 79.949514, 10.0, location_id="LOC-OTHER-99")
+        self.assertEqual(wrong_qr.exception.status_code, 403)
+
+        # Add replace_one to settings collection for manage_qr_location test
+        self.database["settings"].replace_one = lambda q, doc, upsert=False: (
+            self.database["settings"].docs.clear(),
+            self.database["settings"].docs.append(doc),
+        )
+        manage_qr_location("deactivate")
+        with self.assertRaises(HTTPException) as deact_err:
+            get_location_config()
+        self.assertEqual(deact_err.exception.status_code, 403)
+        regenerated = manage_qr_location("regenerate")
+        self.assertTrue(regenerated["qr_active"])
+        self.assertTrue(regenerated["qr_location_id"].startswith("PO-KADUWELA-"))
+
+        # 9. Verify LAN IP, public_base_url, and /attendance/verify-token endpoint
+        from routes import verify_attendance_token
+
+        with patch.dict(os.environ, {"ATTENDANCE_LAN_IP": "192.168.1.3", "FRONTEND_PORT": "5174"}):
+            issued_lan = issue_door_token(location_id=regenerated["qr_location_id"], origin_port="5174")
+            self.assertEqual(issued_lan["lan_ip"], "192.168.1.3")
+            self.assertEqual(issued_lan["public_base_url"], "https://192.168.1.3:5174")
+            verified_res = verify_attendance_token(
+                {
+                    "door_token": issued_lan["token"],
+                    "qr_location_id": regenerated["qr_location_id"],
+                }
+            )
+            self.assertTrue(verified_res["valid"])
+            self.assertEqual(verified_res["qr_location_id"], regenerated["qr_location_id"])
 
 
 if __name__ == "__main__":

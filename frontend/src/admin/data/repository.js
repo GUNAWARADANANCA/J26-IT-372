@@ -152,22 +152,81 @@ export function saveAttendanceSettings(settings) {
   })
 }
 
-export function getDoorToken() {
-  return request('/api/attendance/door-token')
+export function getDoorToken({ port = '', locationId = '' } = {}) {
+  const params = new URLSearchParams()
+  const activePort = port || (typeof window !== 'undefined' ? window.location.port : '')
+  if (activePort) params.set('port', activePort)
+  if (locationId) params.set('location_id', locationId)
+  const query = params.toString()
+  return request(`/api/attendance/door-token${query ? `?${query}` : ''}`)
+}
+
+export function verifyAttendanceToken({ doorToken, qrLocationId }) {
+  return request('/api/attendance/verify-token', {
+    method: 'POST',
+    body: JSON.stringify({
+      door_token: doorToken,
+      qr_location_id: qrLocationId,
+    }),
+  })
+}
+
+export function getAttendanceLocationInfo(locationId = '') {
+  const params = new URLSearchParams()
+  if (locationId) params.set('location_id', locationId)
+  const query = params.toString()
+  return request(`/api/attendance/location-info${query ? `?${query}` : ''}`)
+}
+
+export function validateAttendanceLocation({ latitude, longitude, accuracy, qrLocationId }) {
+  return request('/api/attendance/validate-location', {
+    method: 'POST',
+    body: JSON.stringify({
+      latitude,
+      longitude,
+      accuracy,
+      qr_location_id: qrLocationId,
+    }),
+  })
+}
+
+export function manageQrLocation({ action, officeName, officeId }) {
+  return request('/api/attendance/qr-manage', {
+    method: 'POST',
+    body: JSON.stringify({
+      action,
+      office_name: officeName,
+      office_id: officeId,
+    }),
+  })
 }
 
 export function getAttendanceRoster() {
   return request('/api/attendance/roster')
 }
 
-export function checkAttendanceLocation(latitude, longitude) {
+export function checkAttendanceLocation(latitude, longitude, accuracy = null, qrLocationId = '') {
   return request('/api/attendance/location', {
     method: 'POST',
-    body: JSON.stringify({ latitude, longitude }),
+    body: JSON.stringify({
+      latitude,
+      longitude,
+      accuracy,
+      qr_location_id: qrLocationId || undefined,
+    }),
   })
 }
 
-export function scanAttendance({ employeeId, latitude, longitude, accuracy, doorToken }) {
+export function scanAttendance({
+  employeeId,
+  latitude,
+  longitude,
+  accuracy,
+  doorToken,
+  qrLocationId,
+  action,
+  deviceInfo,
+}) {
   return request('/api/attendance/scan', {
     method: 'POST',
     body: JSON.stringify({
@@ -176,6 +235,9 @@ export function scanAttendance({ employeeId, latitude, longitude, accuracy, door
       longitude,
       accuracy,
       door_token: doorToken,
+      qr_location_id: qrLocationId || undefined,
+      action: action || undefined,
+      device_info: deviceInfo || undefined,
     }),
   })
 }
