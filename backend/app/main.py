@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .db import ensure_indexes, get_client
+from .db import ensure_indexes, ensure_server, get_client
 from .routers import admin, auth, devices, intake, iot, items, notifications, public, reports, review, scans
 from .seed import seed
 from .services.notifications.outbox import OutboxWorker
@@ -25,6 +25,7 @@ API_VERSION = "1.0.0"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     s = get_settings()
+    ensure_server()   # starts the local MongoDB when it is not running yet
     ensure_indexes()
     if s.demo_seed:
         seed()

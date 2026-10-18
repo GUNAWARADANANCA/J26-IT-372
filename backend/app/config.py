@@ -80,6 +80,11 @@ class Settings:
     seed_device_id: str
     seed_device_key: str
 
+    # Local development: start this computer's MongoDB when the API starts and finds none.
+    mongodb_autostart: bool = True
+    mongod_path: Path = Path.home() / "PostAssist" / "mongodb" / "bin" / "mongod.exe"
+    mongod_dbpath: Path = Path.home() / "PostAssist" / "mongo-data"
+
     extras: dict = field(default_factory=dict)
 
 
@@ -126,4 +131,7 @@ def get_settings() -> Settings:
         demo_password=os.environ.get("DEMO_PASSWORD", "PostAssist#2026"),
         seed_device_id=os.environ.get("SEED_DEVICE_ID", "SCALECAM-01"),
         seed_device_key=os.environ.get("SEED_DEVICE_KEY", ""),
+        mongodb_autostart=_bool("MONGODB_AUTOSTART", True),
+        mongod_path=Path(os.environ.get("MONGOD_PATH", Path.home() / "PostAssist" / "mongodb" / "bin" / "mongod.exe")),
+        mongod_dbpath=Path(os.environ.get("MONGOD_DBPATH", Path.home() / "PostAssist" / "mongo-data")),
     )
