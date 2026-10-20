@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { Navigate, Outlet, Route, Routes, useParams } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -26,24 +26,6 @@ import ScanEvent from './pages/ScanEvent.jsx'
 import Track from './pages/Track.jsx'
 // Postal KPI desk (employees, daily KPI, attendance, productivity, entitlements and payroll)
 import DeskLayout from './admin/layout/DeskLayout'
-import EmployeeList from './admin/pages/EmployeeList'
-import EmployeeForm from './admin/pages/EmployeeForm'
-import DailyKpiList from './admin/pages/DailyKpiList'
-import DailyKpiForm from './admin/pages/DailyKpiForm'
-import AttendanceLogList from './admin/pages/AttendanceLogList'
-import AttendanceLogForm from './admin/pages/AttendanceLogForm'
-import SettingsPage from './admin/pages/SettingsPage'
-import AttendanceQrPage from './attendance/AttendanceQrPage'
-import ProductivityPage from './admin/pages/ProductivityPage'
-import KpiSimulatorPage from './admin/pages/KpiSimulatorPage'
-import ForecastMonitoringPage from './admin/pages/ForecastMonitoringPage'
-import KpiForecastPage from './admin/pages/KpiForecastPage'
-import PostalKpiDashboard from './admin/pages/PostalKpiDashboard'
-import SignInPage from './admin/pages/SignInPage'
-import WorkAllocationPage from './admin/pages/WorkAllocationPage'
-import EntitlementDashboard from './entitlements/EntitlementDashboard'
-import PayrollPage from './entitlements/PayrollPage'
-import EntitlementPage from './entitlements/EntitlementPage'
 import frappeTheme from './admin/theme'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
@@ -58,6 +40,47 @@ function Protected({ children }) {
 }
 
 // ------------------------------------------------------------------ Postal KPI desk
+// Lazy-loaded pages for code splitting & fast initial paint
+const EmployeeList = lazy(() => import('./admin/pages/EmployeeList'))
+const EmployeeForm = lazy(() => import('./admin/pages/EmployeeForm'))
+const DailyAttendancePage = lazy(() => import('./admin/pages/DailyAttendancePage'))
+const AttendanceLogList = lazy(() => import('./admin/pages/AttendanceLogList'))
+const AttendanceLogForm = lazy(() => import('./admin/pages/AttendanceLogForm'))
+const SettingsPage = lazy(() => import('./admin/pages/SettingsPage'))
+const AttendanceQrPage = lazy(() => import('./attendance/AttendanceQrPage'))
+const ProductivityPage = lazy(() => import('./admin/pages/ProductivityPage'))
+const KpiSimulatorPage = lazy(() => import('./admin/pages/KpiSimulatorPage'))
+const ForecastMonitoringPage = lazy(() => import('./admin/pages/ForecastMonitoringPage'))
+const KpiForecastPage = lazy(() => import('./admin/pages/KpiForecastPage'))
+const PostalKpiDashboard = lazy(() => import('./admin/pages/PostalKpiDashboard'))
+const SignInPage = lazy(() => import('./admin/pages/SignInPage'))
+const WorkAllocationPage = lazy(() => import('./admin/pages/WorkAllocationPage'))
+const DailyAccountsPage = lazy(() => import('./admin/pages/DailyAccountsPage'))
+const EntitlementDashboard = lazy(() => import('./entitlements/EntitlementDashboard'))
+const PayrollPage = lazy(() => import('./entitlements/PayrollPage'))
+const EntitlementPage = lazy(() => import('./entitlements/EntitlementPage'))
+
+function PageLoadingFallback() {
+  return (
+    <Box
+      sx={{
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '40vh',
+        gap: 1.5,
+      }}
+    >
+      <CircularProgress size={30} sx={{ color: '#1677D2' }} />
+      <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500 }}>
+        Loading Sri Lanka Post module…
+      </Typography>
+    </Box>
+  )
+}
+
 function RequirePostmaster({ children }) {
   const { user } = usePostmasterAuth()
   if (user?.role !== 'postmaster') {
@@ -71,12 +94,6 @@ function EmployeeFormRoute({ onSaved }) {
   return <EmployeeForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
 }
 
-function DailyKpiFormRoute({ onSaved }) {
-  const { id } = useParams()
-  const isNew = id === 'new'
-  return <DailyKpiForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
-}
-
 function AttendanceLogFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
@@ -85,7 +102,16 @@ function AttendanceLogFormRoute({ onSaved }) {
 
 function BootScreen({ children }) {
   return (
-    <Box sx={{ minHeight: '100vh', display: 'grid', placeContent: 'center', gap: 1.5, bgcolor: '#ffffff', px: 2 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeContent: 'center',
+        gap: 1.5,
+        bgcolor: '#F3F6FB',
+        px: 2,
+      }}
+    >
       {children}
     </Box>
   )
@@ -108,15 +134,19 @@ function KpiDeskShell() {
   if (bootError) {
     body = (
       <BootScreen>
-        <Typography variant="h5">Could not load desk</Typography>
-        <Alert severity="error">{bootError}</Alert>
+        <Typography variant="h5" sx={{ color: '#0B1F3A', fontWeight: 700 }}>
+          Could not connect to Post-Assist LK service
+        </Typography>
+        <Alert severity="error" sx={{ borderRadius: 2 }}>{bootError}</Alert>
       </BootScreen>
     )
   } else if (!ready) {
     body = (
       <BootScreen>
-        <CircularProgress size={28} />
-        <Typography color="text.secondary">Loading Postal KPI Desk…</Typography>
+        <CircularProgress size={32} sx={{ color: '#1677D2' }} />
+        <Typography sx={{ color: '#475569', fontWeight: 500 }}>
+          Loading Post-Assist LK Desk…
+        </Typography>
       </BootScreen>
     )
   } else {
@@ -136,62 +166,66 @@ export default function App() {
 
   return (
     <AuthProvider>
-    <Routes>
-      {/* Registered mail intake and tracking */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/track/:trackingId" element={<Track />} />
-      <Route path="/items/:trackingId/print" element={<Protected><LabelPrint /></Protected>} />
-      <Route element={<Protected><Layout /></Protected>}>
-        <Route index element={<Dashboard />} />
-        <Route path="counter" element={<CounterHome />} />
-        <Route path="counter/:draftId" element={<IntakeWizard />} />
-        <Route path="items" element={<Items />} />
-        <Route path="items/:trackingId" element={<ItemDetail />} />
-        <Route path="scan" element={<ScanEvent />} />
-        <Route path="review" element={<ReviewQueue />} />
-        <Route path="notifications" element={<Notifications />} />
-        <Route path="devices" element={<Devices />} />
-        <Route path="offices" element={<Offices />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="audit" element={<Audit />} />
-      </Route>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/track/:trackingId" element={<Track />} />
+          <Route path="/items/:trackingId/print" element={<Protected><LabelPrint /></Protected>} />
+          <Route element={<Protected><Layout /></Protected>}>
+            <Route index element={<Dashboard />} />
+            <Route path="counter" element={<CounterHome />} />
+            <Route path="counter/:draftId" element={<IntakeWizard />} />
+            <Route path="items" element={<Items />} />
+            <Route path="items/:trackingId" element={<ItemDetail />} />
+            <Route path="scan" element={<ScanEvent />} />
+            <Route path="review" element={<ReviewQueue />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="devices" element={<Devices />} />
+            <Route path="offices" element={<Offices />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="audit" element={<Audit />} />
+          </Route>
 
-      {/* Postal KPI desk */}
-      <Route element={<KpiDeskShell />}>
-        <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
-        <Route path="sign-in" element={<SignInPage />} />
-        <Route element={<DeskLayout />}>
-          <Route path="employee" element={<EmployeeList refreshKey={refreshKey} />} />
-          <Route path="employee/:id" element={<EmployeeFormRoute onSaved={bump} />} />
-          <Route path="daily-kpi-log" element={<DailyKpiList refreshKey={refreshKey} />} />
-          <Route path="daily-kpi-log/:id" element={<DailyKpiFormRoute onSaved={bump} />} />
-          <Route path="attendance-log" element={<AttendanceLogList refreshKey={refreshKey} />} />
-          <Route path="attendance-log/:id" element={<AttendanceLogFormRoute onSaved={bump} />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="productivity" element={<ProductivityPage />} />
-          <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
-          <Route path="forecast-monitoring" element={<RequirePostmaster><ForecastMonitoringPage /></RequirePostmaster>} />
-          <Route path="kpi-forecasts" element={<RequirePostmaster><KpiForecastPage /></RequirePostmaster>} />
-          <Route path="postal-kpi-dashboard" element={<RequirePostmaster><PostalKpiDashboard /></RequirePostmaster>} />
-          <Route path="work-allocation" element={<WorkAllocationPage />} />
-          <Route path="entitlements" element={<EntitlementDashboard />} />
-          <Route path="entitlements/payroll" element={<PayrollPage />} />
-          <Route path="entitlements/epf" element={<PayrollPage mode="epf" />} />
-          <Route path="entitlements/etf" element={<PayrollPage mode="etf" />} />
-          <Route path="entitlements/leave" element={<EntitlementPage pageKey="leave" />} />
-          <Route path="entitlements/holiday-pay" element={<EntitlementPage pageKey="holiday-pay" />} />
-          <Route path="entitlements/overtime" element={<EntitlementPage pageKey="overtime" />} />
-          <Route path="entitlements/gratuity" element={<EntitlementPage pageKey="gratuity" />} />
-          <Route path="entitlements/promotions" element={<EntitlementPage pageKey="promotions" />} />
-          <Route path="entitlements/transfers" element={<EntitlementPage pageKey="transfers" />} />
-          <Route path="entitlements/family-benefits" element={<EntitlementPage pageKey="family-benefits" />} />
-          <Route path="entitlements/retirement" element={<EntitlementPage pageKey="retirement" />} />
-          <Route path="entitlements/loans" element={<EntitlementPage pageKey="loans" />} />
-        </Route>
-      </Route>
+          <Route element={<KpiDeskShell />}>
+            <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
+            <Route path="sign-in" element={<SignInPage />} />
+            <Route path="daily-accounts" element={<DailyAccountsPage />} />
+            <Route path="daily-accounts/*" element={<DailyAccountsPage />} />
+            <Route element={<DeskLayout />}>
+              <Route path="employee" element={<EmployeeList refreshKey={refreshKey} />} />
+              <Route path="employee/:id" element={<EmployeeFormRoute onSaved={bump} />} />
+              <Route path="daily-attendance" element={<DailyAttendancePage refreshKey={refreshKey} />} />
+              <Route path="daily-kpi-log" element={<Navigate to="/attendance-log" replace />} />
+              <Route path="daily-kpi-log/*" element={<Navigate to="/attendance-log" replace />} />
+              <Route path="attendance-log" element={<AttendanceLogList refreshKey={refreshKey} />} />
+              <Route path="attendance-log/:id" element={<AttendanceLogFormRoute onSaved={bump} />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="productivity" element={<ProductivityPage />} />
+              <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
+              <Route path="forecast-monitoring" element={<RequirePostmaster><ForecastMonitoringPage /></RequirePostmaster>} />
+              <Route path="kpi-forecasts" element={<RequirePostmaster><KpiForecastPage /></RequirePostmaster>} />
+              <Route path="postal-kpi-dashboard" element={<RequirePostmaster><PostalKpiDashboard /></RequirePostmaster>} />
+              <Route path="work-allocation" element={<WorkAllocationPage />} />
+              <Route path="entitlements" element={<EntitlementDashboard />} />
+              <Route path="entitlements/payroll" element={<PayrollPage />} />
+              <Route path="entitlements/epf" element={<PayrollPage mode="epf" />} />
+              <Route path="entitlements/etf" element={<PayrollPage mode="etf" />} />
+              <Route path="entitlements/leave" element={<EntitlementPage pageKey="leave" />} />
+              <Route path="entitlements/holiday-pay" element={<EntitlementPage pageKey="holiday-pay" />} />
+              <Route path="entitlements/overtime" element={<EntitlementPage pageKey="overtime" />} />
+              <Route path="entitlements/gratuity" element={<EntitlementPage pageKey="gratuity" />} />
+              <Route path="entitlements/promotions" element={<EntitlementPage pageKey="promotions" />} />
+              <Route path="entitlements/transfers" element={<EntitlementPage pageKey="transfers" />} />
+              <Route path="entitlements/family-benefits" element={<EntitlementPage pageKey="family-benefits" />} />
+              <Route path="entitlements/retirement" element={<EntitlementPage pageKey="retirement" />} />
+              <Route path="entitlements/loans" element={<EntitlementPage pageKey="loans" />} />
+              <Route path="*" element={<Navigate to="/employee" replace />} />
+            </Route>
+          </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </AuthProvider>
   )
 }

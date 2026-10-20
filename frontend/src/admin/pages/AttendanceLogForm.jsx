@@ -8,7 +8,6 @@ export default function AttendanceLogForm({ name, isNew, onSaved }) {
     const date = String(doc.date || '').trim()
     if (!employee_id) throw new Error('Employee ID is required')
     if (!date) throw new Error('Date is required')
-    if (!doc.fingerprint_in) throw new Error('Fingerprint In is required')
 
     const employee = await getDoc('employee', employee_id)
     return {

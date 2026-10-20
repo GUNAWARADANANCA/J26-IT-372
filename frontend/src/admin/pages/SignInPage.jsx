@@ -3,17 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import {
   AlertCircle,
   ArrowRight,
-  BarChart3,
-  CalendarCheck,
   CheckCircle2,
   Eye,
   EyeOff,
   Info,
   Lock,
+  Mail,
   ShieldCheck,
-  TrendingUp,
   User,
-  Users,
 } from 'lucide-react'
 import { useAuth } from '../data/auth'
 
@@ -24,6 +21,7 @@ export default function SignInPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from || '/employee'
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -97,221 +95,64 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#F3F6FB] font-sans antialiased selection:bg-[#1677D2] selection:text-white">
-      {/* LEFT PANEL: POSTAL BRANDING (50–55% width on desktop) */}
-      <section className="w-full lg:w-[52%] xl:w-[50%] bg-[#0B1F3A] text-white flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16 relative overflow-hidden shrink-0">
-        {/* Subtle decorative geometric & radial accents */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            backgroundImage: `radial-gradient(circle at 15% 15%, rgba(22, 119, 210, 0.35) 0%, transparent 45%), radial-gradient(circle at 85% 85%, rgba(229, 57, 53, 0.15) 0%, transparent 40%)`,
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute -right-24 -bottom-24 w-96 h-96 rounded-full border border-white/5 pointer-events-none"
-          aria-hidden="true"
-        />
-
-        {/* Top Branding & Official Emblem */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-3.5">
-            {/* Custom SL Postal Emblem */}
-            <div className="flex items-center justify-center size-12 rounded-xl bg-gradient-to-br from-[#E53935] to-[#B71C1C] shadow-lg shadow-red-950/40 border border-red-400/30 text-white font-extrabold text-lg tracking-wider shrink-0 select-none">
-              SL
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold tracking-widest uppercase text-red-400">
-                  Department of Posts
-                </span>
-                <span className="inline-block size-1 rounded-full bg-slate-500" />
-                <span className="text-[11px] font-medium text-slate-300">
-                  Sri Lanka
-                </span>
-              </div>
-              <h2 className="text-base font-semibold tracking-tight text-white leading-tight">
-                Post-Assist LK Terminal
-              </h2>
-            </div>
+    <div className="min-h-screen w-full flex flex-col bg-[#F3F6FB] text-[#0B1F3A] font-sans antialiased">
+      {/* Official Top Bar */}
+      <header className="h-13 w-full border-b border-slate-200 bg-white/95 px-4 sm:px-8 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="flex size-7 items-center justify-center rounded-md bg-[#C62828] text-white shadow-xs">
+            <Mail className="size-4" />
           </div>
-
-          {/* Main Hero & Welcome */}
-          <div className="mt-8 lg:mt-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-blue-200 border border-white/15 backdrop-blur-sm">
-              <span className="size-1.5 rounded-full bg-[#1677D2] animate-pulse" />
-              Administrative Operations Terminal
-            </div>
-            <h1 className="mt-4 text-3xl sm:text-4xl xl:text-[42px] font-extrabold tracking-tight text-white leading-[1.15]">
-              SL Postal <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-[#64B5F6]">KPI Desk</span>
-            </h1>
-            <p className="mt-2 text-base font-medium text-[#90CAF9]">
-              Postal Workforce Performance & Analytics
-            </p>
-            <p className="mt-3 text-sm text-slate-300 max-w-lg leading-relaxed">
-              Centralized operational terminal for authorized postal supervisors and postmasters. Monitor delivery throughput, audit weekly KPIs, and manage workforce capacity across divisional networks.
-            </p>
-          </div>
-
-          {/* Subtle Postal Network Topology Graphic */}
-          <div className="mt-8 hidden sm:block p-4 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-              <span className="flex items-center gap-1.5 font-medium text-slate-300">
-                <span className="size-2 rounded-full bg-emerald-400" />
-                Divisional Route Mesh
-              </span>
-              <span className="text-[11px] text-slate-400">Live Network Node Status</span>
-            </div>
-            <svg
-              className="w-full h-24 text-slate-400 overflow-visible"
-              viewBox="0 0 460 90"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              {/* Connection Lines */}
-              <path
-                d="M 50 45 L 180 25 L 310 65 L 410 40"
-                stroke="rgba(22, 119, 210, 0.45)"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-              />
-              <path
-                d="M 180 25 L 310 30"
-                stroke="rgba(229, 57, 53, 0.35)"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M 50 45 L 310 65"
-                stroke="rgba(255, 255, 255, 0.12)"
-                strokeWidth="1"
-              />
-
-              {/* Node 1: Central Sorting */}
-              <circle cx="50" cy="45" r="7" fill="#0B1F3A" stroke="#1677D2" strokeWidth="3" />
-              <circle cx="50" cy="45" r="3" fill="#64B5F6" />
-              <text x="50" y="66" textAnchor="middle" fill="#CBD5E1" fontSize="10" fontFamily="sans-serif">Colombo GPO</text>
-
-              {/* Node 2: Kaduwela */}
-              <circle cx="180" cy="25" r="8" fill="#0B1F3A" stroke="#E53935" strokeWidth="3" />
-              <circle cx="180" cy="25" r="3.5" fill="#EF5350" />
-              <text x="180" y="46" textAnchor="middle" fill="#FFFFFF" fontWeight="600" fontSize="10" fontFamily="sans-serif">Kaduwela Hub</text>
-
-              {/* Node 3: Battaramulla */}
-              <circle cx="310" cy="65" r="6" fill="#0B1F3A" stroke="#1677D2" strokeWidth="2.5" />
-              <circle cx="310" cy="65" r="2.5" fill="#64B5F6" />
-              <text x="310" y="84" textAnchor="middle" fill="#CBD5E1" fontSize="10" fontFamily="sans-serif">Battaramulla</text>
-
-              {/* Node 4: Regional Distribution */}
-              <circle cx="410" cy="40" r="6" fill="#0B1F3A" stroke="#1677D2" strokeWidth="2.5" />
-              <circle cx="410" cy="40" r="2.5" fill="#64B5F6" />
-              <text x="410" y="59" textAnchor="middle" fill="#CBD5E1" fontSize="10" fontFamily="sans-serif">Regional Dist.</text>
-            </svg>
-          </div>
-
-          {/* 4 Feature Highlights */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/5 hover:border-white/15 transition-colors">
-              <div className="p-2 rounded-lg bg-blue-500/15 text-blue-300 shrink-0">
-                <BarChart3 className="size-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-white">Performance Monitoring</h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-tight">Daily completion, accuracy & timeliness tracking.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/5 hover:border-white/15 transition-colors">
-              <div className="p-2 rounded-lg bg-red-500/15 text-red-300 shrink-0">
-                <TrendingUp className="size-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-white">KPI Forecasting</h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-tight">Predictive modeling with holdout-verified ML models.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/5 hover:border-white/15 transition-colors">
-              <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-300 shrink-0">
-                <CalendarCheck className="size-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-white">Leave & Attendance</h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-tight">Time-bound door tokens & verified attendance logs.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/5 hover:border-white/15 transition-colors">
-              <div className="p-2 rounded-lg bg-purple-500/15 text-purple-300 shrink-0">
-                <Users className="size-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-white">Workforce Planning</h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-tight">Route balancing and operational staff allocations.</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="font-bold text-[#0B1F3A]">Department of Posts</span>
+            <span className="text-slate-400">•</span>
+            <span className="text-slate-500">Sri Lanka</span>
           </div>
         </div>
-
-        {/* Left Panel Footer */}
-        <div className="relative z-10 mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-400">
-          <div className="flex items-center gap-2 text-slate-300">
-            <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
-            <span>Authorized Personnel Access Only • SL Post</span>
-          </div>
-          <span className="text-[11px] text-slate-400">
-            Protected Government System
-          </span>
+        <div className="text-[11px] font-medium text-slate-500 hidden sm:block">
+          Postmaster & Supervisor Portal
         </div>
-      </section>
+      </header>
 
-      {/* RIGHT PANEL: SIGN-IN CARD (Spacious & Clean) */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-16">
-        <div className="w-full max-w-[460px]">
-          {/* Card Container */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_12px_40px_rgba(11,31,58,0.06),0_2px_8px_rgba(11,31,58,0.04)] p-6 sm:p-10 relative overflow-hidden">
-            {/* Top postal red accent stripe */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#1677D2] via-[#E53935] to-[#0B1F3A]" />
-
-            {/* Header / Caption */}
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#1677D2] border border-blue-100">
-                <Lock className="size-3.5" />
-                Authorized Staff Access
+      {/* Main Authentication Area (Simple & Centered) */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+        <div className="w-full max-w-[420px]">
+          {/* Main Card */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
+            {/* Header / Branding */}
+            <div className="text-center mb-6">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-[#1677D2] text-white shadow-sm mb-3">
+                <Mail className="size-6" />
               </div>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#0B1F3A]">
-                Welcome back
-              </h2>
-              <p className="mt-1 text-sm font-medium text-slate-700">
-                Sign in to SL Postal KPI Desk
-              </p>
-              <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                Enter your authorized Postmaster ID and account password to open the operational workspace.
+              <h1 className="text-xl font-bold tracking-tight text-[#0B1F3A]">
+                SL Postal KPI Desk
+              </h1>
+              <p className="mt-1 text-xs text-slate-500">
+                Sign in to your Postmaster or Supervisor account
               </p>
             </div>
 
-            {/* Currently Signed In Alert (if session already active) */}
+            {/* Active Session Notification (if already logged in) */}
             {user ? (
-              <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 text-slate-800 text-xs">
+              <div className="mb-5 rounded-xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs">
                 <div className="flex items-center gap-2 font-semibold text-[#0B1F3A]">
                   <CheckCircle2 className="size-4 text-[#1677D2]" />
                   Active Session Detected
                 </div>
                 <p className="mt-1 text-slate-600">
-                  Signed in as <strong className="font-semibold text-slate-900">{user.username}</strong> ({user.role || 'User'}).
+                  Signed in as <strong className="font-semibold text-slate-900">{user.username}</strong> ({user.role || 'Staff'}).
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handleGoToDashboard}
-                    className="px-3 py-1.5 rounded-lg bg-[#0B1F3A] hover:bg-[#12315c] text-white text-xs font-medium transition-colors"
+                    className="h-8 rounded-lg bg-[#1677D2] px-3 text-xs font-semibold text-white hover:bg-[#125ea7] transition-colors"
                   >
-                    Enter Desk →
+                    Enter Workspace →
                   </button>
                   <button
                     type="button"
                     onClick={() => logout()}
-                    className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors"
+                    className="h-8 rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                   >
                     Sign Out
                   </button>
@@ -319,40 +160,40 @@ export default function SignInPage() {
               </div>
             ) : null}
 
-            {/* Error Message */}
+            {/* Error Banner */}
             {error ? (
               <div
                 role="alert"
-                className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-start gap-2.5 shadow-sm"
+                className="mb-5 flex items-start gap-2.5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800"
               >
                 <AlertCircle className="size-4 text-[#E53935] shrink-0 mt-0.5" />
                 <div className="flex-1 font-medium">{error}</div>
               </div>
             ) : null}
 
-            {/* Policy Help Message */}
+            {/* Help / Information Banner */}
             {help ? (
               <div
                 role="status"
-                className="mb-5 p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start gap-2.5 shadow-sm"
+                className="mb-5 flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900"
               >
                 <Info className="size-4 text-[#1677D2] shrink-0 mt-0.5" />
                 <div className="flex-1 leading-relaxed">{help}</div>
               </div>
             ) : null}
 
-            {/* Sign-In Form */}
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Username / Postmaster ID */}
+              {/* Postmaster ID */}
               <div>
                 <label
                   htmlFor="postmaster-id"
-                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+                  className="block text-xs font-semibold text-slate-700 mb-1"
                 >
-                  Postmaster ID
+                  Postmaster ID or Username
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                     <User className="size-4" />
                   </div>
                   <input
@@ -364,19 +205,19 @@ export default function SignInPage() {
                     autoComplete="username"
                     disabled={submitting}
                     value={username}
-                    onChange={(event) => setUsername(event.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="e.g. postmaster"
-                    className="h-11 w-full pl-10 pr-3.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1677D2] focus:ring-2 focus:ring-[#1677D2]/20 outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500"
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1677D2] focus:ring-2 focus:ring-[#1677D2]/20 outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-1">
                   <label
                     htmlFor="password"
-                    className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
+                    className="block text-xs font-semibold text-slate-700"
                   >
                     Password
                   </label>
@@ -384,13 +225,13 @@ export default function SignInPage() {
                     type="button"
                     onClick={requestHelp}
                     disabled={helping || submitting}
-                    className="text-xs font-medium text-[#1677D2] hover:text-[#0B1F3A] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1677D2]"
+                    className="text-xs font-medium text-[#1677D2] hover:underline transition-colors focus-visible:outline-none"
                   >
-                    {helping ? 'Checking policy…' : 'Need password help?'}
+                    {helping ? 'Checking…' : 'Need password help?'}
                   </button>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                     <Lock className="size-4" />
                   </div>
                   <input
@@ -401,13 +242,12 @@ export default function SignInPage() {
                     autoComplete="current-password"
                     disabled={submitting}
                     value={password}
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter account password"
-                    className="h-11 w-full pl-10 pr-10 rounded-lg border border-slate-300 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1677D2] focus:ring-2 focus:ring-[#1677D2]/20 outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500"
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-9 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1677D2] focus:ring-2 focus:ring-[#1677D2]/20 outline-none transition-all disabled:bg-slate-50 disabled:text-slate-500"
                   />
                   <button
                     type="button"
-                    tabIndex={0}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus-visible:outline-none"
@@ -421,39 +261,39 @@ export default function SignInPage() {
               <button
                 type="submit"
                 disabled={submitting || !username.trim() || !password}
-                className="mt-6 h-11 w-full rounded-xl bg-[#0B1F3A] hover:bg-[#12315c] active:bg-[#08172b] text-white text-sm font-semibold tracking-wide shadow-md shadow-slate-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1677D2] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                className="mt-2 h-10 w-full rounded-lg bg-[#1677D2] hover:bg-[#125ea7] text-white text-xs font-semibold shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1677D2] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
               >
                 {submitting ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 size-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 size-3.5 text-white" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
-                    <span>Authenticating Credentials…</span>
+                    <span>Signing in…</span>
                   </>
                 ) : (
                   <>
-                    <span>Sign In to Terminal</span>
-                    <ArrowRight className="size-4" />
+                    <span>Sign In</span>
+                    <ArrowRight className="size-3.5" />
                   </>
                 )}
               </button>
             </form>
 
             {/* Security Notice */}
-            <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center">
-              <ShieldCheck className="size-3.5 text-slate-400" />
-              <span>Encrypted connection with scrypt server-side credential verification</span>
+            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+              <ShieldCheck className="size-3.5 text-emerald-600 shrink-0" />
+              <span>Official Postal Department System • Authorized Access Only</span>
             </div>
           </div>
 
-          {/* Restrained Application Footer */}
-          <footer className="mt-6 text-center text-xs text-slate-500">
+          {/* Simple Clean Footer */}
+          <footer className="mt-5 text-center text-[11px] text-slate-500 space-y-0.5">
             <p className="font-medium text-slate-600">
-              SL Postal KPI Desk • Version 1.0.0
+              Department of Posts — Sri Lanka
             </p>
-            <p className="mt-1 text-[11px] text-slate-400">
-              Sessions expire after 8 hours of inactivity. Sri Lanka Postal Department.
+            <p className="text-slate-400">
+              Post-Assist LK • Version 1.0.0
             </p>
           </footer>
         </div>

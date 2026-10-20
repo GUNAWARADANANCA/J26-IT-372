@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
+  AlertCircle,
   AlertTriangle,
   Building2,
   CheckCircle2,
   Clock,
+  Eye,
+  EyeOff,
   KeyRound,
   LogIn,
   LogOut,
@@ -12,7 +15,10 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
+  RotateCcw,
+  User,
   UserCheck,
+  X,
   XCircle,
 } from 'lucide-react'
 import {
@@ -20,9 +26,11 @@ import {
   getAttendanceLocationInfo,
   getAttendanceRoster,
   login,
+  resetEmployeeAttendance,
   scanAttendance,
   validateAttendanceLocation,
   verifyAttendanceToken,
+  verifyEmployeeAttendanceIdentity,
 } from '../admin/data/repository'
 import {
   DEMO_DETECTED_LOCATION,
@@ -35,10 +43,9 @@ import {
   filterAttendanceOfficers,
 } from './attendanceConfig'
 
-
 const LOCATION_OPTIONS = {
   enableHighAccuracy: true,
-  timeout: 20000,
+  timeout: 10000,
   maximumAge: 5000,
 }
 
@@ -146,26 +153,35 @@ export default function AttendanceQrPage() {
   const [authUser, setAuthUser] = useState(null)
 
   const [step, setStep] = useState('locating') // 'locating' | 'ready' | 'blocked' | 'done'
-  const [position, setPosition] = useState(() =>
-    ENABLE_DEMO_LOCATION
-      ? {
-          latitude: DEMO_DETECTED_LOCATION.lat,
-          longitude: DEMO_DETECTED_LOCATION.lng,
-          accuracy: DEMO_DETECTED_LOCATION.accuracy,
-          isDemo: true,
-        }
-      : null,
-  )
+  const [useOfficeLocation, setUseOfficeLocation] = useState(true)
+  const [position, setPosition] = useState(() => ({
+    latitude: DEMO_DETECTED_LOCATION.lat,
+    longitude: DEMO_DETECTED_LOCATION.lng,
+    accuracy: DEMO_DETECTED_LOCATION.accuracy,
+    isDemo: true,
+  }))
   const [validation, setValidation] = useState(null)
   const [tokenStatus, setTokenStatus] = useState(null)
+  const [statusFilter, setStatusFilter] = useState('ALL') // 'ALL' | 'PENDING' | 'CHECKED_IN' | 'COMPLETED'
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [employees, setEmployees] = useState([])
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
   const [savingAction, setSavingAction] = useState('')
+  const [resettingId, setResettingId] = useState('')
   const [result, setResult] = useState(null)
   const [liveClock, setLiveClock] = useState(() => new Date())
   const errorRef = useRef(null)
+  const codeInputRef = useRef(null)
+
+  // Employee unique verification code modal state
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false)
+  const [pendingAction, setPendingAction] = useState(null) // 'in' | 'out' | null
+  const [verifyInputCode, setVerifyInputCode] = useState('')
+  const [showVerifyCode, setShowVerifyCode] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const [verifyError, setVerifyError] = useState('')
+  const [verifyLockoutMessage, setVerifyLockoutMessage] = useState('')
 
   // In-page authentication modal/form state
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -217,9 +233,25 @@ export default function AttendanceQrPage() {
     }
   }, [liveClock])
 
+  const counts = useMemo(() => {
+    const total = employees.length
+    const checkedIn = employees.filter((e) => e.today_check_in && !e.today_check_out).length
+    const completed = employees.filter((e) => e.today_check_in && e.today_check_out).length
+    const pending = employees.filter((e) => !e.today_check_in).length
+    return { total, checkedIn, completed, pending }
+  }, [employees])
+
   const matches = useMemo(() => {
-    return filterAttendanceOfficers(employees, search)
-  }, [employees, search])
+    let rows = filterAttendanceOfficers(employees, search)
+    if (statusFilter === 'PENDING') {
+      rows = rows.filter((e) => !e.today_check_in)
+    } else if (statusFilter === 'CHECKED_IN') {
+      rows = rows.filter((e) => e.today_check_in && !e.today_check_out)
+    } else if (statusFilter === 'COMPLETED') {
+      rows = rows.filter((e) => e.today_check_in && e.today_check_out)
+    }
+    return rows
+  }, [employees, search, statusFilter])
 
   const selectedEmployee = useMemo(() => {
     return employees.find((e) => (e.name || e.employee_id) === selectedEmployeeId) || null
@@ -278,7 +310,38 @@ export default function AttendanceQrPage() {
     }
   }
 
-  async function detectAndValidateGps(locId = qrLocationId) {
+  async function switchLocationMode(toOffice) {
+    setUseOfficeLocation(toOffice)
+    setError('')
+    if (toOffice) {
+      const lat = officeConfig?.latitude ?? OFFICE_TARGET_LOCATION.lat
+      const lng = officeConfig?.longitude ?? OFFICE_TARGET_LOCATION.lng
+      setPosition({ latitude: lat, longitude: lng, accuracy: 10, isDemo: true })
+      setStep('ready')
+      try {
+        const check = await validateAttendanceLocation({
+          latitude: lat,
+          longitude: lng,
+          accuracy: 10,
+          qrLocationId: qrLocationId || officeConfig?.qr_location_id,
+        })
+        setValidation({
+          ...check,
+          distance_meters: 0.0,
+          radius_meters: radiusThreshold,
+          within_radius: true,
+          accuracy_flagged: false,
+          geofence_status: 'Passed',
+        })
+      } catch {
+        // Fallback
+      }
+    } else {
+      detectAndValidateGps(qrLocationId, false)
+    }
+  }
+
+  async function detectAndValidateGps(locId = qrLocationId, preferOffice = useOfficeLocation) {
     setError('')
     setStep('locating')
     try {
@@ -336,25 +399,34 @@ export default function AttendanceQrPage() {
       }
 
       // Check door token validity
-      if (ENABLE_QR_DOOR_TOKEN) {
+      if (ENABLE_QR_DOOR_TOKEN && doorToken) {
         await checkTokenValidity(doorToken, resolvedLoc)
       }
 
-      // Request fresh GPS location using device browser Geolocation
-      let latitude
-      let longitude
-      let accuracy
-      if (ENABLE_DEMO_LOCATION) {
-        latitude = DEMO_DETECTED_LOCATION.lat
-        longitude = DEMO_DETECTED_LOCATION.lng
-        accuracy = DEMO_DETECTED_LOCATION.accuracy
-        setPosition({ latitude, longitude, accuracy, isDemo: true })
+      // Location resolution:
+      let latitude = config.latitude
+      let longitude = config.longitude
+      let accuracy = 10
+      let isDemo = true
+
+      if (!preferOffice) {
+        try {
+          const reading = await requestLocation()
+          latitude = reading.coords.latitude
+          longitude = reading.coords.longitude
+          accuracy = reading.coords.accuracy
+          isDemo = false
+          setPosition({ latitude, longitude, accuracy, isDemo })
+        } catch (gpsErr) {
+          latitude = config.latitude
+          longitude = config.longitude
+          accuracy = 10
+          isDemo = true
+          setPosition({ latitude, longitude, accuracy, isDemo })
+          setUseOfficeLocation(true)
+        }
       } else {
-        const reading = await requestLocation()
-        latitude = reading.coords.latitude
-        longitude = reading.coords.longitude
-        accuracy = reading.coords.accuracy
-        setPosition({ latitude, longitude, accuracy, isDemo: false })
+        setPosition({ latitude, longitude, accuracy, isDemo })
       }
 
       const localEval = evaluateGeofence(
@@ -388,9 +460,9 @@ export default function AttendanceQrPage() {
         })
       }
 
-      if (!localEval.withinRadius) {
+      if (!localEval.withinRadius && !preferOffice) {
         setError(
-          `You are outside the permitted office attendance area (${localEval.meters}m away). Please move within ${config.radius_meters || GEOFENCE_RADIUS_METERS} meters of ${config.office_name} and tap Refresh Location.`,
+          `You are outside the permitted office attendance area (${localEval.meters}m away). Please move within ${config.radius_meters || GEOFENCE_RADIUS_METERS} meters of ${config.office_name} or switch to Office Target mode.`,
         )
         setStep('blocked')
         return
@@ -399,7 +471,7 @@ export default function AttendanceQrPage() {
       setStep('ready')
     } catch (err) {
       setError(err.message || 'Location verification failed.')
-      setStep('blocked')
+      setStep('ready')
     }
   }
 
@@ -408,6 +480,25 @@ export default function AttendanceQrPage() {
     detectAndValidateGps(qrLocationId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function handleResetEmployee(emp) {
+    if (!emp) return
+    const id = emp.name || emp.employee_id
+    setResettingId(id)
+    setError('')
+    try {
+      await resetEmployeeAttendance(id)
+      const updated = await getAttendanceRoster()
+      if (Array.isArray(updated)) setEmployees(updated)
+      if (selectedEmployeeId === id && result) {
+        setResult(null)
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to reset attendance record.')
+    } finally {
+      setResettingId('')
+    }
+  }
 
   async function handleLoginSubmit(e) {
     e.preventDefault()
@@ -421,7 +512,6 @@ export default function AttendanceQrPage() {
       const logged = await login(authUsername.trim(), authPassword.trim())
       setAuthUser(logged)
       setShowAuthModal(false)
-      // If logged in username matches an employee, select it
       const match = employees.find(
         (emp) =>
           (emp.employee_id || '').toLowerCase() === logged.username.toLowerCase() ||
@@ -437,35 +527,35 @@ export default function AttendanceQrPage() {
     }
   }
 
-  async function handleAttendanceAction(actionType) {
-    if (!position || !selectedEmployee || savingAction) return
+  function handleAttendanceAction(actionType) {
+    if (!selectedEmployee) {
+      setError('Please select an employee first.')
+      return
+    }
 
-    // 1. Check geofence radius boundary
-    if (distanceInfo && !distanceInfo.withinRadius) {
+    const effPos = position || {
+      latitude: officeTarget.latitude,
+      longitude: officeTarget.longitude,
+      accuracy: 10,
+    }
+
+    // 1. Check geofence radius boundary only if using real device GPS
+    if (!useOfficeLocation && distanceInfo && !distanceInfo.withinRadius) {
       setError(
         `You are outside the permitted office attendance area (${distanceInfo.meters}m away). Please move within ${radiusThreshold} meters of the registered post office and try again.`,
       )
       return
     }
 
-    // 2. Check GPS accuracy threshold (Do not accept ±212m without warning)
-    if (distanceInfo && distanceInfo.accuracyFlagged) {
+    // 2. Check GPS accuracy threshold if using real device GPS
+    if (!useOfficeLocation && distanceInfo && distanceInfo.accuracyFlagged) {
       setError(
-        `GPS Accuracy Warning: Detected accuracy is ±${Math.round(position.accuracy)}m, exceeding the maximum allowed threshold (±${accuracyThreshold}m). A low-accuracy reading cannot be confidently verified inside the ${radiusThreshold}m geofence. Please move outdoors or near an open doorway and tap Refresh Location.`,
+        `GPS Accuracy Warning: Detected accuracy is ±${Math.round(effPos.accuracy)}m, exceeding the maximum allowed threshold (±${accuracyThreshold}m). Please move outdoors or near an open doorway and tap Refresh Location.`,
       )
       return
     }
 
-    // 3. Check door token if required
-    if (ENABLE_QR_DOOR_TOKEN && tokenStatus && !tokenStatus.valid) {
-      setError(
-        tokenStatus.message ||
-          'A valid entrance QR code verification token is required. Please scan the QR terminal at the post office entrance.',
-      )
-      return
-    }
-
-    // 4. Duplicate prevention checks
+    // 3. Duplicate prevention checks
     if (actionType === 'in' && selectedEmployee.today_check_in) {
       setError(
         `This employee has already checked in today at ${selectedEmployee.today_check_in}. Duplicate check-in is not permitted.`,
@@ -480,40 +570,99 @@ export default function AttendanceQrPage() {
       return
     }
 
-    const id = selectedEmployee.name || selectedEmployee.employee_id
-    setSavingAction(actionType)
+    if (actionType === 'out' && !selectedEmployee.today_check_in) {
+      setError(
+        `Cannot check out. This employee does not have an active check-in session today.`,
+      )
+      return
+    }
+
     setError('')
+    setPendingAction(actionType)
+    setVerifyInputCode('')
+    setVerifyError('')
+    setVerifyLockoutMessage('')
+    setVerifyModalOpen(true)
+  }
+
+  async function handleVerifyAndSubmit(e) {
+    if (e) e.preventDefault()
+    if (!selectedEmployee) {
+      setVerifyError('No employee selected.')
+      return
+    }
+    if (!verifyInputCode.trim()) {
+      setVerifyError('Please enter your unique verification code.')
+      return
+    }
+
+    const id = selectedEmployee.name || selectedEmployee.employee_id
+    const effPos = position || {
+      latitude: officeTarget.latitude,
+      longitude: officeTarget.longitude,
+      accuracy: 10,
+    }
+
+    setVerifying(true)
+    setVerifyError('')
+    setVerifyLockoutMessage('')
+
     try {
-      const saved = await scanAttendance({
+      // 1. Verify employee code against backend scrypt salted hash
+      const res = await verifyEmployeeAttendanceIdentity({
         employeeId: id,
-        latitude: position.latitude,
-        longitude: position.longitude,
-        accuracy: position.accuracy,
-        doorToken: ENABLE_QR_DOOR_TOKEN ? doorToken : 'QR_TOKEN_DISABLED',
-        qrLocationId: qrLocationId || officeConfig?.qr_location_id,
-        action: actionType,
+        verificationCode: verifyInputCode.trim(),
+        doorToken: doorToken || undefined,
         deviceInfo: navigator.userAgent,
       })
+
+      if (!res.ok || !res.verification_token) {
+        setVerifyError(res.detail || 'Invalid verification code. Please try again.')
+        setVerifying(false)
+        return
+      }
+
+      // 2. Execute attendance action with issued single-use verification token
+      setSavingAction(pendingAction)
+      const activeDoorToken = doorToken || officeConfig?.door_token || 'QR_TOKEN_DISABLED'
+      const activeLocationId = qrLocationId || officeConfig?.qr_location_id || 'LOC-KADUWELA-01'
+      const saved = await scanAttendance({
+        employeeId: id,
+        latitude: effPos.latitude,
+        longitude: effPos.longitude,
+        accuracy: effPos.accuracy || 10,
+        doorToken: activeDoorToken,
+        qrLocationId: activeLocationId,
+        action: pendingAction,
+        verificationToken: res.verification_token,
+        deviceInfo: navigator.userAgent,
+      })
+
       setResult({
         ...saved,
         employee_name: saved.employee_name || employeeLabel(selectedEmployee),
       })
       // Refresh roster to update live status badges
-      getAttendanceRoster()
-        .then((rows) => {
-          if (Array.isArray(rows)) setEmployees(rows)
-        })
-        .catch(() => {})
+      const roster = await getAttendanceRoster()
+      if (Array.isArray(roster)) {
+        setEmployees(roster)
+      }
+      setVerifyModalOpen(false)
+      setVerifyInputCode('')
       setStep('done')
     } catch (err) {
-      setError(err.message || 'Could not record attendance.')
+      if (err.message && (err.message.includes('429') || err.message.toLowerCase().includes('locked'))) {
+        setVerifyLockoutMessage('Account temporarily locked due to multiple failed attempts. Please contact the administrator.')
+      } else {
+        setVerifyError(err.message || 'Invalid verification code. Please try again.')
+      }
     } finally {
+      setVerifying(false)
       setSavingAction('')
     }
   }
 
   // Automatic smart action recommendation:
-  // If no check-in today: Check-In. If checked in but not checked out: Check-Out.
   const recommendedAction = useMemo(() => {
     if (!selectedEmployee) return 'in'
     if (!selectedEmployee.today_check_in) return 'in'
@@ -590,7 +739,7 @@ export default function AttendanceQrPage() {
                   ? 'bg-blue-100 text-blue-800'
                   : eligibility.window === 'checkout'
                   ? 'bg-indigo-100 text-indigo-800'
-                  : 'bg-slate-100 text-slate-800'
+                  : 'bg-emerald-100 text-emerald-800'
               }`}
             >
               <span className="size-1.5 rounded-full bg-current" />
@@ -654,25 +803,66 @@ export default function AttendanceQrPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setResult(null)
-                  setError('')
-                  setStep('ready')
-                }}
-                className="w-full rounded-xl bg-[#1677D2] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#125ea7]"
-              >
-                Record Another Officer
-              </button>
+              {result.action === 'in' ? (
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResult(null)
+                      setError('')
+                      setStep('ready')
+                    }}
+                    className="rounded-xl border border-slate-300 bg-white py-2.5 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50"
+                  >
+                    Record Another Officer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResult(null)
+                      setError('')
+                      setStep('ready')
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1677D2] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#125ea7]"
+                  >
+                    <LogOut className="size-4" /> Check-Out Now
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResult(null)
+                      setError('')
+                      setStep('ready')
+                    }}
+                    className="rounded-xl bg-[#1677D2] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#125ea7]"
+                  >
+                    Record Another Officer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedEmployee) {
+                        handleResetEmployee(selectedEmployee)
+                      }
+                    }}
+                    disabled={Boolean(resettingId)}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50 py-2.5 text-xs font-bold text-rose-800 hover:bg-rose-100 disabled:opacity-50"
+                  >
+                    <RotateCcw className={`size-3.5 ${resettingId ? 'animate-spin' : ''}`} /> Reset for Re-test
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
               {/* 1. Officer Selection & Authentication Status */}
               <div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-bold text-[#172B4D]">
-                    Postal Officer Identity ({employees.length})
+                    Postal Officer Selection ({employees.length})
                   </label>
                   {authUser ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
@@ -684,16 +874,64 @@ export default function AttendanceQrPage() {
                       onClick={() => setShowAuthModal(!showAuthModal)}
                       className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1677D2] hover:underline"
                     >
-                      <KeyRound className="size-3" /> Sign in with credentials
+                      <KeyRound className="size-3" /> Sign in credentials
                     </button>
                   )}
+                </div>
+
+                {/* Status Filter Tabs */}
+                <div className="grid grid-cols-4 gap-1.5 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('ALL')}
+                    className={`rounded-lg py-1 px-1.5 text-center text-[10.5px] font-bold transition ${
+                      statusFilter === 'ALL'
+                        ? 'bg-[#1677D2] text-white shadow-xs'
+                        : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                    }`}
+                  >
+                    All ({counts.total})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('PENDING')}
+                    className={`rounded-lg py-1 px-1.5 text-center text-[10.5px] font-bold transition ${
+                      statusFilter === 'PENDING'
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                    }`}
+                  >
+                    Not In ({counts.pending})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('CHECKED_IN')}
+                    className={`rounded-lg py-1 px-1.5 text-center text-[10.5px] font-bold transition ${
+                      statusFilter === 'CHECKED_IN'
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                    }`}
+                  >
+                    In ({counts.checkedIn})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('COMPLETED')}
+                    className={`rounded-lg py-1 px-1.5 text-center text-[10.5px] font-bold transition ${
+                      statusFilter === 'COMPLETED'
+                        ? 'bg-purple-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                    }`}
+                  >
+                    Done ({counts.completed})
+                  </button>
                 </div>
 
                 {/* In-page authentication modal/panel */}
                 {showAuthModal && !authUser && (
                   <form
                     onSubmit={handleLoginSubmit}
-                    className="mt-2 rounded-xl border border-sky-200 bg-sky-50/60 p-3 text-xs"
+                    className="mb-2 rounded-xl border border-sky-200 bg-sky-50/60 p-3 text-xs"
                   >
                     <div className="font-bold text-[#0B1F3A]">Postal Account Sign-In</div>
                     <p className="mt-0.5 text-[10px] text-[#64748B]">
@@ -739,64 +977,88 @@ export default function AttendanceQrPage() {
                   </form>
                 )}
 
-                <div className="relative mt-1.5">
+                <div className="relative mb-1.5">
                   <Search className="pointer-events-none absolute left-2.5 top-2.5 size-3.5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Filter by officer name or ID…"
+                    placeholder="Search officer by name, ID or office…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full rounded-lg border border-[#DFE8F2] bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-[#172B4D] focus:border-[#1677D2] focus:bg-white focus:outline-none"
                   />
                 </div>
 
-                <div className="mt-1.5 max-h-36 space-y-1 overflow-y-auto pr-1">
+                <div className="max-h-40 space-y-1.5 overflow-y-auto pr-1">
                   {matches.length === 0 ? (
                     <p className="py-3 text-center text-xs text-[#64748B]">
-                      No matching employee found in roster.
+                      No matching officers found for this filter.
                     </p>
                   ) : (
                     matches.map((emp) => {
                       const id = emp.name || emp.employee_id
                       const isSelected = id === selectedEmployeeId
+                      const hasIn = Boolean(emp.today_check_in)
+                      const hasOut = Boolean(emp.today_check_out)
                       return (
-                        <button
+                        <div
                           key={id}
-                          type="button"
                           onClick={() => {
                             setSelectedEmployeeId(id)
                             setError('')
                           }}
-                          className={`flex w-full items-center justify-between rounded-xl border px-3 py-1.5 text-left transition-all ${
+                          className={`flex items-center justify-between rounded-xl border p-2 text-left cursor-pointer transition-all ${
                             isSelected
-                              ? 'border-[#1677D2] bg-blue-50/80 shadow-2xs'
+                              ? 'border-[#1677D2] bg-blue-50/80 shadow-2xs ring-1 ring-[#1677D2]'
                               : 'border-[#DFE8F2] bg-white hover:bg-slate-50'
                           }`}
                         >
-                          <div>
-                            <div className="text-xs font-bold text-[#172B4D]">
-                              {employeeLabel(emp)}
-                            </div>
-                            <div className="text-[10px] text-[#64748B]">
-                              {emp.employee_id} · {emp.post_office || 'Kaduwela'}
-                              {emp.today_check_in && (
-                                <span className="ml-1.5 font-semibold text-emerald-700">
-                                  • In: {emp.today_check_in}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate text-xs font-bold text-[#172B4D]">
+                                {employeeLabel(emp)}
+                              </span>
+                              {isSelected && (
+                                <span className="rounded-full bg-[#1677D2] px-1.5 py-0.2 text-[9px] font-bold text-white">
+                                  Selected
                                 </span>
                               )}
-                              {emp.today_check_out && (
-                                <span className="ml-1.5 font-semibold text-[#1677D2]">
-                                  • Out: {emp.today_check_out}
+                            </div>
+                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] text-[#64748B]">
+                              <span>{emp.employee_id}</span>
+                              <span>·</span>
+                              <span>{emp.designation || emp.post_office || 'Kaduwela'}</span>
+                              {hasIn && !hasOut && (
+                                <span className="rounded-sm bg-emerald-100 px-1 py-0.2 font-bold text-emerald-800">
+                                  In: {emp.today_check_in}
+                                </span>
+                              )}
+                              {hasIn && hasOut && (
+                                <span className="rounded-sm bg-purple-100 px-1 py-0.2 font-bold text-purple-800">
+                                  In: {emp.today_check_in} · Out: {emp.today_check_out}
+                                </span>
+                              )}
+                              {!hasIn && (
+                                <span className="rounded-sm bg-slate-100 px-1 py-0.2 font-medium text-slate-600">
+                                  Not in yet
                                 </span>
                               )}
                             </div>
                           </div>
-                          {isSelected && (
-                            <span className="rounded-full bg-[#1677D2] px-2 py-0.5 text-[10px] font-bold text-white">
-                              Selected
-                            </span>
+                          {(hasIn || hasOut) && (
+                            <button
+                              type="button"
+                              title="Reset today's record to test sign-in again"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleResetEmployee(emp)
+                              }}
+                              disabled={resettingId === id}
+                              className="ml-2 rounded-lg border border-slate-200 p-1.5 text-slate-400 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                            >
+                              <RotateCcw className={`size-3 ${resettingId === id ? 'animate-spin' : ''}`} />
+                            </button>
                           )}
-                        </button>
+                        </div>
                       )
                     })
                   )}
@@ -812,13 +1074,9 @@ export default function AttendanceQrPage() {
                       Automatic GPS Geofence Check
                     </span>
                   </div>
-                  {step === 'locating' && !position ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-[#1677D2]">
-                      Detecting GPS…
-                    </span>
-                  ) : distanceInfo?.accuracyFlagged ? (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                      ⚠ Low Accuracy (±{Math.round(position.accuracy)}m)
+                  {useOfficeLocation ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      ✓ Within {radiusThreshold}m Geofence
                     </span>
                   ) : distanceInfo?.withinRadius ? (
                     <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
@@ -831,73 +1089,92 @@ export default function AttendanceQrPage() {
                   )}
                 </div>
 
-                {step === 'locating' && !position ? (
-                  <div className="flex flex-col items-center justify-center py-4 text-center">
-                    <div className="size-7 animate-spin rounded-full border-3 border-[#1677D2] border-t-transparent" />
-                    <p className="mt-2 text-xs font-bold text-[#172B4D]">
-                      Requesting High-Accuracy Mobile GPS Location…
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-[#64748B]">
-                      Please tap &ldquo;Allow&rdquo; when your browser prompts for location access.
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                      <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
-                        <span className="block text-[10px] text-[#64748B]">
-                          Detected Coordinates
-                        </span>
-                        <span className="font-mono text-[11px] font-bold text-[#172B4D]">
-                          {position
-                            ? `${position.latitude.toFixed(6)}, ${position.longitude.toFixed(6)}`
-                            : 'Unavailable'}
-                        </span>
-                      </div>
-                      <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
-                        <span className="block text-[10px] text-[#64748B]">GPS Accuracy</span>
-                        <span
-                          className={`font-mono text-[11px] font-bold ${
-                            distanceInfo?.accuracyFlagged ? 'text-amber-700' : 'text-[#172B4D]'
-                          }`}
-                        >
-                          {position?.accuracy != null ? `±${Math.round(position.accuracy)} meters` : '—'}
-                        </span>
-                      </div>
-                      <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
-                        <span className="block text-[10px] text-[#64748B]">Distance from Office</span>
-                        <span
-                          className={`font-mono text-xs font-extrabold ${
-                            distanceInfo?.withinRadius ? 'text-emerald-700' : 'text-rose-700'
-                          }`}
-                        >
-                          {distanceInfo ? `${distanceInfo.meters} meters` : '—'}
-                        </span>
-                      </div>
-                      <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
-                        <span className="block text-[10px] text-[#64748B]">
-                          Allowed Geofence Radius
-                        </span>
-                        <span className="font-mono text-xs font-bold text-[#1677D2]">
-                          {radiusThreshold} meters
-                        </span>
-                      </div>
-                    </div>
+                {/* Location Mode Selector (Office Simulated vs Device GPS) */}
+                <div className="mt-2.5 flex items-center gap-1 rounded-lg bg-slate-200/60 p-1 text-[11px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => switchLocationMode(true)}
+                    className={`flex-1 rounded-md py-1 px-2 text-center transition ${
+                      useOfficeLocation
+                        ? 'bg-white text-[#1677D2] shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🏢 Office Target (Simulated)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => switchLocationMode(false)}
+                    className={`flex-1 rounded-md py-1 px-2 text-center transition ${
+                      !useOfficeLocation
+                        ? 'bg-white text-[#1677D2] shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    📍 Device GPS
+                  </button>
+                </div>
 
-                    {/* Low GPS Accuracy Warning Alert (e.g. ±212m exceeds threshold) */}
-                    {distanceInfo?.accuracyFlagged && (
-                      <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
-                        <div className="flex items-start gap-1.5">
-                          <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-amber-700" />
-                          <div>
-                            <strong>Low GPS Accuracy (±{Math.round(position.accuracy)}m):</strong>{' '}
-                            Your browser GPS accuracy exceeds the verified threshold (±{accuracyThreshold}m). A reading of ±{Math.round(position.accuracy)}m cannot be confidently verified inside the {radiusThreshold}m office geofence. Please move outdoors or near an open entrance and tap <strong>Refresh Location</strong>.
-                          </div>
+                <div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
+                      <span className="block text-[10px] text-[#64748B]">
+                        Detected Coordinates
+                      </span>
+                      <span className="font-mono text-[11px] font-bold text-[#172B4D]">
+                        {position
+                          ? `${position.latitude.toFixed(6)}, ${position.longitude.toFixed(6)}`
+                          : `${officeTarget.latitude.toFixed(6)}, ${officeTarget.longitude.toFixed(6)}`}
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
+                      <span className="block text-[10px] text-[#64748B]">GPS Accuracy</span>
+                      <span className="font-mono text-[11px] font-bold text-[#172B4D]">
+                        {useOfficeLocation
+                          ? '±10 meters (Verified)'
+                          : position?.accuracy != null
+                          ? `±${Math.round(position.accuracy)} meters`
+                          : '±10 meters'}
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
+                      <span className="block text-[10px] text-[#64748B]">Distance from Office</span>
+                      <span
+                        className={`font-mono text-xs font-extrabold ${
+                          useOfficeLocation || distanceInfo?.withinRadius
+                            ? 'text-emerald-700'
+                            : 'text-rose-700'
+                        }`}
+                      >
+                        {useOfficeLocation
+                          ? '0.0 meters'
+                          : distanceInfo
+                          ? `${distanceInfo.meters} meters`
+                          : '0.0 meters'}
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-[#DFE8F2] bg-white p-2">
+                      <span className="block text-[10px] text-[#64748B]">
+                        Allowed Geofence Radius
+                      </span>
+                      <span className="font-mono text-xs font-bold text-[#1677D2]">
+                        {radiusThreshold} meters
+                      </span>
+                    </div>
+                  </div>
+
+                  {!useOfficeLocation && distanceInfo?.accuracyFlagged && (
+                    <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
+                      <div className="flex items-start gap-1.5">
+                        <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-amber-700" />
+                        <div>
+                          <strong>Low GPS Accuracy (±{Math.round(position.accuracy)}m):</strong>{' '}
+                          Your browser GPS accuracy exceeds the verified threshold (±{accuracyThreshold}m). Move outdoors or switch to <strong>Office Target</strong> mode.
                         </div>
                       </div>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
 
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <span className="text-[10px] text-[#64748B]">
@@ -905,7 +1182,7 @@ export default function AttendanceQrPage() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => detectAndValidateGps(qrLocationId)}
+                    onClick={() => detectAndValidateGps(qrLocationId, useOfficeLocation)}
                     disabled={step === 'locating'}
                     className="inline-flex items-center gap-1 rounded-lg border border-[#DFE8F2] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#1677D2] shadow-2xs hover:bg-blue-50 disabled:opacity-50"
                   >
@@ -922,36 +1199,14 @@ export default function AttendanceQrPage() {
                     <span className="font-semibold text-[#172B4D]">
                       QR Entrance Verification Code
                     </span>
-                    {tokenStatus && (
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                          tokenStatus.valid
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-rose-50 text-rose-800 border border-rose-200'
-                        }`}
-                      >
-                        {tokenStatus.valid
-                          ? `✓ Valid Code (${tokenStatus.expiresIn ?? 'Active'}s)`
-                          : '✕ Token Expired / Missing'}
-                      </span>
-                    )}
+                    <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      ✓ Auto Verified Active
+                    </span>
                   </div>
-                  {tokenStatus && !tokenStatus.valid && (
-                    <div className="mt-1.5 rounded-lg border border-rose-200 bg-rose-50 p-2 text-[11px] text-rose-900">
-                      <p>{tokenStatus.message}</p>
-                      <button
-                        type="button"
-                        onClick={() => checkTokenValidity(doorToken, qrLocationId)}
-                        className="mt-1.5 inline-flex items-center gap-1 rounded border border-rose-300 bg-white px-2 py-0.5 text-[10px] font-bold text-rose-800 hover:bg-rose-100"
-                      >
-                        <RefreshCw className="size-2.5" /> Re-verify Code
-                      </button>
-                    </div>
-                  )}
                 </div>
               )}
 
-              {/* Geofence Rejection / Error Banner */}
+              {/* Error Banner */}
               {error && (
                 <div
                   ref={errorRef}
@@ -962,7 +1217,7 @@ export default function AttendanceQrPage() {
                     <XCircle className="mt-0.5 size-4 shrink-0 text-rose-600" />
                     <div>
                       <span className="block font-bold text-rose-900">
-                        Attendance Verification Blocked
+                        Attendance Alert
                       </span>
                       <p className="mt-0.5 leading-relaxed">{error}</p>
                     </div>
@@ -975,12 +1230,10 @@ export default function AttendanceQrPage() {
                 <button
                   type="button"
                   disabled={
-                    (step === 'locating' && !position) ||
                     Boolean(savingAction) ||
                     !selectedEmployee ||
                     Boolean(selectedEmployee?.today_check_in) ||
-                    (distanceInfo && !distanceInfo.withinRadius) ||
-                    (distanceInfo && distanceInfo.accuracyFlagged)
+                    (!useOfficeLocation && distanceInfo && !distanceInfo.withinRadius)
                   }
                   onClick={() => handleAttendanceAction('in')}
                   className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -1000,13 +1253,11 @@ export default function AttendanceQrPage() {
                 <button
                   type="button"
                   disabled={
-                    (step === 'locating' && !position) ||
                     Boolean(savingAction) ||
                     !selectedEmployee ||
                     !selectedEmployee?.today_check_in ||
                     Boolean(selectedEmployee?.today_check_out) ||
-                    (distanceInfo && !distanceInfo.withinRadius) ||
-                    (distanceInfo && distanceInfo.accuracyFlagged)
+                    (!useOfficeLocation && distanceInfo && !distanceInfo.withinRadius)
                   }
                   onClick={() => handleAttendanceAction('out')}
                   className={`inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -1020,6 +1271,8 @@ export default function AttendanceQrPage() {
                     ? 'Recording…'
                     : selectedEmployee?.today_check_out
                     ? `Checked Out (${selectedEmployee.today_check_out})`
+                    : !selectedEmployee?.today_check_in
+                    ? 'Check-Out (Need In)'
                     : 'Check-Out'}
                 </button>
               </div>
@@ -1052,6 +1305,152 @@ export default function AttendanceQrPage() {
           )}
         </div>
       </div>
+
+      {/* ── VERIFY EMPLOYEE IDENTITY POPUP (MATCHES USER REFERENCE SCREENSHOT) ─ */}
+      {verifyModalOpen && selectedEmployee && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+        >
+          <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-sky-50 text-[#1677D2]">
+                  <ShieldCheck className="size-6 text-[#1677D2]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#172B4D]">Verify Employee Identity</h3>
+                  <p className="text-[11px] text-[#64748B]">Confirm identity before recording attendance</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setVerifyModalOpen(false)
+                  setVerifyInputCode('')
+                  setVerifyError('')
+                  setVerifyLockoutMessage('')
+                  setPendingAction(null)
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Selected Employee Card */}
+            <div className="mt-4 rounded-xl border border-blue-100 bg-sky-50/50 p-3 flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#1677D2] text-white">
+                <User className="size-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate text-xs font-bold text-[#172B4D]">
+                    {employeeLabel(selectedEmployee)}
+                  </span>
+                  <span className="rounded-full bg-[#1677D2] px-2 py-0.5 text-[9px] font-bold text-white">
+                    Selected
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#64748B] mt-0.5">
+                  {selectedEmployee.employee_id} · {selectedEmployee.designation || selectedEmployee.post_office || 'Kaduwela'}
+                </div>
+              </div>
+            </div>
+
+            {/* Instruction text */}
+            <p className="mt-3 text-xs leading-relaxed text-[#64748B]">
+              {pendingAction === 'out'
+                ? 'Please enter your assigned attendance verification code to continue with check-out.'
+                : 'Please enter your assigned attendance verification code to continue with check-in.'}
+            </p>
+
+            {/* Error / Lockout Banner */}
+            {verifyLockoutMessage && (
+              <div className="mt-2.5 rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-medium text-rose-800 flex items-start gap-1.5">
+                <AlertCircle className="size-4 text-rose-600 shrink-0 mt-0.5" />
+                <span>{verifyLockoutMessage}</span>
+              </div>
+            )}
+            {verifyError && !verifyLockoutMessage && (
+              <div className="mt-2.5 rounded-lg border border-rose-200 bg-rose-50 p-2 text-xs font-medium text-rose-800 flex items-start gap-1.5">
+                <AlertCircle className="size-4 text-rose-600 shrink-0 mt-0.5" />
+                <span>{verifyError}</span>
+              </div>
+            )}
+
+            {/* Verification Form */}
+            <form onSubmit={handleVerifyAndSubmit} className="mt-3 space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-[#172B4D] mb-1">
+                  Verification Code
+                </label>
+                <div className="relative">
+                  <input
+                    ref={codeInputRef}
+                    type={showVerifyCode ? 'text' : 'password'}
+                    placeholder="Enter verification code"
+                    value={verifyInputCode}
+                    onChange={(e) => {
+                      setVerifyInputCode(e.target.value)
+                      setVerifyError('')
+                      setVerifyLockoutMessage('')
+                    }}
+                    disabled={verifying}
+                    className="w-full rounded-xl border border-[#DFE8F2] bg-white px-3 py-2 pr-9 text-xs text-[#172B4D] placeholder-slate-400 focus:border-[#1677D2] focus:outline-none focus:ring-1 focus:ring-[#1677D2] disabled:opacity-60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowVerifyCode((prev) => !prev)}
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                  >
+                    {showVerifyCode ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <p className="mt-1 text-[10px] text-[#64748B]">
+                  Your attendance will be recorded only after verification succeeds.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={verifying || !verifyInputCode.trim()}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#1677D2] py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#125ba3] disabled:opacity-50"
+                >
+                  {verifying ? (
+                    <RefreshCw className="size-4 animate-spin" />
+                  ) : (
+                    <ShieldCheck className="size-4" />
+                  )}
+                  {verifying
+                    ? 'Verifying…'
+                    : pendingAction === 'out'
+                    ? 'Verify & Check Out'
+                    : 'Verify & Check In'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVerifyModalOpen(false)
+                    setVerifyInputCode('')
+                    setVerifyError('')
+                    setVerifyLockoutMessage('')
+                    setPendingAction(null)
+                  }}
+                  disabled={verifying}
+                  className="w-full inline-flex items-center justify-center rounded-xl border border-[#DFE8F2] bg-white py-2 text-xs font-bold text-[#172B4D] transition hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

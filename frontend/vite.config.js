@@ -27,9 +27,44 @@ export default defineConfig(({ mode }) => {
       host: true, // reachable from phones on the same Wi-Fi (https://<laptop-ip>:5173)
       port: 5173,
       proxy: {
-        '/api': { target: api, changeOrigin: true },
-        '/health': { target: api, changeOrigin: true },
+        '/api': {
+          target: api,
+          changeOrigin: true,
+          timeout: 120000,
+          configure: (proxy) => {
+            proxy.on('error', (err, _req, res) => {
+              if (res && !res.headersSent) {
+                res.writeHead(502, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify({ detail: `FastAPI backend at ${api} is unreachable: ${err.message}` }))
+              }
+            })
+          },
+        },
+        '/health': { target: api, changeOrigin: true, timeout: 30000 },
       },
+    },
+    preview: {
+      host: true,
+      port: 5173,
+      proxy: {
+        '/api': { target: api, changeOrigin: true, timeout: 120000 },
+        '/health': { target: api, changeOrigin: true, timeout: 30000 },
+      },
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('@mui') || id.includes('@emotion')) return 'vendor-mui'
+              if (id.includes('lucide-react')) return 'vendor-lucide'
+              if (id.includes('recharts') || id.includes('d3')) return 'vendor-charts'
+              if (id.includes('xlsx')) return 'vendor-xlsx'
+            }
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
     },
   }
 })

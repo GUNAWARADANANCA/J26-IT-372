@@ -134,17 +134,28 @@ _KPI_PARTS = (
 )
 
 
-def recommendations(row: dict) -> tuple[str, list[dict]]:
+def recommendations(row: dict, previous: dict | None = None) -> tuple[str, list[dict]]:
     """One note per KPI already scored this week, from that score and its work count."""
     rates = {key: row[key] for key, _label, _count_key, _noun in _KPI_PARTS}
     weakest = min(rates, key=rates.get)
     notes = []
+    reasons = {
+        "completion": "Workload volume spikes and uncompleted daily deliveries.",
+        "accuracy": "Recorded data discrepancies, incorrect entries, or counter sorting slips.",
+        "timeliness": "Morning sorting cutoffs and dispatch delays affecting turnaround time.",
+    }
     for key, label, count_key, noun in _KPI_PARTS:
         score = float(row[key])
         count = int(round(float(row[count_key])))
         is_weakest = key == weakest
+        prior_score = float(previous[key]) if previous and previous.get(key) is not None else None
+        delta_score = round(score - prior_score, 1) if prior_score is not None else None
+        trend = "improving" if delta_score and delta_score > 0 else "declining" if delta_score and delta_score < 0 else "stable"
+
         if count > 0:
             evidence = f"{count} {noun} item{'s' if count != 1 else ''} this week."
+            if prior_score is not None:
+                evidence += f" Component moved {delta_score:+.1f} pts vs previous week ({prior_score:.1f}%)."
             action = (
                 f"Review those {noun} items with the employee. "
                 "That is the work still sitting against this score."
@@ -152,6 +163,8 @@ def recommendations(row: dict) -> tuple[str, list[dict]]:
             priority = "high" if is_weakest else "medium"
         else:
             evidence = f"No {noun} items were recorded this week."
+            if prior_score is not None:
+                evidence += f" Component score is {score:.1f}% ({delta_score:+.1f} pts vs previous week)."
             action = "This part does not need a change from the current week's work."
             priority = "low"
         notes.append(
@@ -163,6 +176,10 @@ def recommendations(row: dict) -> tuple[str, list[dict]]:
                 "action": action,
                 "priority": priority,
                 "weakest": is_weakest,
+                "reason": reasons.get(key, "General operational workflow variance."),
+                "follow_up": f"Target {label} ≥ {min(100.0, score + 3.0):.1f}% next week.",
+                "trend": trend,
+                "delta_score": delta_score,
                 "review_note": "Advice only. A person must review this before any change.",
             }
         )
@@ -337,7 +354,178 @@ def _matched_saved_forecasts(employee_id: str, weeks: list[dict]) -> list[dict]:
     return pairs
 
 
-def productivity_for(employee_id: str, week: str | None = None) -> dict:
+def _build_future_coaching_plan(employee: dict, weeks: list[dict], target_year: str, bundle: dict) -> dict:
+    """Build forward-looking strategic plan using historical baseline and ML forecasting model."""
+    latest_row = weeks[-1]
+    count = len(weeks)
+    avg_kpi = _round(sum(w["kpi"] for w in weeks) / count)
+    avg_completion = _round(sum(w["completion"] for w in weeks) / count)
+    avg_accuracy = _round(sum(w["accuracy"] for w in weeks) / count)
+    avg_timeliness = _round(sum(w["timeliness"] for w in weeks) / count)
+    tot_assigned = int(round(sum(w.get("assigned", 0) for w in weeks)))
+    tot_uncompleted = int(round(sum(w.get("uncompleted", 0) for w in weeks)))
+    tot_incorrect = int(round(sum(w.get("incorrect", 0) for w in weeks)))
+    tot_late = int(round(sum(w.get("late", 0) for w in weeks)))
+
+    components = [
+        ("Timeliness", avg_timeliness, tot_late, "late"),
+        ("Accuracy", avg_accuracy, tot_incorrect, "incorrect"),
+        ("Completion", avg_completion, tot_uncompleted, "uncompleted"),
+    ]
+    components.sort(key=lambda c: c[1])
+    weakest_name, weakest_score, weakest_count, weakest_noun = components[0]
+    strongest_name, strongest_score, strongest_count, strongest_noun = components[-1]
+
+    frame = pd.DataFrame([
+        {
+            "kpi": avg_kpi,
+            "completion": avg_completion,
+            "accuracy": avg_accuracy,
+            "timeliness": avg_timeliness,
+            "assigned": tot_assigned / count,
+            "uncompleted": tot_uncompleted / count,
+            "incorrect": tot_incorrect / count,
+            "late": tot_late / count,
+            "experience": latest_row["experience"],
+            "work_category": latest_row["work_category"],
+        }
+    ])
+    model_pred = _round(float(bundle["model"].predict(frame)[0]))
+
+    strategic_recs = [
+        {
+            "id": f"{employee.get('_id')}|{target_year}|strategic_{weakest_name.lower()}",
+            "category": weakest_name.lower(),
+            "priority": "High",
+            "headline": f"{target_year} Strategic Priority: Elevate {weakest_name} Performance",
+            "evidence": (
+                f"Historical baseline across {count} recorded weeks shows {weakest_name.lower()} "
+                f"averaging {weakest_score:.1f}% ({weakest_count} {weakest_noun} items), lagging {strongest_name} by {strongest_score - weakest_score:.1f} points."
+            ),
+            "reason": f"Systemic {weakest_name.lower()} bottlenecks in sorting and morning handoffs during peak operational windows.",
+            "actions": [
+                f"Implement morning {weakest_name.lower()} cutoff checklists for daily post office operations.",
+                f"Reallocate peak workload between 08:30 and 10:30 to eliminate {weakest_noun} processing delays.",
+                f"Conduct monthly review of {weakest_name.lower()} benchmarks against the departmental 90% standard.",
+            ],
+            "follow_up": f"Target ≥ {min(95.0, weakest_score + 5.0):.1f}% {weakest_name.lower()} in Q1 {target_year}.",
+            "review_after": f"Q1 {target_year}",
+            "pattern": "strategic_forward_look",
+            "basis": "strategic_plan",
+            "rank": 3.0,
+        },
+        {
+            "id": f"{employee.get('_id')}|{target_year}|strategic_{strongest_name.lower()}",
+            "category": strongest_name.lower(),
+            "priority": "Medium",
+            "headline": f"Sustain Departmental Strength in {strongest_name}",
+            "evidence": (
+                f"{strongest_name} demonstrated steady high performance at {strongest_score:.1f}% "
+                f"over {count} recorded weeks."
+            ),
+            "reason": f"Established verification discipline and consistent adherence to postal guidelines.",
+            "actions": [
+                f"Maintain dual-check validation protocols for all registered articles and financial transactions.",
+                f"Mentor incoming junior clerks using {employee.get('employee_name', 'staff')}'s operational best practices.",
+            ],
+            "follow_up": f"Maintain {strongest_name} ≥ {strongest_score:.1f}% throughout {target_year}.",
+            "review_after": f"Mid-year {target_year}",
+            "pattern": "sustaining_strength",
+            "basis": "strategic_plan",
+            "rank": 2.0,
+        },
+        {
+            "id": f"{employee.get('_id')}|{target_year}|strategic_workload",
+            "category": "workload",
+            "priority": "Medium",
+            "headline": f"Capacity & Daily Throughput Optimization for {target_year}",
+            "evidence": (
+                f"Average assigned workload of {int(round(tot_assigned / count))} items per week with an average "
+                f"completion rate of {avg_completion:.1f}%."
+            ),
+            "reason": "Volume spikes during month-end utility collections and pension disbursement cycles.",
+            "actions": [
+                "Establish daily dispatch buffers during peak month-end cycles.",
+                "Review automated route sequencing to minimize late delivery runs.",
+            ],
+            "follow_up": f"Target 0 backlog rollover during quarterly audits in {target_year}.",
+            "review_after": f"Quarterly in {target_year}",
+            "pattern": "capacity_planning",
+            "basis": "strategic_plan",
+            "rank": 1.5,
+        },
+    ]
+
+    milestones = [
+        {
+            "quarter": f"Q1 {target_year} (Jan - Mar)",
+            "title": "Baseline Stabilization & Bottleneck Audit",
+            "target": f"Eliminate early-week delivery delays; raise {weakest_name} to ≥ {min(92.0, weakest_score + 3.0):.1f}%.",
+            "focus": f"Morning dispatch timing and {weakest_name.lower()} discipline.",
+        },
+        {
+            "quarter": f"Q2 {target_year} (Apr - Jun)",
+            "title": "Process Optimization & Mid-Year Check",
+            "target": f"Achieve overall weekly KPI ≥ {min(95.0, avg_kpi + 2.5):.1f}% across all service categories.",
+            "focus": "Workload balancing during peak pension and utility bill cycles.",
+        },
+        {
+            "quarter": f"Q3 {target_year} (Jul - Sep)",
+            "title": "Quality Consistency & Standardized Routines",
+            "target": f"Maintain {strongest_name} at ≥ {strongest_score:.1f}% with zero compliance audit defects.",
+            "focus": "Peer review and cross-verification in registered counters.",
+        },
+        {
+            "quarter": f"Q4 {target_year} (Oct - Dec)",
+            "title": "Annual Target Attainment & Consolidation",
+            "target": f"Sustain annualized KPI score matching model projection ({model_pred:.1f}%).",
+            "focus": "Annual performance evaluation and postmaster operational sign-off.",
+        },
+    ]
+
+    return {
+        "target_year": target_year,
+        "is_strategic_projection": True,
+        "baseline_period": f"{weeks[0]['week']} to {latest_row['week']}",
+        "baseline_weeks_count": count,
+        "baseline_kpi": avg_kpi,
+        "baseline_completion": avg_completion,
+        "baseline_accuracy": avg_accuracy,
+        "baseline_timeliness": avg_timeliness,
+        "projected_kpi": model_pred,
+        "strengths": f"{strongest_name} ({strongest_score:.1f}%) — consistently meets department excellence standard.",
+        "improvement_focus": f"{weakest_name} ({weakest_score:.1f}%) — primary area for operational enhancement.",
+        "historical_evidence": (
+            f"Evaluated across {count} recorded weeks ({weeks[0]['week']} to {latest_row['week']}) with "
+            f"{tot_assigned} total assigned items, {tot_uncompleted} uncompleted, {tot_incorrect} incorrect, and {tot_late} late."
+        ),
+        "strategic_actions": {
+            "productivity": "Establish daily dispatch quotas and buffer margins during high-volume utility collection days.",
+            "accuracy": f"Maintain verification checks on all registered parcels to protect current {avg_accuracy:.1f}% accuracy.",
+            "timeliness": f"Implement 08:30 AM dispatch cutoffs to raise timeliness from {avg_timeliness:.1f}% toward target standard.",
+        },
+        "quarterly_milestones": milestones,
+        "progress_indicators": [
+            "Weekly KPI log compliance (5 recorded days per week).",
+            f"Reduction of late items by 20% compared to baseline.",
+            "Zero carry-over backlog at end of daily postal window.",
+            f"Target sustained KPI ≥ {model_pred:.1f}%.",
+        ],
+        "model_validation": {
+            "model_name": "Random Forest Weekly KPI Predictor",
+            "model_mae": EVALUATION["model_mae"],
+            "model_rmse": EVALUATION["model_rmse"],
+            "baseline_mae": EVALUATION["baseline_mae"],
+            "uncertainty_note": (
+                f"Model projection of {model_pred:.1f}% is an estimate with holdout error margin ±{EVALUATION['model_mae']} MAE "
+                f"(RMSE: {EVALUATION['model_rmse']}). It is a strategic projection and not a recorded department observation."
+            ),
+        },
+        "strategic_recommendations": strategic_recs,
+    }
+
+
+def productivity_for(employee_id: str, week: str | None = None, year: str | None = None) -> dict:
     employee_id = employee_id.strip()
     employee = get_db()["employee"].find_one({"_id": employee_id})
     if employee is None:
@@ -361,10 +549,75 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
             "evaluation": EVALUATION,
         }
 
+    weeks_by_year: dict[str, list[str]] = {}
+    for row in weeks:
+        y = row["week"][:4]
+        weeks_by_year.setdefault(y, []).append(row["week"])
+    available_years = sorted(list(set(list(weeks_by_year.keys()) + ["2024", "2025", "2026", "2027"])))
+
+    if year:
+        target_year = str(year).strip()
+    elif week and len(week) >= 4:
+        target_year = week[:4]
+    else:
+        target_year = weeks[-1]["week"][:4]
+
+    # Future year or year with no measured logs
+    if target_year in ("2026", "2027") or target_year not in weeks_by_year:
+        bundle = load_model()
+        future_plan = _build_future_coaching_plan(employee, weeks, target_year, bundle)
+        latest_row = weeks[-1]
+        return {
+            "available": False,
+            "week_has_logs": False,
+            "is_future_year": True,
+            "mode": "future_coaching",
+            "year": target_year,
+            "employee_id": employee_id,
+            "employee_name": employee.get("employee_name") or "",
+            "work_category": latest_row["work_category"],
+            "post_office": employee.get("post_office") or "",
+            "requested_week": week or None,
+            "latest_available_week": latest_row["week"],
+            "earliest_available_week": weeks[0]["week"],
+            "available_weeks": [row["week"] for row in weeks],
+            "weeks_by_year": weeks_by_year,
+            "available_years": available_years,
+            "latest_measured_kpi": _round(latest_row["kpi"]),
+            "predicted_next_week_kpi": future_plan["projected_kpi"],
+            "historical_baseline_kpi": future_plan["baseline_kpi"],
+            "message": (
+                f"Strategic Coaching Horizon for {target_year}. "
+                f"No measured KPI records exist for {target_year}. "
+                f"Historical baseline data is available from {weeks[0]['week']} to {latest_row['week']}."
+            ),
+            "future_coaching_plan": future_plan,
+            "recommendations": future_plan["strategic_recommendations"],
+            "history": [
+                {
+                    "week": row["week"],
+                    "kpi": _round(row["kpi"]),
+                    "assigned": round(row["assigned"]),
+                    "completed": round(row.get("completed") or 0),
+                    "uncompleted": round(row["uncompleted"]),
+                    "completion": _round(row["completion"]),
+                    "accuracy": _round(row["accuracy"]),
+                    "timeliness": _round(row["timeliness"]),
+                }
+                for row in weeks
+            ],
+            "evaluation": EVALUATION,
+            "drivers": _model_drivers(bundle),
+            "matched_forecasts": _matched_saved_forecasts(employee_id, weeks),
+        }
+
+    # Selected year has measured weeks
+    year_weeks = weeks_by_year.get(target_year, [])
     selected = week_start(week) if week else None
     if week and selected is None:
         raise HTTPException(status_code=400, detail="The reporting week must be a date.")
-    current = weeks[-1]
+
+    current = None
     if selected is not None:
         match = [row for row in weeks if row["week"] == selected.isoformat()]
         if not match:
@@ -390,6 +643,7 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
             return {
                 "available": False,
                 "week_has_logs": False,
+                "year": target_year,
                 "employee_id": employee_id,
                 "employee_name": employee.get("employee_name") or "",
                 "work_category": latest_row["work_category"],
@@ -398,6 +652,8 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
                 "latest_available_week": latest_row["week"],
                 "earliest_available_week": weeks[0]["week"],
                 "available_weeks": [row["week"] for row in weeks],
+                "weeks_by_year": weeks_by_year,
+                "available_years": available_years,
                 "latest_measured_kpi": _round(latest_row["kpi"]),
                 "predicted_next_week_kpi": latest_pred,
                 "message": (
@@ -421,6 +677,11 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
                 "matched_forecasts": _matched_saved_forecasts(employee_id, weeks),
             }
         current = match[0]
+    else:
+        # Default to latest measured week in this year
+        latest_week_in_year = year_weeks[-1]
+        current = [row for row in weeks if row["week"] == latest_week_in_year][0]
+
     previous = None
     for row in weeks:
         if row["week"] < current["week"]:
@@ -444,7 +705,7 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
     )
     predicted = _round(float(bundle["model"].predict(frame)[0]))
     measured = _round(current["kpi"])
-    weakest, notes = recommendations(current)
+    weakest, notes = recommendations(current, previous)
     trend = _trend_note([row for row in weeks if row["week"] <= current["week"]])
     if trend:
         notes.append(trend)
@@ -463,6 +724,9 @@ def productivity_for(employee_id: str, week: str | None = None) -> dict:
         "work_category": current["work_category"],
         "post_office": employee.get("post_office") or "",
         "week": current["week"],
+        "year": target_year,
+        "weeks_by_year": weeks_by_year,
+        "available_years": available_years,
         "measured_kpi": measured,
         "predicted_next_week_kpi": predicted,
         "forecast_difference": round(predicted - measured, 1),
