@@ -21,6 +21,7 @@ USERS = "app_user"
 SESSIONS = "app_session"
 COOKIE = "postassist_session"
 ROLE_POSTMASTER = "postmaster"
+ROLE_CLERK = "clerk"
 SESSION_HOURS = 8
 FAILURE_LIMIT = 5
 FAILURE_WINDOW = timedelta(minutes=15)
@@ -73,6 +74,33 @@ def bootstrap_postmaster() -> None:
         }
     )
     print(f"Created the initial postmaster account for {username}.")
+
+
+def bootstrap_clerk() -> dict:
+    """Create a default clerk account for Colombo Central Post Office if none exists."""
+    username = os.environ.get("CLERK_USERNAME", "clerk").strip()
+    password = os.environ.get("CLERK_PASSWORD", "Clerk@123456")
+    user_doc = {
+        "_id": username,
+        "username": username,
+        "password_hash": hash_password(password),
+        "hashed_password": hash_password(password),
+        "role": ROLE_CLERK,
+        "office_id": "PO-COLOMBO-CENTRAL",
+        "full_name": "Amila Silva",
+    }
+    try:
+        users = get_db()[USERS]
+        existing = users.find_one({"_id": username})
+        if existing:
+            existing.setdefault("hashed_password", existing.get("password_hash"))
+            return existing
+        users.insert_one(user_doc)
+        print(f"Created the initial clerk account for {username}.")
+        return user_doc
+    except Exception as exc:
+        print(f"Clerk bootstrap notice: {exc}")
+        return user_doc
 
 
 def _cookie_secure() -> bool:
@@ -197,3 +225,27 @@ def current_user(request: Request) -> dict:
         "csrf_token": session.get("csrf_token") or "",
         "expires_at": session.get("expires_at") or "",
     }
+
+
+def require_clerk_or_postmaster(request: Request) -> dict:
+    """Accept an authenticated session from a clerk or postmaster."""
+    session_id = request.cookies.get(COOKIE)
+    if not session_id:
+        auth_hdr = request.headers.get("authorization") or ""
+        if auth_hdr.startswith("Bearer "):
+            session_id = auth_hdr[7:].strip()
+    session, user = _session_user(session_id)
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        supplied = request.headers.get("x-csrf-token") or ""
+        if not supplied or not hmac.compare_digest(supplied, session.get("csrf_token") or ""):
+            raise HTTPException(status_code=403, detail="The security token did not match.")
+    role = user.get("role") or ""
+    if role not in {ROLE_POSTMASTER, ROLE_CLERK}:
+        raise HTTPException(status_code=403, detail="An authorized clerk or postmaster sign-in is required.")
+    return {
+        "username": user["username"],
+        "role": role,
+        "office_id": user.get("office_id", "PO-COLOMBO-CENTRAL"),
+        "full_name": user.get("full_name", user["username"]),
+    }
+

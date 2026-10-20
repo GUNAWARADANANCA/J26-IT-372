@@ -22,6 +22,7 @@ import {
   deleteEntitlement,
   list,
   listEntitlements,
+  updateLeaveStatus,
 } from '../admin/data/repository'
 import GratuityFromService from './GratuityFromService'
 import LeaveCalendars from './LeaveCalendars'
@@ -34,9 +35,22 @@ const MODULES = {
     module: 'leave',
     statusField: 'status',
     fields: [
-      { name: 'leave_type', label: 'Leave type' },
-      { name: 'from_date', label: 'From', type: 'date' },
-      { name: 'to_date', label: 'To', type: 'date' },
+      {
+        name: 'leave_type',
+        label: 'Leave type',
+        type: 'select',
+        options: [
+          'Annual Leave',
+          'Casual Leave',
+          'Medical Leave',
+          'Sick Leave',
+          'Half Day Leave',
+          'Duty Leave',
+          'Special Leave',
+        ],
+      },
+      { name: 'from_date', label: 'From (Start Date)', type: 'date' },
+      { name: 'to_date', label: 'To (End Date)', type: 'date' },
       { name: 'days', label: 'Days', type: 'number' },
       { name: 'reason', label: 'Reason' },
       { name: 'status', label: 'Status', type: 'select', options: ['Pending', 'Approved', 'Rejected'] },
@@ -149,6 +163,7 @@ export default function EntitlementPage({ pageKey }) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(emptyDraft(meta))
   const [saving, setSaving] = useState(false)
+  const [successNotice, setSuccessNotice] = useState('')
 
   async function reload() {
     const requests = [
@@ -189,17 +204,70 @@ export default function EntitlementPage({ pageKey }) {
   const statuses = meta.fields.find((field) => field.name === meta.statusField)?.options || []
 
   async function handleSave() {
-    setSaving(true)
+    if (saving) return
     setError('')
+    setSuccessNotice('')
+
+    if (!draft.employee_id) {
+      setError('Employee selection is required')
+      return
+    }
+
+    if (meta.module === 'leave') {
+      if (!draft.leave_type) {
+        setError('Leave type is required')
+        return
+      }
+      if (!draft.from_date) {
+        setError('Start date (From) is required')
+        return
+      }
+      if (!draft.to_date) {
+        setError('End date (To) is required')
+        return
+      }
+      if (draft.to_date < draft.from_date) {
+        setError('End date cannot be earlier than start date')
+        return
+      }
+    }
+
+    setSaving(true)
     try {
       await createEntitlement(meta.module, draft)
       setOpen(false)
       setDraft(emptyDraft(meta))
+      setSuccessNotice(`${meta.title} saved successfully.`)
+      setTimeout(() => setSuccessNotice(''), 4000)
       await reload()
     } catch (err) {
       setError(err.message || 'Could not save')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleApproveLeave(id, empName) {
+    setError('')
+    try {
+      await updateLeaveStatus(id, 'Approved')
+      setSuccessNotice(`Leave for ${empName || 'employee'} approved.`)
+      setTimeout(() => setSuccessNotice(''), 4000)
+      await reload()
+    } catch (err) {
+      setError(err.message || 'Could not approve leave')
+    }
+  }
+
+  async function handleRejectLeave(id, empName) {
+    setError('')
+    try {
+      await updateLeaveStatus(id, 'Rejected')
+      setSuccessNotice(`Leave for ${empName || 'employee'} rejected.`)
+      setTimeout(() => setSuccessNotice(''), 4000)
+      await reload()
+    } catch (err) {
+      setError(err.message || 'Could not reject leave')
     }
   }
 
@@ -253,6 +321,11 @@ export default function EntitlementPage({ pageKey }) {
           ))}
         </TextField>
       </Stack>
+      {successNotice && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {successNotice}
+        </Alert>
+      )}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
@@ -292,9 +365,21 @@ export default function EntitlementPage({ pageKey }) {
                     <TableCell key={field.name}>{row[field.name] ?? '—'}</TableCell>
                   ))}
                   <TableCell>
-                    <Button size="small" color="error" onClick={() => handleDelete(row.id)}>
-                      Delete
-                    </Button>
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      {pageKey === 'leave' && String(row.status || '').toLowerCase() === 'pending' && (
+                        <>
+                          <Button size="small" color="success" variant="outlined" onClick={() => handleApproveLeave(row.id, row.employee_name)}>
+                            Approve
+                          </Button>
+                          <Button size="small" color="warning" variant="outlined" onClick={() => handleRejectLeave(row.id, row.employee_name)}>
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                      <Button size="small" color="error" onClick={() => handleDelete(row.id)}>
+                        Delete
+                      </Button>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}

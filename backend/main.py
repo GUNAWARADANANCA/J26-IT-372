@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pymongo.errors import AutoReconnect, NetworkTimeout, ServerSelectionTimeoutError
+from pymongo.errors import AutoReconnect, InvalidOperation, NetworkTimeout, ServerSelectionTimeoutError
 
 load_dotenv()
 
-from auth import bootstrap_postmaster  # noqa: E402
-from db import connect, disconnect, get_db, reset_client  # noqa: E402
+from auth import bootstrap_clerk, bootstrap_postmaster  # noqa: E402
+from attendance_credential import seed_default_credentials  # noqa: E402
+from daily_accounts import init_daily_accounts_indexes  # noqa: E402
+from db import connect, disconnect, get_db, init_performance_indexes, reset_client  # noqa: E402
 from routes import router  # noqa: E402
 
 
@@ -21,6 +23,10 @@ async def lifespan(_app: FastAPI):
     try:
         connect()
         bootstrap_postmaster()
+        bootstrap_clerk()
+        init_performance_indexes()
+        init_daily_accounts_indexes()
+        seed_default_credentials()
     except Exception as exc:
         disconnect()
         print(f"MongoDB was not reachable at startup: {exc}", flush=True)
@@ -47,18 +53,23 @@ app.add_middleware(
         "http://127.0.0.1:5174",
         "https://localhost:5174",
         "https://127.0.0.1:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://localhost:3000",
+        "https://127.0.0.1:3000",
         *_extra_origins,
     ],
-    allow_origin_regex=r"^https?://(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$",
+    allow_origin_regex=r"^https?://.*$",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "X-CSRF-Token"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
 @app.exception_handler(ServerSelectionTimeoutError)
 @app.exception_handler(AutoReconnect)
 @app.exception_handler(NetworkTimeout)
+@app.exception_handler(InvalidOperation)
 async def database_unavailable(_request: Request, _exc: Exception):
     reset_client()
     return JSONResponse(
@@ -74,8 +85,16 @@ def root():
 
 @app.get("/health")
 def health():
-    db = get_db()
-    return {"ok": True, "database": db.name}
+    db_ok = False
+    db_name = "postassist"
+    try:
+        db = get_db()
+        db_ok = True
+        db_name = db.name
+    except Exception as exc:
+        db_ok = False
+        db_name = f"reconnecting ({exc})"
+    return {"ok": True, "service": "PostAssist", "database": db_name, "db_connected": db_ok}
 
 
 if __name__ == "__main__":

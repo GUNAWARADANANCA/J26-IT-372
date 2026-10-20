@@ -224,7 +224,7 @@ class DoorScanTests(unittest.TestCase):
         self.database["attendance_day"] = _Collection([])
 
         # 1. Valid QR scan inside 150m radius during on-time window (06:00-08:40) -> Present / On time
-        monday_on_time = datetime(2026, 10, 12, 7, 30, tzinfo=COLOMBO)  # Monday
+        monday_on_time = datetime(2026, 10, 12, 19, 30, tzinfo=COLOMBO)  # Monday 07:30 PM
         with patch("attendance.colombo_now", return_value=monday_on_time):
             res_in = record_scan("EMP1", 6.927763, 79.949514, 12.5, qr_location_id="LOC-KADUWELA-01")
         self.assertEqual(res_in["action"], "in")
@@ -245,13 +245,13 @@ class DoorScanTests(unittest.TestCase):
         self.assertEqual(res_out["action"], "out")
         self.assertEqual(res_out["status"], "On time")
         stored_log = self.database["attendance_log"].find_one({"_id": "EMP1-2026-10-12"})
-        self.assertEqual(stored_log["check_in_time"], "07:30")
+        self.assertEqual(stored_log["check_in_time"], "19:30")
         self.assertEqual(stored_log["check_out_time"], "17:15")
         self.assertIsNotNone(stored_log["check_in_latitude"])
         self.assertIsNotNone(stored_log["check_out_latitude"])
 
         # 2. Valid QR scan inside 150m radius during late window (08:40-11:00) -> Late
-        tuesday_late = datetime(2026, 10, 13, 9, 15, tzinfo=COLOMBO)  # Tuesday
+        tuesday_late = datetime(2026, 10, 13, 21, 15, tzinfo=COLOMBO)  # Tuesday 09:15 PM
         with patch("attendance.colombo_now", return_value=tuesday_late):
             res_late = record_scan("EMP1", 6.927763, 79.949514, 15.0)
         self.assertEqual(res_late["status"], "Late")

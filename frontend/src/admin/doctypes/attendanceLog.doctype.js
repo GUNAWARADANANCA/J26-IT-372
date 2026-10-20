@@ -85,7 +85,6 @@ export const attendanceLogDoctype = {
           fieldname: 'fingerprint_in',
           label: 'Fingerprint In',
           fieldtype: 'Time',
-          reqd: true,
         },
         {
           fieldname: 'fingerprint_out',

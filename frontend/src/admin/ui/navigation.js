@@ -6,6 +6,7 @@ import {
   ChartNoAxesCombined,
   ClipboardList,
   Clock,
+  FileSpreadsheet,
   Gift,
   HandCoins,
   Landmark,
@@ -28,13 +29,6 @@ export const workspaceNav = [
     label: 'Employee Overview',
     hint: "Overall view of your team's performance",
     icon: LayoutDashboard,
-    group: 'WORKSPACE',
-  },
-  {
-    to: '/daily-kpi-log',
-    label: 'Daily KPI Log',
-    hint: 'Record and manage daily performance',
-    icon: ClipboardList,
     group: 'WORKSPACE',
   },
   {
@@ -82,6 +76,13 @@ export const analyticsNav = [
     label: 'Work Allocation',
     hint: 'Plan and balance employee workload',
     icon: UsersRound,
+    group: 'PLANNING & ANALYTICS',
+  },
+  {
+    to: '/daily-accounts',
+    label: 'Daily Accounts',
+    hint: 'Upload daily accounts, validate records, and monitor collections and balances',
+    icon: FileSpreadsheet,
     group: 'PLANNING & ANALYTICS',
   },
 ]

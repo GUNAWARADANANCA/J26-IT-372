@@ -15,9 +15,9 @@ export const MAX_GPS_ACCURACY_METERS = Number(env.VITE_MAX_GPS_ACCURACY_METERS |
 export const ENABLE_QR_DOOR_TOKEN =
   String(env.VITE_ENABLE_QR_DOOR_TOKEN ?? 'true').toLowerCase() === 'true'
 
-/** Whether demo override coordinates are enabled (default false: uses real device GPS) */
+/** Whether demo override coordinates are enabled (default true for reliable desktop/testing operation) */
 export const ENABLE_DEMO_LOCATION =
-  String(env.VITE_ENABLE_DEMO_LOCATION ?? 'false').toLowerCase() === 'true'
+  String(env.VITE_ENABLE_DEMO_LOCATION ?? 'true').toLowerCase() !== 'false'
 
 /** Registered official Post Office target coordinates (Kaduwela Head Post Office) */
 export const OFFICE_TARGET_LOCATION = {
