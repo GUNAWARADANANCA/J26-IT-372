@@ -36,5 +36,12 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
+const ROLE_LABEL = {
+  admin: 'Administrator', counter_officer: 'Counter officer', hub_officer: 'Hub officer', postman: 'Postman', postmaster: 'Postmaster',
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
-export const can = (user, ...roles) => Boolean(user) && (user.role === 'admin' || roles.includes(user.role))
+export const roleLabel = (role) => ROLE_LABEL[role] || role?.replaceAll('_', ' ')
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const can =(user, ...roles) => Boolean(user) && (user.role === 'admin' || roles.includes(user.role))
