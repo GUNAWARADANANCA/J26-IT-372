@@ -19,3 +19,4 @@ Expo React Native field app is kept in `mobile_app/`) · ESP32-CAM.
 | [ML training and evaluation](ml/README.md) | address-field CRF, script-ID CNN, evaluation scripts |
 
 Code: `backend/` · `frontend/` · `mobile_app/flutter_app/` (Flutter) · `mobile_app/` (Expo, earlier field app) · `iot/` · `ml/`
+
