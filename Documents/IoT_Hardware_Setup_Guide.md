@@ -256,7 +256,7 @@ Connect HX711 **VCC → ESP32-CAM 3V3**, HX711 **GND → GND**, **DT → IO13** 
 ## Step 8 – Connect the device to the PostAssist system
 
 1. Start MongoDB, the backend and the web app (see [Setup_and_Run_Guide.md](Setup_and_Run_Guide.md)). Start the backend with `--host 0.0.0.0`.
-2. Sign in to the web app as **`counter2`** (office *SLIIT Malabe demo counter* – the seeded device `SCALECAM-01` belongs to this office) or as `pm2` / `admin`.
+2. Sign in to the web app as **`counter2`** (office *Malabe Post Office* (`MLB-PO`) – the seeded device `SCALECAM-01` belongs to this office) or as `pm2` / `admin`.
 3. Open **IoT scale**. Within a second the card should show **online**, the IP, firmware version, Wi-Fi signal (RSSI), `HX711 ok` and `camera ok`.
 4. If it stays **offline**: check `API_BASE_URL`, the firewall rule and that the phone/laptop/ESP32 are on the same Wi-Fi. If the ESP32 serial log shows `readings -> 401`, the device key does not match.
 
