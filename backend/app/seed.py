@@ -23,9 +23,10 @@ log = logging.getLogger(__name__)
 OSM = "OpenStreetMap {ref} (ODbL) - verify on site before location trials"
 
 OFFICES = [
-    {"_id": "SLIIT-DEMO", "name": "SLIIT Malabe demo counter", "type": "post_office", "postcode": "10115",
+    {"_id": "MLB-PO", "name": "Malabe Post Office", "type": "post_office", "postcode": "10115",
      "city": "Malabe", "latitude": 6.91470, "longitude": 79.97290, "zone_radius_m": 150, "service_radius_m": 2000,
-     "provenance": "approximate campus point for controlled trials - set it on site with 'Use my location' on the Offices page"},
+     "provenance": "trial reference point on the SLIIT Malabe campus, not the post office building - "
+                   "set it on site with 'Use my location' on the Offices page"},
     {"_id": "KDW-PO", "name": "Kaduwela Post Office", "type": "post_office", "postcode": "10640", "city": "Kaduwela",
      "latitude": 6.9335663, "longitude": 79.9835762, "zone_radius_m": 120, "service_radius_m": 3000,
      "provenance": OSM.format(ref="node/2755818385")},
@@ -46,14 +47,14 @@ OFFICES = [
 USERS = [
     ("admin", "System Administrator", "admin", "COL-GPO", []),
     ("counter1", "Counter Officer (Kaduwela)", "counter_officer", "KDW-PO", []),
-    ("counter2", "Counter Officer (SLIIT demo)", "counter_officer", "SLIIT-DEMO", []),
+    ("counter2", "Counter Officer (Malabe)", "counter_officer", "MLB-PO", []),
     ("hub1", "Hub Officer (Central Mail Exchange)", "hub_officer", "COL-CMX", []),
     ("hubjaf", "Hub Officer (Jaffna)", "hub_officer", "JAF-HPO", []),
-    ("hubdemo", "Hub Officer (SLIIT demo)", "hub_officer", "SLIIT-DEMO", []),
+    ("hub2", "Hub Officer (Malabe)", "hub_officer", "MLB-PO", []),
     ("postman1", "Postman (Jaffna)", "postman", "JAF-HPO", ["40000"]),
-    ("postman2", "Postman (SLIIT demo)", "postman", "SLIIT-DEMO", []),
+    ("postman2", "Postman (Malabe)", "postman", "MLB-PO", []),
     ("pm1", "Postmaster (Jaffna)", "postmaster", "JAF-HPO", []),
-    ("pm2", "Postmaster (SLIIT demo)", "postmaster", "SLIIT-DEMO", []),
+    ("pm2", "Postmaster (Malabe)", "postmaster", "MLB-PO", []),
 ]
 
 
@@ -88,7 +89,7 @@ def seed(db=None) -> dict:
 
     key = s.seed_device_key or secrets.token_urlsafe(24)
     res = db.devices.update_one({"_id": s.seed_device_id}, {"$setOnInsert": {
-        "type": "scale_camera", "description": "ESP32-CAM (OV3660) + HX711 + 1 kg load cell", "office_id": "SLIIT-DEMO",
+        "type": "scale_camera", "description": "ESP32-CAM (OV3660) + HX711 + 1 kg load cell", "office_id": "MLB-PO",
         "key_hash": hash_secret(key), "active": True, "created_at": now,
         "calibration": {"status": "uncalibrated", "expanded_uncertainty_g": None}}}, upsert=True)
     if res.upserted_id is not None:
