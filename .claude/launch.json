@@ -8,6 +8,12 @@
       "port": 8000
     },
     {
+      "name": "backend-mobile-test",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-c", "import os,sys; os.environ.update(MONGODB_DB='postassist_mobile_contract_test', STORAGE_DIR=os.path.abspath('backend/storage/mobile_contract_test'), OUTBOX_WORKER_ENABLED='false'); sys.path.insert(0, 'backend'); import uvicorn; uvicorn.run('app.main:app', host='0.0.0.0', port=8001)"],
+      "port": 8001
+    },
+    {
       "name": "frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "frontend", "run", "dev"],
