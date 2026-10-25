@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, downloadFile, imageUrl } from '../api.js'
 import { can, useAuth } from '../auth.jsx'
-import { Alert, Badge, Button, Card, ErrorBox, Field, PageHeader, fmtTime, inputClass } from '../components/ui.jsx'
+import { Alert, Badge, Button, Card, EmptyState, ErrorBox, Field, PageHeader, fmtTime, inputClass } from '../components/ui.jsx'
 
 export default function Devices() {
   const [devices, setDevices] = useState([])
@@ -9,9 +9,12 @@ export default function Devices() {
   useEffect(() => { api('/api/devices').then(setDevices).catch(setError) }, [])
   return (
     <div className="space-y-4">
-      <PageHeader title="IoT scale & camera" subtitle="ESP32-CAM (OV3660) + HX711 + 1 kg load cell. Live status, calibration and weighing trials." />
+      <PageHeader title="Scale & camera" breadcrumbs={[{ label: 'Dashboard', to: '/' }, { label: 'Scale & camera' }]}
+        subtitle="Live status, zeroing, calibration and weighing trials for the counter's IoT scale (ESP32-CAM OV3660, HX711, 1 kg load cell)." />
       <ErrorBox error={error} />
-      {devices.length === 0 && <Alert tone="amber">No device registered for your office.</Alert>}
+      {devices.length === 0 && (
+        <Card><EmptyState icon="scale" title="No scale registered for your office">Ask the administrator to register the device. Until then, weights can be entered by hand during intake.</EmptyState></Card>
+      )}
       {devices.map((d) => <DeviceCard key={d.device_id} deviceId={d.device_id} />)}
     </div>
   )
@@ -93,8 +96,9 @@ function DeviceCard({ deviceId }) {
   const cal = live?.calibration || {}
   const mae = trials.length ? (trials.reduce((s, t) => s + Math.abs(t.error_g), 0) / trials.length).toFixed(2) : null
   return (
-    <Card title={<span className="flex items-center gap-2">{deviceId} <Badge tone={live?.online ? 'green' : 'red'}>{live?.online ? 'online' : 'offline'}</Badge></span>}
-      actions={<span className="text-xs text-slate-500">{live?.ip} · fw {live?.firmware} · RSSI {live?.rssi != null ? `${live.rssi} dBm` : 'n/a'} · seen {fmtTime(live?.last_seen)}</span>}>
+    <Card title={<span className="flex items-center gap-2">{deviceId} <Badge tone={live?.online ? 'green' : 'red'} dot>{live?.online ? 'Online' : 'Offline'}</Badge></span>}
+      description={`Last seen ${fmtTime(live?.last_seen)}`}
+      actions={<span className="text-xs text-slate-500">IP {live?.ip || '–'} · firmware {live?.firmware || '–'} · signal {live?.rssi != null ? `${live.rssi} dBm` : 'n/a'}</span>}>
       <div className="space-y-4">
         <ErrorBox error={error} />
         {msg && <Alert tone={msgTone}>{msg}</Alert>}
@@ -103,11 +107,11 @@ function DeviceCard({ deviceId }) {
           <div className="space-y-1 text-sm">
             <div className="flex gap-2">
               {r?.needs_tare
-                ? <Badge tone="red">needs tare</Badge>
-                : <Badge tone={r?.stable ? 'green' : 'amber'}>{r?.stable ? 'stable' : 'settling'}</Badge>}
-              <Badge tone={r?.loaded ? 'blue' : 'slate'}>{r?.loaded ? `placement #${r.placement_id}` : 'empty'}</Badge>
-              <Badge tone={r?.sensor_ok === false ? 'red' : 'green'}>HX711 {r?.sensor_ok === false ? 'fault' : 'ok'}</Badge>
-              <Badge tone={live?.camera_ok ? 'green' : 'amber'}>camera {live?.camera_ok ? 'ok' : 'n/a'}</Badge>
+                ? <Badge tone="red" dot>Needs tare</Badge>
+                : <Badge tone={r?.stable ? 'green' : 'amber'} dot>{r?.stable ? 'Stable' : 'Settling'}</Badge>}
+              <Badge tone={r?.loaded ? 'blue' : 'slate'}>{r?.loaded ? `Item on scale #${r.placement_id}` : 'Platform empty'}</Badge>
+              <Badge tone={r?.sensor_ok === false ? 'red' : 'green'}>Load sensor {r?.sensor_ok === false ? 'fault' : 'OK'}</Badge>
+              <Badge tone={live?.camera_ok ? 'green' : 'amber'}>Camera {live?.camera_ok ? 'OK' : 'n/a'}</Badge>
             </div>
             <p className="text-xs text-slate-300">spread {r?.spread_g ?? '–'} g over the last second · calibration {cal.calibration_id || 'none'} · ±{cal.expanded_uncertainty_g ?? '? (no trials yet)'} g</p>
             {r?.needs_tare && <p className="text-xs text-amber-300">The scale was restarted: empty the platform and press Tare.</p>}
@@ -115,8 +119,8 @@ function DeviceCard({ deviceId }) {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="space-y-2">
-            <h3 className="font-semibold">Zero and calibrate</h3>
+          <div className="space-y-2 rounded-md border border-slate-200 p-4">
+            <h3 className="font-semibold text-brand-900">Zero and calibrate</h3>
             <Button tone="secondary" onClick={() => command('tare')}>Tare (platform empty)</Button>
             <div className="flex items-end gap-2">
               <Field label="Reference mass (g)"><input className={inputClass} type="number" value={known} onChange={(e) => setKnown(e.target.value)} /></Field>
@@ -124,13 +128,14 @@ function DeviceCard({ deviceId }) {
             </div>
             <p className="text-xs text-slate-500">Tare with the platform empty, then place the reference mass and press Calibrate.</p>
           </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold">Camera test</h3>
+          <div className="space-y-2 rounded-md border border-slate-200 p-4">
+            <h3 className="font-semibold text-brand-900">Camera test</h3>
+            <p className="text-xs text-slate-500">Takes a photo of the platform to check focus and lighting.</p>
             <Button tone="secondary" onClick={() => command('capture', { flash: false })}>Take test photo</Button>
             {img && <img src={img} alt="Test capture from the ESP32-CAM" className="w-full rounded border" />}
           </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold">Weighing trial (reference masses)</h3>
+          <div className="space-y-2 rounded-md border border-slate-200 p-4">
+            <h3 className="font-semibold text-brand-900">Weighing trial (reference masses)</h3>
             <div className="grid grid-cols-2 gap-2">
               <Field label="Reference (g)"><input className={inputClass} type="number" step="0.1" value={trial.reference_g} onChange={(e) => setTrial({ ...trial, reference_g: e.target.value })} /></Field>
               <Field label="Condition">
@@ -141,8 +146,8 @@ function DeviceCard({ deviceId }) {
               </Field>
             </div>
             <Button tone="secondary" disabled={!trial.reference_g} onClick={recordTrial}>Record current stable reading</Button>
-            <p className="text-xs text-slate-500">{trials.length} trials · MAE {mae ?? '–'} g</p>
-            <Button tone="ghost" onClick={() => downloadFile(`/api/devices/${deviceId}/trials.csv`, `${deviceId}_trials.csv`)}>Download trials CSV</Button>
+            <p className="text-xs text-slate-500">{trials.length} trials · mean absolute error {mae ?? '–'} g</p>
+            <Button size="sm" tone="ghost" icon="download" onClick={() => downloadFile(`/api/devices/${deviceId}/trials.csv`, `${deviceId}_trials.csv`)}>Download trials CSV</Button>
           </div>
         </div>
 
