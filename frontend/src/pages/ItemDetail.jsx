@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api.js'
 import { can, useAuth } from '../auth.jsx'
-import { StatusBadge } from '../components/StatusBadge.jsx'
+import { OutboxBadge, StatusBadge, StatusProgress } from '../components/StatusBadge.jsx'
 import Timeline from '../components/Timeline.jsx'
-import { Badge, Button, Card, ErrorBox, Field, Money, PageHeader, Spinner, fmtTime, inputClass } from '../components/ui.jsx'
+import { Button, Card, DescriptionList, EmptyState, ErrorBox, Field, Loading, Money, PageHeader, fmtTime, inputClass } from '../components/ui.jsx'
 
 export default function ItemDetail() {
   const { trackingId } = useParams()
@@ -20,48 +20,59 @@ export default function ItemDetail() {
     try { await api(`/api/items/${trackingId}/assign`, { method: 'POST', body: { postman_username: postman } }); load() } catch (e) { setError(e) }
   }
 
-  if (!item) return error ? <ErrorBox error={error} /> : <Spinner />
+  if (!item) return error ? <ErrorBox error={error} /> : <Loading>Loading item…</Loading>
   const r = item.recipient || {}
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PageHeader title={<span className="font-mono">{item.tracking_id}</span>}
-        subtitle={<span className="flex items-center gap-2"><StatusBadge status={item.status} /> revision {item.revision} · {item.direction === 'return' ? 'return to sender' : 'forward'}</span>}
-        actions={can(user, 'counter_officer') && <Link to={`/items/${item.tracking_id}/print`}><Button tone="secondary">Label / receipt</Button></Link>} />
+        breadcrumbs={[{ label: 'Registered items', to: '/items' }, { label: item.tracking_id }]}
+        subtitle={<span className="flex flex-wrap items-center gap-2"><StatusBadge status={item.status} />
+          <span>{item.direction === 'return' ? 'Being returned to the sender' : `To ${r.city || 'destination'}`} · record revision {item.revision}</span></span>}
+        actions={can(user, 'counter_officer') && <Link to={`/items/${item.tracking_id}/print`} className="inline-flex items-center gap-2 rounded-md border border-brand-300 bg-white px-4 py-2 text-sm font-semibold text-brand-800 hover:bg-brand-50">Label &amp; receipt</Link>} />
       <ErrorBox error={error} />
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card title="Event history (staff view)" className="lg:col-span-2"><Timeline events={item.events} /></Card>
-        <div className="space-y-4">
-          <Card title="Item">
-            <dl className="space-y-1 text-sm">
-              <div><dt className="inline text-slate-500">To: </dt><dd className="inline">{r.name}, {[r.house_number, r.street, r.locality, r.city, r.postcode].filter(Boolean).join(', ')}</dd></div>
-              {item.sender && <div><dt className="inline text-slate-500">From: </dt><dd className="inline">{item.sender.name}, {item.sender.city}</dd></div>}
-              <div><dt className="inline text-slate-500">Accepted: </dt><dd className="inline">{fmtTime(item.accepted_at)} by {item.accepted_by}</dd></div>
-              <div><dt className="inline text-slate-500">Weight: </dt><dd className="inline">{item.weight?.grams} g ({item.weight?.source})</dd></div>
-              {item.quote && <div><dt className="inline text-slate-500">Charge: </dt><dd className="inline"><Money value={item.quote.total_lkr} /> · {item.tariff_version}</dd></div>}
-              <div><dt className="inline text-slate-500">Assigned postman: </dt><dd className="inline">{item.assigned_postman || '—'}</dd></div>
-              <div><dt className="inline text-slate-500">Label: </dt><dd className="inline">{item.label?.prints} print(s){item.label?.verified_at ? ' · verified' : ''}</dd></div>
-            </dl>
+
+      <section aria-label="Delivery progress" className="rounded-lg border border-line bg-white px-4 py-4 sm:px-6">
+        <StatusProgress status={item.status} direction={item.direction} />
+      </section>
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        <Card title="Event history" description="Every scan with its decision and location check (staff view)" className="lg:col-span-2">
+          {item.events?.length ? <Timeline events={item.events} /> : <EmptyState icon="history" title="No events yet" />}
+        </Card>
+        <div className="space-y-5">
+          <Card title="Item details">
+            <DescriptionList items={[
+              ['Recipient', <>{r.name}<span className="block font-normal text-slate-600">{[r.house_number, r.street, r.locality, r.city, r.postcode].filter(Boolean).join(', ')}</span></>],
+              item.sender && ['Sender', [item.sender.name, item.sender.city].filter(Boolean).join(', ')],
+              ['Accepted', <>{fmtTime(item.accepted_at)}<span className="block font-normal text-slate-600">by {item.accepted_by}</span></>],
+              ['Weight', item.weight ? `${item.weight.grams} g (${item.weight.source === 'device' ? 'IoT scale' : item.weight.source})` : null],
+              item.quote && ['Charge', <><Money value={item.quote.total_lkr} /><span className="block font-normal text-slate-600">Tariff {item.tariff_version}</span></>],
+              ['Assigned postman', item.assigned_postman || 'Not assigned'],
+              ['Label', `${item.label?.prints ?? 0} print(s)${item.label?.verified_at ? ' · verified' : ' · not verified'}`],
+            ]} />
           </Card>
           {can(user, 'postmaster') && (
-            <Card title="Assign to postman">
-              <div className="flex gap-2">
-                <Field label="Username"><input className={inputClass} value={postman} onChange={(e) => setPostman(e.target.value)} placeholder="postman2" /></Field>
-                <Button className="self-end" tone="secondary" disabled={!postman} onClick={assign}>Assign</Button>
+            <Card title="Assign to a postman" description="The postman sees the item in the mobile app.">
+              <div className="flex items-end gap-2">
+                <Field label="Postman username" className="flex-1"><input className={inputClass} value={postman} onChange={(e) => setPostman(e.target.value)} placeholder="e.g. postman2" /></Field>
+                <Button tone="secondary" disabled={!postman} onClick={assign}>Assign</Button>
               </div>
             </Card>
           )}
           {item.outbox?.length > 0 && (
-            <Card title="Sender messages">
-              <ul className="space-y-1 text-sm">
+            <Card title="Messages to the sender">
+              <ul className="divide-y divide-slate-100 text-sm">
                 {item.outbox.map((o) => (
-                  <li key={o.key} className="flex flex-wrap items-center gap-2">
-                    <span>{o.status_code.replaceAll('_', ' ')}</span>
-                    <Badge tone={o.status === 'provider_accepted' ? 'green' : o.status.startsWith('failed') || o.status === 'ambiguous' ? 'red' : 'amber'}>{o.status.replaceAll('_', ' ')}</Badge>
-                    <span className="text-xs text-slate-500">{o.channel}/{o.language} · {o.attempts} attempt(s)</span>
+                  <li key={o.key} className="flex flex-wrap items-center justify-between gap-2 py-2 first:pt-0 last:pb-0">
+                    <span>
+                      <span className="block font-medium capitalize text-slate-900">{o.status_code.replaceAll('_', ' ')}</span>
+                      <span className="text-xs text-slate-500">{o.channel} · {o.language} · {o.attempts} attempt(s)</span>
+                    </span>
+                    <OutboxBadge status={o.status} />
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs text-slate-500">"provider accepted" means the e-mail service took the message – not that the sender read it.</p>
+              <p className="mt-3 text-xs text-slate-500">"Sent" means the e-mail service accepted the message – not that the sender has read it.</p>
             </Card>
           )}
         </div>
