@@ -1,0 +1,1029 @@
+{
+  "@@locale": "en",
+  "appName": "PostAssist LK",
+  "appSubtitle": "Registered mail intake and tracking",
+  "officialUseStrip": "Official use – authorised postal staff only",
+  "officialUseTitle": "Official use",
+  "officialUseBody": "This app is for authorised postal staff. Every sign-in and every change to a record is logged. It is a research prototype: use synthetic mail unless the trial has been approved.",
+  "publicServiceStrip": "PostAssist LK – registered letter tracking",
+  "publicServiceTitle": "Letter tracking",
+  "publicServiceBody": "This page shows the progress of a registered letter to its sender. Places are shown as office names only; staff names and map positions are never shown.",
+  "close": "Close",
+  "cancel": "Cancel",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "save": "Save",
+  "search": "Search",
+  "retry": "Retry",
+  "tryAgain": "Try again",
+  "loading": "Loading…",
+  "saving": "Saving…",
+  "optional": "optional",
+  "thereIsAProblem": "There is a problem",
+  "somethingWentWrong": "Something went wrong",
+  "errorNetwork": "The server did not answer. Check that the phone is on the same network as the PostAssist server and that the address is right.",
+  "errorSessionExpired": "Your session has ended. Sign in again.",
+  "errorForbidden": "You are not allowed to do this.",
+  "reason": "Reason",
+  "reasonTooShort": "Enter at least {min} characters",
+  "@reasonTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "language": "Language",
+  "languageHint": "Choose the language for the app.",
+  "usePhoneLanguage": "Use the phone's language",
+  "progress": "Progress",
+  "complete": "complete",
+  "notComplete": "not complete",
+  "signInTitle": "Staff sign-in",
+  "serverAddress": "Server address",
+  "serverAddressHint": "The computer running the PostAssist server, for example http://192.168.1.10:8000",
+  "testConnection": "Test connection",
+  "connectionOk": "Server reached",
+  "connectionFailed": "No answer",
+  "insecureConnectionWarning": "This connection is not encrypted (http). Use it only on a closed lab network; a live service must use https.",
+  "username": "Username",
+  "password": "Password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "signIn": "Sign in",
+  "staffOnlyNotice": "For authorised postal staff. Sign-ins are logged for audit.",
+  "errServerRequired": "Enter the server address",
+  "errServerInvalid": "The server address is not valid",
+  "errUsernameRequired": "Enter your username",
+  "errPasswordRequired": "Enter your password",
+  "errWrongCredentials": "The username or password is wrong",
+  "sessionExpiredTitle": "Session ended",
+  "sessionExpiredBody": "For security you were signed out. Sign in again – scans saved on this phone are kept.",
+  "trackLetterPublic": "Sent a registered letter?",
+  "trackLetterPublicHint": "Anyone with a receipt can see the letter's progress – no sign-in needed.",
+  "trackALetter": "Track a letter",
+  "aboutAndPrivacy": "About, privacy and accessibility",
+  "settings": "Settings",
+  "welcome": "Welcome, {name}",
+  "@welcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupDaily": "Daily work",
+  "groupSupervision": "Supervision",
+  "groupSetup": "Set-up and tools",
+  "scanALetter": "Scan a registered letter",
+  "auditFooter": "Sign-ins and changes to records are logged for audit.",
+  "reviewWaiting": "{count, plural, =1{1 scan is waiting for your review} other{{count} scans are waiting for your review}}",
+  "@reviewWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openReviewQueue": "Open review queue",
+  "offlineScansTitle": "Scans on this phone",
+  "networkAvailable": "Network available",
+  "networkOffline": "Offline – scans are saved on this phone",
+  "pendingCount": "{count} waiting to upload",
+  "@pendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "heldCount": "{count} held",
+  "@heldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rejectedCount": "{count} rejected",
+  "@rejectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastUploadFailed": "Last upload failed: {error}",
+  "@lastUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastUploadFailedNetwork": "Last upload failed: no connection to the server. Scans will upload automatically.",
+  "uploadNow": "Upload now",
+  "uploading": "Uploading…",
+  "taskRegister": "Register a letter",
+  "taskRegisterHint": "Counter intake in five steps",
+  "taskScan": "Scan a letter",
+  "taskScanHint": "Record dispatch, transit or delivery",
+  "taskItems": "Registered items",
+  "taskItemsHint": "Find an item and see its history",
+  "taskHistory": "My scans",
+  "taskHistoryHint": "Saved scans and upload status",
+  "taskReview": "Review queue",
+  "taskReviewHint": "Approve or reject held scans",
+  "taskMessages": "Sender messages",
+  "taskMessagesHint": "E-mail and SMS updates to senders",
+  "taskSummary": "Summary",
+  "taskSummaryHint": "Items, reviews and messages at a glance",
+  "taskAudit": "Audit log",
+  "taskAuditHint": "Who did what, and when",
+  "taskDevices": "Scale and camera",
+  "taskDevicesHint": "IoT scale status, tare, calibrate",
+  "taskOffices": "Offices and zones",
+  "taskOfficesHint": "Reference points for location checks",
+  "taskTrack": "Track a letter",
+  "taskTrackHint": "The sender's view of an item",
+  "stAccepted": "Accepted at counter",
+  "stDispatched": "Dispatched",
+  "stInTransit": "In transit",
+  "stAtDestination": "At destination office",
+  "stOutForDelivery": "Out for delivery",
+  "stDeliveryAttempted": "Delivery attempted",
+  "stDelivered": "Delivered",
+  "stReturnStarted": "Return started",
+  "stReturnedToSender": "Returned to sender",
+  "roleAdmin": "Administrator",
+  "rolePostmaster": "Postmaster",
+  "roleCounter": "Counter officer",
+  "roleHub": "Hub officer",
+  "rolePostman": "Postman",
+  "decAccepted": "Accepted",
+  "decAcceptedAfterReview": "Accepted after review",
+  "decHeld": "Held for review",
+  "decRejected": "Rejected",
+  "decRejectedAfterReview": "Rejected after review",
+  "decDuplicate": "Already recorded",
+  "decPending": "Waiting to upload",
+  "locConsistent": "Location matches",
+  "locUncertain": "Location uncertain",
+  "locMismatch": "Location mismatch",
+  "locUnlocated": "No location sent",
+  "locNotAssessed": "Location not checked",
+  "locDenied": "Location permission was refused – the scan was saved without location",
+  "locTimeout": "No location fix in time – the scan was saved without location",
+  "locUnavailable": "Location is switched off or unavailable",
+  "obQueued": "Queued",
+  "obRetry": "Waiting to retry",
+  "obSending": "Sending",
+  "obSent": "Sent",
+  "obAmbiguous": "Unclear – check",
+  "obFailed": "Failed",
+  "obResolved": "Resolved by hand",
+  "channelNone": "No messages (receipt only)",
+  "channelEmail": "E-mail",
+  "channelSms": "SMS (only if a gateway is approved)",
+  "sevInfo": "Info",
+  "sevWarning": "Warning",
+  "sevSecurity": "Security",
+  "scanLabel": "Scan label",
+  "scanInstruction": "Point the camera at the barcode or QR code on the label",
+  "torch": "Torch",
+  "cameraPermissionNeeded": "Camera permission is needed to scan labels. Allow it in the phone's settings, or type the ID below.",
+  "cameraUnavailable": "The camera could not be started. Type the ID below.",
+  "notAPostAssistCode": "This code is not a PostAssist label. Try again or type the ID.",
+  "typeTrackingId": "Damaged label? Type the tracking ID",
+  "typeTrackingIdHint": "It is printed under the barcode.",
+  "useTypedId": "Use typed ID",
+  "errTrackingIdInvalid": "This is not a valid tracking ID – check each character (example: PA-DEMO-7K3M9Q2XRH4)",
+  "recordStatus": "Record status",
+  "scanSaved": "Scan saved",
+  "lookingUpItem": "Looking up the item…",
+  "offlineModeTitle": "Working offline",
+  "offlineModeBody": "Item details could not be loaded. You can still record the scan; the server checks it when it uploads.",
+  "destinationOffice": "Destination office",
+  "destinationTown": "Destination town",
+  "assignedPostman": "Assigned postman",
+  "deliverTo": "Deliver to",
+  "nothingToRecordTitle": "Nothing to record",
+  "nothingToRecordBody": "You cannot record a new status for this item now.",
+  "newStatus": "New status",
+  "newStatusHint": "Only the statuses you may record for this item are shown.",
+  "reasonTitle": "Reason",
+  "reasonHint": "Why the letter could not be delivered.",
+  "reasonNotAvailable": "Recipient not available",
+  "reasonClosed": "Premises closed",
+  "reasonAddressNotFound": "Address not found",
+  "reasonRefused": "Recipient refused",
+  "reasonUnsafe": "Unsafe access",
+  "otherReason": "Reason in your own words",
+  "ackTitle": "Delivery acknowledgement",
+  "ackHint": "Required for a delivered letter: how did the recipient acknowledge it?",
+  "ackSignature": "Signature",
+  "ackNameOnly": "Name only",
+  "ackSheet": "Delivery sheet",
+  "receivedBy": "Received by (name)",
+  "relationship": "Relationship to the addressee",
+  "relationshipHint": "For example: self, spouse, security officer",
+  "sheetNumber": "Delivery sheet / page number",
+  "signature": "Recipient's signature",
+  "signatureHint": "Ask the recipient to sign inside the box.",
+  "signatureArea": "Signature area. Draw the signature with one finger.",
+  "signHere": "Sign here with a finger",
+  "clearSignature": "Clear signature",
+  "noAckPossible": "No acknowledgement possible",
+  "noAckPossibleHint": "Describe the approved exception. The scan will be held for the postmaster.",
+  "exceptionReason": "Exception reason",
+  "notes": "Notes",
+  "locationNotice": "Your location is read once, when you press Save. The postmaster sees it as evidence quality – it is not proof of delivery.",
+  "saveScan": "Save scan",
+  "readingLocation": "Reading location…",
+  "errChooseStatus": "Choose the new status",
+  "errReasonRequired": "Choose or type a reason",
+  "errExceptionTooShort": "Describe the exception in at least 5 characters",
+  "errRecipientNameRequired": "Enter the name of the person who received the letter",
+  "errSignatureRequired": "Ask the recipient to sign",
+  "errSheetRequired": "Enter the delivery sheet or page number",
+  "outcomeAcceptedTitle": "Accepted",
+  "outcomeAcceptedBody": "The server accepted the scan and updated the status.",
+  "outcomeDuplicateTitle": "Already recorded",
+  "outcomeDuplicateBody": "The server already had this scan. Nothing was added twice.",
+  "outcomeHeldTitle": "Saved – held for review",
+  "outcomeHeldBody": "The scan is stored, but the status changes only after the postmaster approves it.",
+  "outcomeRejectedTitle": "Not accepted",
+  "outcomeRejectedBody": "The server did not accept this scan:",
+  "outcomePendingTitle": "Saved on this phone",
+  "outcomePendingBody": "It will upload automatically when the network returns.",
+  "statusRecorded": "Status recorded",
+  "locationEvidence": "Location evidence",
+  "locationQuality": "± {metres} m, {seconds} s old",
+  "@locationQuality": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "mockLocationWarning": "The phone reported a simulated (mock) location. The scan will be held for review.",
+  "scanNext": "Scan next letter",
+  "scanAnother": "Scan another letter",
+  "itemNotFoundTitle": "Item not found",
+  "notAllowedTitle": "You cannot scan this item",
+  "historyIntro": "Scans are saved on this phone first and uploaded when there is network. Scans waiting to upload are never deleted.",
+  "noScansYet": "No scans on this phone yet",
+  "waitingForUser": "Waits for {user} to sign in",
+  "@waitingForUser": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "retryPending": "Upload not finished – {attempts} attempt(s), will retry",
+  "@retryPending": {
+    "placeholders": {
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "trackIntro": "Senders can follow a registered letter with the QR code or the tracking ID and access code on their receipt.",
+  "scanReceiptQr": "Scan the receipt QR code",
+  "scanReceipt": "Scan receipt",
+  "scanReceiptInstruction": "Point the camera at the QR code on the sender's receipt",
+  "orTypeDetails": "Or type the details from the receipt",
+  "trackingId": "Tracking ID",
+  "trackingIdHint": "Printed under the barcode, for example PA-DEMO-7K3M9Q2XRH4",
+  "accessCode": "Access code",
+  "accessCodeHint": "Part of the tracking link on the receipt (after #t=)",
+  "errAccessCodeRequired": "Enter the access code from the receipt",
+  "showStatus": "Show status",
+  "trackNotFoundTitle": "No tracking record found",
+  "trackNotFoundBody": "Check the tracking ID and the access code on the receipt. For your security we do not say which one is wrong.",
+  "acceptedOn": "Accepted on",
+  "fromOffice": "From office",
+  "history": "History",
+  "syncedLater": "Uploaded later, at {time}",
+  "@syncedLater": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "historyOnly": "Kept in history only",
+  "trackPrivacyNotice": "Status is recorded when authorised staff scan the letter. Places are office names only; a scan's position is not proof of delivery.",
+  "intakeIntro": "Register a registered letter in five steps: photo, addresses, confirm, weigh, charge.",
+  "registerNewLetter": "Register a new letter",
+  "ocrUnavailableTitle": "Address reading is not available",
+  "ocrUnavailableBody": "The server has no OCR engine or handwriting model installed. Type or paste the address instead.",
+  "draftsInProgress": "Registrations in progress",
+  "noDrafts": "No registrations in progress",
+  "noDraftsHint": "Press Register a new letter to start.",
+  "stepsDone": "{done} of {total} steps",
+  "@stepsDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noAddressYet": "No address yet",
+  "startedAt": "Started {time}",
+  "@startedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "continueDraft": "Continue",
+  "deleteDraft": "Delete draft",
+  "deleteDraftTitle": "Delete this draft?",
+  "deleteDraftBody": "The draft is cancelled and its scale reading is released. This cannot be undone.",
+  "registerALetter": "Register a letter",
+  "moreActions": "More actions",
+  "clearForm": "Clear form",
+  "clearFormTitle": "Clear the form?",
+  "clearFormBody": "Clear the recipient, sender, destination office and contact fields?",
+  "openingDraft": "Opening draft…",
+  "draft": "Draft",
+  "unsavedChanges": "Unsaved changes",
+  "allChangesSaved": "All changes saved",
+  "stepOf": "Step {step} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stepPhoto": "Photo",
+  "stepAddresses": "Addresses",
+  "stepConfirm": "Confirm",
+  "stepWeigh": "Weigh",
+  "stepPay": "Charge",
+  "alreadyAcceptedTitle": "Already accepted",
+  "alreadyAcceptedBody": "This draft became registered item {id}.",
+  "@alreadyAcceptedBody": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "openReceipt": "Open label and receipt",
+  "draftClosedTitle": "Draft closed",
+  "draftClosedBody": "This draft was cancelled. Start a new registration from the counter screen.",
+  "stepPhotoTitle": "Step 1 of 5: photograph the envelope",
+  "nextPhoto": "Take a photo of the envelope, then press Read address. You can also type the address.",
+  "captureMode": "Capture mode (research)",
+  "captureModeHint": "P1 is the assisted mode. B1 and B0 are baselines for the evaluation.",
+  "modeP1": "P1 – assisted capture (recommended)",
+  "modeB1": "B1 – basic OCR + rules",
+  "modeB0": "B0 – manual entry (baseline)",
+  "envelopePhoto": "Envelope photo",
+  "envelopePhotoHint": "Photograph the front of the envelope, flat and well lit.",
+  "photoOptionalB0": "Optional in manual entry (B0).",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose a photo",
+  "captureFromScale": "Capture from scale camera",
+  "noPhotoYet": "No photo yet",
+  "noPhotoYetHint": "Take a photo of the front of the envelope.",
+  "photoNotLoaded": "The photo could not be shown.",
+  "rotateLeft": "Rotate left",
+  "rotateRight": "Rotate right",
+  "photoQualityTitle": "Photo quality",
+  "qLowResolution": "The photo is too small – move closer.",
+  "qBlurry": "The photo is blurred – hold the phone still and take it again.",
+  "qTooDark": "The photo is too dark – add light.",
+  "qTooBright": "The photo is too bright.",
+  "qLowContrast": "The text contrast is low.",
+  "qGlare": "There is glare on the envelope – tilt it or switch off the flash.",
+  "readAddressTitle": "Read the address",
+  "readAddressHint": "The server reads the photo and suggests the fields. You check them in step 2.",
+  "readFor": "Read the address of the",
+  "recipient": "Recipient",
+  "sender": "Sender",
+  "handwriting": "Handwriting",
+  "writingAuto": "Auto",
+  "writingHand": "Handwritten",
+  "writingPrinted": "Printed",
+  "addressLanguage": "Language of the address",
+  "detectAutomatically": "Detect automatically",
+  "readAddress": "Read address",
+  "typeOrPaste": "Type or paste the address",
+  "typeOrPasteHint": "Use this when there is no photo or the reader could not read it.",
+  "fillFromText": "Fill fields from text",
+  "readResultTitle": "What the reader found",
+  "fieldConfidence": "Field confidence {percent} %",
+  "@fieldConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "noFlags": "No fields flagged",
+  "fieldsToCheck": "{count, plural, =1{1 field to check} other{{count} fields to check}}",
+  "@fieldsToCheck": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "handwritingModel": "Handwriting model",
+  "printedTextReader": "Printed-text reader",
+  "readResultNext": "Empty fields were filled from this result. Go to the next step to check them.",
+  "stepAddressesTitle": "Step 2 of 5: check the addresses",
+  "nextAddresses": "Compare every field with the envelope. Correct anything that is wrong.",
+  "recipientTo": "Recipient (to)",
+  "recipientHint": "Who the letter is addressed to. Name and postal town are needed.",
+  "senderFrom": "Sender (from)",
+  "senderHint": "Who is posting the letter (printed on the receipt).",
+  "useAllSuggestions": "Use all suggestions",
+  "confidenceLegend": "Percentages show how sure the reader is. Fields marked in red need a closer look.",
+  "fName": "Name",
+  "fHouse": "House / unit no.",
+  "fStreet": "Street / road",
+  "fLocality": "Village / locality",
+  "fCity": "Postal town",
+  "fPostcode": "Postcode",
+  "fRegion": "District / province",
+  "modelConfidence": "Reader confidence {percent} percent",
+  "@modelConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "lowConfidenceCheck": "Low confidence – check against the envelope",
+  "suggestedValue": "Suggested: {value}",
+  "@suggestedValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "use": "Use",
+  "postcodeDerived": "Postcode {postcode} can be derived from the town. Check it before use.",
+  "@postcodeDerived": {
+    "placeholders": {
+      "postcode": {
+        "type": "String"
+      }
+    }
+  },
+  "useIt": "Use it",
+  "townPostcodeOk": "Town and postcode agree with the gazetteer.",
+  "townPostcodeCheck": "Town and postcode check",
+  "townPostcodeMismatch": "The postcode belongs to a different town.",
+  "townUnknown": "The town is not in the reference list.",
+  "postcodeUnknown": "The postcode is not in the reference list.",
+  "expectedValues": "Expected: {values}",
+  "@expectedValues": {
+    "placeholders": {
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "stepConfirmTitle": "Step 3 of 5: confirm the details",
+  "nextConfirm": "Choose the destination office and how the sender gets updates, then confirm.",
+  "destinationOfficeHint": "The post office that delivers to the recipient's address.",
+  "deliveryOffice": "Delivery office",
+  "choose": "Choose",
+  "senderUpdates": "Sender updates",
+  "senderUpdatesHint": "Optional messages to the sender when the status changes.",
+  "sendUpdatesBy": "Send status updates by",
+  "senderEmail": "Sender's e-mail",
+  "senderMobile": "Sender's mobile number",
+  "mobileFormat": "Format: 07XXXXXXXX",
+  "messageLanguage": "Message language",
+  "whichUpdates": "Which updates",
+  "updatesKey": "Key updates only (accepted, out for delivery, delivered, problems)",
+  "updatesAll": "Every accepted scan",
+  "smsGatewayNote": "SMS is sent only if an SMS gateway has been approved for the trial.",
+  "detailsConfirmedBy": "Details confirmed by {user}",
+  "@detailsConfirmedBy": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewStats": "Suggested {suggested} · kept {kept} · corrected {corrected} · typed {typed}",
+  "@reviewStats": {
+    "placeholders": {
+      "suggested": {
+        "type": "int"
+      },
+      "kept": {
+        "type": "int"
+      },
+      "corrected": {
+        "type": "int"
+      },
+      "typed": {
+        "type": "int"
+      }
+    }
+  },
+  "reconfirmNeeded": "You changed the details after confirming. Confirm them again.",
+  "confirmDetails": "I have checked the envelope – confirm details",
+  "confirmDetailsHint": "Confirm only after comparing every field with the envelope.",
+  "errPartyName": "{party}: enter the name",
+  "@errPartyName": {
+    "placeholders": {
+      "party": {
+        "type": "String"
+      }
+    }
+  },
+  "errPartyCity": "{party}: enter the postal town",
+  "@errPartyCity": {
+    "placeholders": {
+      "party": {
+        "type": "String"
+      }
+    }
+  },
+  "errPartyAddress": "{party}: enter a house number, street or village",
+  "@errPartyAddress": {
+    "placeholders": {
+      "party": {
+        "type": "String"
+      }
+    }
+  },
+  "errDestinationRequired": "Choose the destination office",
+  "errEmailInvalid": "Enter a valid e-mail address, like name@example.com",
+  "errPhoneInvalid": "Enter a Sri Lankan mobile number, like 0771234567",
+  "stepWeighTitle": "Step 4 of 5: weigh the letter",
+  "nextWeigh": "Place the letter on the scale. When the reading is stable, press Use this weight.",
+  "weightRecorded": "Weight recorded: {weight}",
+  "@weightRecorded": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weightFromScale": "From scale {device}, uncertainty ± {uncertainty} g",
+  "@weightFromScale": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      },
+      "uncertainty": {
+        "type": "String"
+      }
+    }
+  },
+  "weightManual": "Entered by hand – {instrument}",
+  "@weightManual": {
+    "placeholders": {
+      "instrument": {
+        "type": "String"
+      }
+    }
+  },
+  "iotScale": "IoT scale",
+  "iotScaleHint": "Place the letter on the scale and wait until the reading is stable.",
+  "noScaleForOffice": "No IoT scale is registered for your office. Enter the weight by hand below.",
+  "scale": "Scale",
+  "noReading": "No reading",
+  "currentReading": "Current reading",
+  "stableReady": "Stable – ready",
+  "settling": "Settling…",
+  "spread": "Spread {grams} g",
+  "@spread": {
+    "placeholders": {
+      "grams": {
+        "type": "String"
+      }
+    }
+  },
+  "useThisWeight": "Use this weight",
+  "manualWeightTitle": "Enter weight by hand",
+  "manualWeightHint": "Only when the IoT scale cannot be used. This is recorded for audit.",
+  "weightGrams": "Weight (grams)",
+  "instrument": "Scale used",
+  "instrumentHint": "For example: approved counter scale no. 2",
+  "manualReasonHint": "Why the IoT scale could not be used",
+  "recordManualWeight": "Record manual weight",
+  "errGrams": "Enter the weight in grams (more than 0, up to 5000)",
+  "errInstrument": "Enter the scale used",
+  "errManualReason": "Say why the IoT scale was not used (at least 5 characters)",
+  "stepPayTitle": "Step 5 of 5: charge and accept",
+  "nextPay": "Calculate the charge, take the payment, then accept the letter.",
+  "extraServices": "Extra services",
+  "adviceOfDelivery": "Advice of delivery",
+  "adviceOfDeliveryHint": "The sender receives a signed delivery card (extra fee).",
+  "insuredValue": "Insured value (Rs.)",
+  "insuredValueHint": "Declared value of the contents, if the sender wants insurance",
+  "errInsuredValue": "Enter the insured value as a number of rupees, or leave it empty",
+  "calculateCharge": "Calculate charge",
+  "weighFirst": "Record the weight in step 4 first.",
+  "reweighRequired": "Reweigh required",
+  "cannotQuote": "Cannot calculate the charge",
+  "charge": "Charge",
+  "tariffLine": "Tariff {version} · weight {weight} g ± {uncertainty} g",
+  "@tariffLine": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "String"
+      },
+      "uncertainty": {
+        "type": "String"
+      }
+    }
+  },
+  "tariffNotApproved": "Tariff not yet approved – research use",
+  "qPostage": "Letter postage",
+  "qRegistration": "Registration fee",
+  "qInsurance": "Insurance",
+  "total": "Total",
+  "beforeAccepting": "Before accepting",
+  "checkConfirmed": "Details confirmed (step 3)",
+  "checkWeight": "Weight recorded (step 4)",
+  "checkCharge": "Charge calculated",
+  "payment": "Payment",
+  "paymentMethod": "Payment method",
+  "payCash": "Cash",
+  "payCard": "Card",
+  "payOther": "Other (approved)",
+  "receiptReference": "Receipt or reference number",
+  "receivedAndAccept": "Received {amount} – accept letter",
+  "@receivedAndAccept": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmFirst": "Confirm the details (step 3) before accepting.",
+  "acceptLetter": "Accept letter",
+  "acceptLetterTitle": "Accept this letter?",
+  "acceptLetterBody": "Confirm that you received {amount} from the sender. A tracking ID is created and cannot be removed.",
+  "@acceptLetterBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "labelAndReceipt": "Label and receipt",
+  "letterAccepted": "Letter accepted",
+  "letterAcceptedBody": "Print the label, stick it on the envelope, then scan it to verify. Give the receipt to the sender.",
+  "registeredLetter": "Registered letter",
+  "to": "To",
+  "receiptDetails": "Receipt",
+  "acceptedBy": "Accepted by",
+  "senderName": "Sender",
+  "weight": "Weight",
+  "paidBy": "Payment",
+  "tariff": "Tariff",
+  "labelPrints": "Label prints",
+  "senderTracking": "Sender's tracking QR",
+  "senderTrackingHint": "Printed on the receipt. The sender can follow the letter with it.",
+  "copyLink": "Copy link",
+  "linkCopied": "Link copied",
+  "verifyLabel": "Verify the printed label",
+  "verifyLabelInstruction": "Scan the barcode on the label you stuck on the envelope",
+  "labelVerified": "Label verified – the printed label matches this item.",
+  "labelMismatch": "The scanned label shows {id}, not this item. Reprint the label.",
+  "@labelMismatch": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "markPrinted": "Mark label as printed",
+  "recordReprint": "Record a reprint",
+  "reprintTitle": "Reprint the label?",
+  "reprintBody": "A reprint does not create a new item. Say why the label is printed again.",
+  "printRecorded": "Label print recorded",
+  "reprintRecorded": "Reprint recorded",
+  "printNote": "Print the label from the counter computer (web app) or a connected label printer, then record it here.",
+  "openItem": "Open item details",
+  "registerAnother": "Register another letter",
+  "findItem": "Tracking ID",
+  "findItemHint": "All or part of the ID",
+  "status": "Status",
+  "allStatuses": "All statuses",
+  "scanToFind": "Scan a label to find it",
+  "noItemsFound": "No items found",
+  "itemsShown": "{count, plural, =1{1 item} other{{count} items}}",
+  "@itemsShown": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "acceptedAt": "Accepted {time}",
+  "@acceptedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "itemDetails": "Item details",
+  "copyId": "Copy tracking ID",
+  "idCopied": "Tracking ID copied",
+  "recordAScan": "Record a scan",
+  "assignPostman": "Assign postman",
+  "assignedTo": "Assigned to {user}",
+  "@assignedTo": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "noPostmenAtOffice": "There is no active postman at the destination office.",
+  "details": "Details",
+  "byWorker": "By {worker} ({role})",
+  "@byWorker": {
+    "placeholders": {
+      "worker": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "locationAccuracy": "Location accuracy ± {metres} m",
+  "@locationAccuracy": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceFromZone": "{metres} m from the reference area",
+  "@distanceFromZone": {
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "savedOffline": "Saved offline, uploaded {seconds} s later",
+  "@savedOffline": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "ackLine": "Acknowledgement: {type} {name}",
+  "@ackLine": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewNote": "Reviewed by {user}: {reason}",
+  "@reviewNote": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "flagged": "Flagged",
+  "heldTab": "Held ({count})",
+  "@heldTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flaggedTab": "Flagged ({count})",
+  "@flaggedTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "heldIntro": "These scans did not change the status. Check the reasons, then approve or reject each one.",
+  "flaggedIntro": "Accepted scans marked for attention in the last 14 days (for example an uncertain location). No action is needed.",
+  "noHeldScans": "No scans waiting for review",
+  "noFlaggedScans": "No flagged scans",
+  "requestedStatus": "Requested: {status}",
+  "@requestedStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "mockLocation": "Simulated location",
+  "offlineScan": "Saved offline",
+  "approve": "Approve",
+  "reject": "Reject",
+  "approveScanTitle": "Approve this scan?",
+  "approveScanBody": "The status changes and the sender is notified. Say why you approve it.",
+  "rejectScanTitle": "Reject this scan?",
+  "rejectScanBody": "The scan stays in the history but does not change the status. Say why you reject it.",
+  "scanApproved": "Scan approved",
+  "scanRejected": "Scan rejected",
+  "messagesIntro": "Status messages to senders. Retry failed ones or mark them resolved after contacting the sender.",
+  "noMessages": "No messages",
+  "attemptsAndTime": "{attempts} attempt(s) · created {time}",
+  "@attemptsAndTime": {
+    "placeholders": {
+      "attempts": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "preview": "Preview",
+  "messagePreview": "Message",
+  "markResolved": "Mark resolved",
+  "retryMessageTitle": "Retry this message?",
+  "retryMessageBody": "The message will be sent again.",
+  "resolveMessageTitle": "Mark message resolved?",
+  "resolveMessageBody": "Use this after you have informed the sender another way.",
+  "devicesIntro": "The scale weighs letters and its camera photographs envelopes. Tare the empty scale after every restart.",
+  "noDevices": "No scale registered for your office",
+  "online": "Online",
+  "offline": "Offline",
+  "calibrationStatus": "Calibration: {value}",
+  "@calibrationStatus": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "firmware": "Firmware",
+  "cameraOk": "Camera ready",
+  "cameraFault": "Camera fault",
+  "stable": "Stable",
+  "loaded": "Item on scale",
+  "needsTare": "Needs tare",
+  "notReadyToWeigh": "Not ready to weigh",
+  "actions": "Actions",
+  "tareHint": "Tare with the platform empty. Calibrate with a known reference mass.",
+  "tare": "Tare (set to zero)",
+  "calibrate": "Calibrate",
+  "identify": "Identify (blink light)",
+  "testPhoto": "Take a test photo",
+  "commandSent": "Command sent to the scale",
+  "calibrateTitle": "Calibrate the scale",
+  "calibrateBody": "Empty the platform and press Tare first. Then place a known reference mass on the platform and enter its weight.",
+  "referenceMass": "Reference mass (grams, 10–1000)",
+  "office": "Office",
+  "wifiSignal": "Wi-Fi signal",
+  "lastSeen": "Last seen",
+  "calibration": "Calibration",
+  "uncertainty": "Uncertainty",
+  "recentCommands": "Recent commands",
+  "cmdQueued": "Queued",
+  "cmdSent": "Sent to scale",
+  "cmdDone": "Done",
+  "cmdFailed": "Failed",
+  "cmdExpired": "Expired",
+  "wpNoReading": "The scale has not sent a reading yet.",
+  "wpStale": "The last reading is too old – check the scale's Wi-Fi.",
+  "wpSensorFault": "Load-cell amplifier not responding – check the HX711 wiring.",
+  "wpNeedsTare": "The scale was restarted. Empty the platform and press Tare on the Scale page.",
+  "wpUncalibrated": "The scale is not calibrated.",
+  "wpEmpty": "Nothing on the platform.",
+  "wpUnstable": "Reading not stable yet – wait for the letter to settle.",
+  "wpNegative": "Negative weight – empty the platform and tare.",
+  "officesIntro": "Each office's reference point and radius are used to check where scans were made.",
+  "referencePoint": "Reference point",
+  "zoneRadius": "Office zone radius (m)",
+  "serviceRadius": "Delivery area radius",
+  "provenance": "Provenance (how the point was measured)",
+  "provenanceHint": "Required. It is stored with the point and logged.",
+  "provenanceDefault": "Measured on site {date} with phone GPS, accuracy ± {metres} m",
+  "@provenanceDefault": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "useMyLocation": "Use my location as the reference point",
+  "setReferencePoint": "Set reference point",
+  "setReferencePointBody": "Stand at the entrance of {office}. This position becomes the office's reference point:",
+  "@setReferencePointBody": {
+    "placeholders": {
+      "office": {
+        "type": "String"
+      }
+    }
+  },
+  "poorAccuracy": "The location is not precise. Move outside or near a window and try again.",
+  "officeUpdated": "Office reference point saved",
+  "registeredItems": "Registered items",
+  "waitingReview": "Waiting for review",
+  "openDrafts": "Open drafts",
+  "itemsByStatus": "Items by status",
+  "messagesByState": "Sender messages by state",
+  "reportsOnWeb": "CSV exports for the evaluation are on the web app's Reports page.",
+  "auditTarget": "Record",
+  "auditTargetHint": "Tracking ID, draft ID, device or user name",
+  "severity": "Level",
+  "allSeverities": "All levels",
+  "noAuditEntries": "No audit entries",
+  "account": "Your account",
+  "name": "Name",
+  "role": "Role",
+  "connection": "Connection",
+  "thisDevice": "This phone's ID",
+  "changeServerHint": "To use a different server, sign out and change it on the sign-in screen.",
+  "offlineData": "Data on this phone",
+  "waitingToUpload": "Scans waiting to upload",
+  "offlineDataHint": "Uploaded scans are kept for 14 days so you can check the server's answer. Scans waiting to upload are never deleted.",
+  "clearUploadedHistory": "Delete uploaded scan history",
+  "historyCleared": "{count} uploaded scan(s) deleted from this phone",
+  "@historyCleared": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cannotSignOutTitle": "Upload your scans before signing out",
+  "cannotSignOutBody": "{count, plural, =1{1 scan is still on this phone. It can only be uploaded while you are signed in.} other{{count} scans are still on this phone. They can only be uploaded while you are signed in.}}",
+  "@cannotSignOutBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signOut": "Sign out",
+  "signOutTitle": "Sign out?",
+  "signOutBody": "You will need your password to sign in again.",
+  "prototypeTitle": "Research prototype",
+  "prototypeBody": "This is a SLIIT research prototype (project J26-IT-372), not an official Sri Lanka Post service. Do not use it with real customer mail unless the trial is approved.",
+  "aboutTitle": "About this app",
+  "aboutBody": "PostAssist LK helps postal staff accept, label and track domestic registered letters. Counter officers register letters with assisted address reading and an IoT scale; postmen and hub officers record each handover with the phone's location; postmasters review exceptions and sender messages.",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyTitle": "Privacy notice",
+  "privacyIntro": "What this app collects and why:",
+  "privacyLocation": "Location: read once when you save a scan, with its accuracy, age and whether it is simulated. It is never tracked in the background.",
+  "privacyCamera": "Camera: used only to scan labels and to photograph envelopes at the counter. Photos are sent to the PostAssist server, not stored in the phone's gallery.",
+  "privacyStorage": "On this phone: your sign-in token (encrypted storage) and your scans until they are uploaded, then for 14 days.",
+  "privacyServer": "Data is sent only to the PostAssist server address entered at sign-in.",
+  "privacyAudit": "Every sign-in, scan and decision is written to an audit log with your username.",
+  "accessibilityTitle": "Accessibility statement",
+  "accessibilityBody": "Everyone who works at a postal counter or delivers mail should be able to use this app.",
+  "a11yLanguages": "Use the app in Sinhala, Tamil or English (Settings → Language).",
+  "a11yText": "Text follows your phone's font size, up to 200 %.",
+  "a11yContrast": "Text and controls meet WCAG 2.2 AA contrast; status is shown with words and icons, never colour alone.",
+  "a11yTargets": "Buttons and controls are at least 48 × 48 dp.",
+  "a11yScreenReader": "Works with TalkBack and VoiceOver: fields, buttons and progress are labelled.",
+  "standardsTitle": "Design standards",
+  "standardsBody": "The interface follows the principles of the Sri Lanka Digital Design System (SLDDS, Ministry of Digital Economy, 2026 draft for public consultation): plain language, the three official languages, mobile-first layouts, consistent components and WCAG 2.2 AA accessibility. It has not been formally assessed or approved by a government body."
+}
