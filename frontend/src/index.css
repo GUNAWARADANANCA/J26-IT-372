@@ -155,8 +155,9 @@ body {
   --color-brand-700: #063c77;
   --color-brand-800: #033160;
   --color-brand-900: #02264a;
-  --color-surface: #f3f6fb;
-  --color-line: #d5dfeb;
+  --color-brand-950: #011a34;
+  --color-surface: #f4f6f9;
+  --color-line: #d8e0ea;
   --color-ink: #16263a;
 }
 
@@ -165,11 +166,10 @@ body { @apply bg-surface text-ink antialiased; }
 
 @layer base {
   /* Data tables inside the app shell: tinted header row, even cell padding. */
-  main table thead th { @apply bg-brand-50 px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-600; }
-  main table thead th:first-child { @apply rounded-l-md; }
-  main table thead th:last-child { @apply rounded-r-md; }
-  main table tbody td { @apply px-3 py-2.5; }
-  main table tbody tr { @apply border-line; }
+  main table thead th { @apply border-b border-line bg-slate-50 px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-600; }
+  main table tbody td { @apply px-3 py-2.5 align-middle; }
+  main table tbody tr { @apply border-slate-100; }
+  main table.rows-hover tbody tr:hover { @apply bg-brand-50/50; }
 }
 
 /* Links to records (tracking IDs, drafts) */
