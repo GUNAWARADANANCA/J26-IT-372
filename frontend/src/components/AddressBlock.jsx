@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api.js'
+import Icon from './icons.jsx'
 import { Alert, Badge, Button, Card, Field, inputClass } from './ui.jsx'
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -15,7 +16,7 @@ export const FIELDS = [
 
 // Officer-confirmed fields are edited here. OCR/parser suggestions are shown
 // beside them (never silently merged), and low-confidence fields are highlighted.
-export default function AddressBlock({ title, party, value, suggestion, onChange, disabled }) {
+export default function AddressBlock({ title, party, value, suggestion, onChange, disabled, stepProps }) {
   const conf = suggestion?.confidence || {}
   const review = new Set(suggestion?.needs_review || [])
   const [check, setCheck] = useState(null)
@@ -33,11 +34,17 @@ export default function AddressBlock({ title, party, value, suggestion, onChange
   const status = check?.city_postcode?.status
 
   return (
-    <Card title={title} actions={suggestion?.fields && (
-      <Button tone="secondary" disabled={disabled} onClick={() => onChange({ ...value, ...nonEmpty(suggestion.fields) })}>
+    <Card title={title} {...stepProps} actions={suggestion?.fields && (
+      <Button size="sm" tone="secondary" icon="tick" disabled={disabled} onClick={() => onChange({ ...value, ...nonEmpty(suggestion.fields) })}>
         Use all suggestions
       </Button>
     )}>
+      {Object.keys(conf).length > 0 && (
+        <p className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+          <span className="flex items-center gap-1"><Badge tone="blue">80%</Badge> how sure the reader is</span>
+          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm border border-red-400 bg-red-50" /> check against the envelope</span>
+        </p>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         {FIELDS.map(([k, label]) => {
           const s = suggestion?.fields?.[k]
@@ -81,7 +88,7 @@ export default function AddressBlock({ title, party, value, suggestion, onChange
           </Alert>
         </div>
       )}
-      {status === 'consistent' && <p className="mt-2 text-xs text-green-700">✓ Town and postcode agree with the gazetteer.</p>}
+      {status === 'consistent' && <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-700"><Icon name="check" className="h-3.5 w-3.5" /> Town and postcode agree with the gazetteer.</p>}
     </Card>
   )
 }
