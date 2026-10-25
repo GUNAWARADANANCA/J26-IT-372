@@ -1,5 +1,9 @@
 # PostAssist Field – mobile app (React Native / Expo SDK 57)
 
+> The full staff app (all roles, counter intake, Sinhala/Tamil/English) is now the **Flutter app in
+> [`flutter_app/`](flutter_app/README.md)** – see [Documents/Flutter_Mobile_App_Guide.md](../Documents/Flutter_Mobile_App_Guide.md).
+> This Expo app is the earlier postman/hub scanner and is kept for reference.
+
 For postmen and hub officers: scan the registered-letter label (Code 128 or QR), record the status with the
 phone's location evidence, capture the delivery acknowledgement (signature / name / delivery-sheet number), and
 keep working **offline**.
@@ -8,7 +12,7 @@ keep working **offline**.
 npm install
 npx expo start            # scan the QR code with Expo Go (same Wi-Fi as the laptop)
 ```
-Login: server `http://<laptop-IP>:8000`, user `postman2` or `hubdemo` (password = `DEMO_PASSWORD`).
+Login: server `http://<laptop-IP>:8000`, user `postman2` or `hub2` (password = `DEMO_PASSWORD`).
 
 ## How offline works
 1. *Save scan* reads the location **once**, builds the event with a new `event_id`, and writes it to SQLite
