@@ -65,7 +65,7 @@ def client():
 @pytest.fixture(scope="session")
 def tokens(client):
     out = {}
-    for user in ("counter2", "counter1", "hubdemo", "hub1", "hubjaf", "postman1", "postman2", "pm1", "pm2", "admin"):
+    for user in ("counter2", "counter1", "hub2", "hub1", "hubjaf", "postman1", "postman2", "pm1", "pm2", "admin"):
         r = client.post("/api/auth/login", json={"username": user, "password": PASSWORD})
         assert r.status_code == 200, r.text
         out[user] = {"Authorization": f"Bearer {r.json()['token']}"}
