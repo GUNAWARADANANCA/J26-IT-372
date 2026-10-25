@@ -1,0 +1,65 @@
+train: 45000 lines, fonts=['AbhayaLibre-Bold', 'AbhayaLibre-Regular', 'BalooThambi2', 'Catamaran', 'Caveat', 'CourierPrime-Regular', 'HindMadurai-Regular', 'Kalam-Regular', 'Kavivanar-Regular', 'MeeraInimai-Regular', 'NotoSans', 'NotoSansSinhala', 'NotoSansTamil', 'NotoSerif', 'NotoSerifSinhala', 'NotoSerifTamil', 'ShadowsIntoLight', 'StickNoBills']
+val: 4500 lines, fonts=['GemunuLibre', 'MuktaMalar-Regular', 'PatrickHand-Regular', 'SourceSans3']
+test: 4500 lines, fonts=['IndieFlower-Regular', 'Merriweather', 'Nirmala', 'Pavanam-Regular', 'TiroTamil-Regular', 'Yaldevi']
+input size 32x256; written to C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\Datasets\processed\script_id
+device: cuda (NVIDIA GeForce RTX 2050)
+train (45000, 1, 32, 256) val (4500, 1, 32, 256) test (4500, 1, 32, 256)
+  epoch  1 loss 0.5054 val_acc 0.7747
+  epoch  2 loss 0.2788 val_acc 0.7109
+  epoch  3 loss 0.2477 val_acc 0.8738
+  epoch  4 loss 0.2296 val_acc 0.9287
+  epoch  5 loss 0.2192 val_acc 0.7213
+  epoch  6 loss 0.2128 val_acc 0.8509
+  epoch  7 loss 0.2079 val_acc 0.9364
+  epoch  8 loss 0.2039 val_acc 0.8778
+  epoch  9 loss 0.2008 val_acc 0.8976
+  epoch 10 loss 0.1974 val_acc 0.9440
+  epoch 11 loss 0.1945 val_acc 0.9391
+  epoch 12 loss 0.1922 val_acc 0.9389
+  epoch 13 loss 0.1904 val_acc 0.9467
+  epoch 14 loss 0.1894 val_acc 0.9438
+seed 5: val 0.9467 test 0.9796 handwriting 0.8965
+  epoch  1 loss 0.4859 val_acc 0.7236
+  epoch  2 loss 0.2818 val_acc 0.8187
+  epoch  3 loss 0.2453 val_acc 0.8511
+  epoch  4 loss 0.2289 val_acc 0.8802
+  epoch  5 loss 0.2184 val_acc 0.9544
+  epoch  6 loss 0.2126 val_acc 0.9427
+  epoch  7 loss 0.2089 val_acc 0.9269
+  epoch  8 loss 0.2041 val_acc 0.9060
+  epoch  9 loss 0.2007 val_acc 0.9040
+  epoch 10 loss 0.1975 val_acc 0.9262
+  epoch 11 loss 0.1942 val_acc 0.9553
+  epoch 12 loss 0.1920 val_acc 0.9216
+  epoch 13 loss 0.1905 val_acc 0.9507
+  epoch 14 loss 0.1895 val_acc 0.9487
+seed 6: val 0.9553 test 0.9862 handwriting 0.9414
+  epoch  1 loss 0.4949 val_acc 0.4136
+  epoch  2 loss 0.2810 val_acc 0.8067
+  epoch  3 loss 0.2469 val_acc 0.6900
+  epoch  4 loss 0.2303 val_acc 0.8627
+  epoch  5 loss 0.2215 val_acc 0.8576
+  epoch  6 loss 0.2139 val_acc 0.9080
+  epoch  7 loss 0.2090 val_acc 0.9304
+  epoch  8 loss 0.2060 val_acc 0.8136
+  epoch  9 loss 0.2018 val_acc 0.9511
+  epoch 10 loss 0.1981 val_acc 0.9553
+  epoch 11 loss 0.1953 val_acc 0.9531
+  epoch 12 loss 0.1928 val_acc 0.9356
+  epoch 13 loss 0.1909 val_acc 0.9544
+  epoch 14 loss 0.1901 val_acc 0.9476
+seed 7: val 0.9553 test 0.9600 handwriting 0.7875
+C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\script_id\train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return float(log_t.exp())
+C:\Users\CYBORG 15\OneDrive\Desktop\Research\J26-IT-372\ml\script_id\train.py:246: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(model_cpu, dummy, str(onnx_path), input_names=["image"], output_names=["logits"],
+{
+  "best_val_accuracy": 0.9553,
+  "test_accuracy": 0.9862,
+  "temperature": 0.5468,
+  "test_ece_raw": 0.0667,
+  "test_ece_calibrated": 0.0115,
+  "onnx_max_abs_logit_diff": 3.337860107421875e-06,
+  "onnx_cpu_ms_per_line": 6.84
+}

@@ -61,3 +61,16 @@ vite.config.ts.timestamp-*
 vite.config.js.timestamp-*
 
 .pnpm-store/
+
+# --- Smart Registered Mail component ---------------------------------------
+# Runtime data (may contain personal data: envelope images, e-mails)
+backend/storage/
+# Firmware secrets
+iot/**/config.h
+# Regenerable datasets (see Datasets/README.md)
+Datasets/processed/script_id/*.npz
+Datasets/processed/synthetic_envelopes/images/
+# ML scratch
+ml/reports/**/grid.crfsuite
+mobile_app/.expo/
+mobile_app/dist/

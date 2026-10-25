@@ -1,0 +1,47 @@
+device cuda, 4.48 M parameters, 195 characters, 20362 lines per epoch, plan {'sinocr_repeat': 4, 'si_comp': 6000, 'si_font': 600, 'en_font': 2000, 'ta_font': 2000}
+epoch   1  loss 5.109  val CER  si 0.901  en 0.839  ta(font) 0.911  mean 0.8838 *  104 s
+epoch   2  loss 2.719  val CER  si 0.689  en 0.501  ta(font) 0.424  mean 0.5376 *  95 s
+epoch   3  loss 1.404  val CER  si 0.528  en 0.264  ta(font) 0.086  mean 0.2925 *  94 s
+epoch   4  loss 0.900  val CER  si 0.438  en 0.201  ta(font) 0.031  mean 0.2235 *  94 s
+epoch   5  loss 0.692  val CER  si 0.384  en 0.156  ta(font) 0.024  mean 0.1880 *  95 s
+epoch   6  loss 0.562  val CER  si 0.339  en 0.137  ta(font) 0.009  mean 0.1616 *  95 s
+epoch   7  loss 0.493  val CER  si 0.339  en 0.130  ta(font) 0.010  mean 0.1598 *  96 s
+epoch   8  loss 0.438  val CER  si 0.342  en 0.160  ta(font) 0.013  mean 0.1714  95 s
+epoch   9  loss 0.399  val CER  si 0.282  en 0.100  ta(font) 0.004  mean 0.1284 *  95 s
+epoch  10  loss 0.371  val CER  si 0.278  en 0.103  ta(font) 0.004  mean 0.1286  94 s
+epoch  11  loss 0.342  val CER  si 0.261  en 0.094  ta(font) 0.005  mean 0.1197 *  95 s
+epoch  12  loss 0.308  val CER  si 0.259  en 0.091  ta(font) 0.006  mean 0.1189 *  95 s
+epoch  13  loss 0.294  val CER  si 0.243  en 0.085  ta(font) 0.003  mean 0.1104 *  94 s
+epoch  14  loss 0.272  val CER  si 0.254  en 0.086  ta(font) 0.005  mean 0.1148  94 s
+epoch  15  loss 0.261  val CER  si 0.230  en 0.081  ta(font) 0.002  mean 0.1040 *  95 s
+epoch  16  loss 0.245  val CER  si 0.229  en 0.080  ta(font) 0.001  mean 0.1034 *  95 s
+epoch  17  loss 0.236  val CER  si 0.229  en 0.079  ta(font) 0.002  mean 0.1035  94 s
+epoch  18  loss 0.216  val CER  si 0.209  en 0.078  ta(font) 0.001  mean 0.0959 *  95 s
+epoch  19  loss 0.212  val CER  si 0.224  en 0.072  ta(font) 0.001  mean 0.0991  95 s
+epoch  20  loss 0.200  val CER  si 0.215  en 0.073  ta(font) 0.001  mean 0.0965  96 s
+epoch  21  loss 0.187  val CER  si 0.220  en 0.070  ta(font) 0.001  mean 0.0970  95 s
+epoch  22  loss 0.183  val CER  si 0.219  en 0.068  ta(font) 0.000  mean 0.0957 *  94 s
+epoch  23  loss 0.160  val CER  si 0.209  en 0.068  ta(font) 0.001  mean 0.0927 *  125 s
+epoch  24  loss 0.162  val CER  si 0.216  en 0.066  ta(font) 0.002  mean 0.0946  143 s
+epoch  25  loss 0.157  val CER  si 0.225  en 0.065  ta(font) 0.002  mean 0.0973  144 s
+epoch  26  loss 0.151  val CER  si 0.212  en 0.063  ta(font) 0.001  mean 0.0922 *  141 s
+epoch  27  loss 0.143  val CER  si 0.214  en 0.063  ta(font) 0.000  mean 0.0926  110 s
+epoch  28  loss 0.141  val CER  si 0.211  en 0.062  ta(font) 0.001  mean 0.0913 *  95 s
+epoch  29  loss 0.136  val CER  si 0.215  en 0.061  ta(font) 0.000  mean 0.0922  96 s
+epoch  30  loss 0.126  val CER  si 0.207  en 0.061  ta(font) 0.001  mean 0.0895 *  173 s
+epoch  31  loss 0.128  val CER  si 0.204  en 0.061  ta(font) 0.000  mean 0.0883 *  130 s
+epoch  32  loss 0.125  val CER  si 0.206  en 0.060  ta(font) 0.000  mean 0.0889  137 s
+epoch  33  loss 0.117  val CER  si 0.199  en 0.059  ta(font) 0.001  mean 0.0865 *  141 s
+epoch  34  loss 0.117  val CER  si 0.199  en 0.060  ta(font) 0.001  mean 0.0867  162 s
+epoch  35  loss 0.118  val CER  si 0.203  en 0.059  ta(font) 0.001  mean 0.0877  97 s
+epoch  36  loss 0.112  val CER  si 0.201  en 0.059  ta(font) 0.000  mean 0.0869  97 s
+epoch  37  loss 0.109  val CER  si 0.197  en 0.059  ta(font) 0.000  mean 0.0854 *  104 s
+epoch  38  loss 0.117  val CER  si 0.198  en 0.059  ta(font) 0.001  mean 0.0856  94 s
+epoch  39  loss 0.110  val CER  si 0.201  en 0.059  ta(font) 0.001  mean 0.0867  93 s
+epoch  40  loss 0.108  val CER  si 0.198  en 0.059  ta(font) 0.001  mean 0.0856  93 s
+test sinocr   CER 0.1805  WER 0.5645  (227 lines)
+test iam      CER 0.0904  WER 0.3064  (2915 lines)
+test ta_font  CER 0.0035  WER 0.0211  (500 lines)
+test en_font  CER 0.0205  WER 0.1326  (400 lines)
+ONNX: max |logit difference| 8.68e-05, 14.0 ms per line on CPU, 17.9 MB
+done in 71.5 min; best epoch 37

@@ -1,0 +1,198 @@
+{
+  "trained_at": "2026-10-02T02:32:29+00:00",
+  "device": "cuda",
+  "parameters": 462755,
+  "epochs": 14,
+  "train_seconds": 32404.7,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.4859,
+      "val_acc": 0.7236
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.2818,
+      "val_acc": 0.8187
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.2453,
+      "val_acc": 0.8511
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2289,
+      "val_acc": 0.8802
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.2184,
+      "val_acc": 0.9544
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.2126,
+      "val_acc": 0.9427
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.2089,
+      "val_acc": 0.9269
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.2041,
+      "val_acc": 0.906
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.2007,
+      "val_acc": 0.904
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.1975,
+      "val_acc": 0.9262
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.1942,
+      "val_acc": 0.9553
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.192,
+      "val_acc": 0.9216
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.1905,
+      "val_acc": 0.9507
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.1895,
+      "val_acc": 0.9487
+    }
+  ],
+  "best_val_accuracy": 0.9553,
+  "seed_summary": {
+    "seeds": [
+      {
+        "seed": 5,
+        "best_val_accuracy": 0.9467,
+        "train_seconds": 485.2856,
+        "test_accuracy": 0.9796,
+        "test_handwriting_accuracy": 0.8965
+      },
+      {
+        "seed": 6,
+        "best_val_accuracy": 0.9553,
+        "train_seconds": 32404.6854,
+        "test_accuracy": 0.9862,
+        "test_handwriting_accuracy": 0.9414
+      },
+      {
+        "seed": 7,
+        "best_val_accuracy": 0.9553,
+        "train_seconds": 649.2664,
+        "test_accuracy": 0.96,
+        "test_handwriting_accuracy": 0.7875
+      }
+    ],
+    "chosen_seed": 6,
+    "test_accuracy_mean": 0.9753,
+    "test_accuracy_sd": 0.0136,
+    "handwriting_accuracy_mean": 0.8751,
+    "handwriting_accuracy_sd": 0.0792
+  },
+  "temperature": 0.5468,
+  "test_accuracy": 0.9862,
+  "test_per_class": {
+    "si": {
+      "precision": 0.9746,
+      "recall": 0.996,
+      "f1": 0.9852,
+      "support": 1500
+    },
+    "ta": {
+      "precision": 0.994,
+      "recall": 0.9933,
+      "f1": 0.9937,
+      "support": 1500
+    },
+    "en": {
+      "precision": 0.9905,
+      "recall": 0.9693,
+      "f1": 0.9798,
+      "support": 1500
+    }
+  },
+  "test_confusion": [
+    [
+      1494,
+      1,
+      5
+    ],
+    [
+      1,
+      1490,
+      9
+    ],
+    [
+      38,
+      8,
+      1454
+    ]
+  ],
+  "test_ece_raw": 0.0667,
+  "test_ece_calibrated": 0.0115,
+  "test_by_style": {
+    "printed": {
+      "n": 3766,
+      "accuracy": 0.995
+    },
+    "handwriting": {
+      "n": 734,
+      "accuracy": 0.9414
+    }
+  },
+  "test_by_font": {
+    "IndieFlower-Regular": {
+      "n": 734,
+      "accuracy": 0.9414
+    },
+    "Merriweather": {
+      "n": 766,
+      "accuracy": 0.9961
+    },
+    "Nirmala": {
+      "n": 1228,
+      "accuracy": 0.9976
+    },
+    "Pavanam-Regular": {
+      "n": 509,
+      "accuracy": 0.9902
+    },
+    "TiroTamil-Regular": {
+      "n": 493,
+      "accuracy": 0.9919
+    },
+    "Yaldevi": {
+      "n": 770,
+      "accuracy": 0.9948
+    }
+  },
+  "test_mixed_script_lines": {
+    "n": 48,
+    "accuracy": 0.9583
+  },
+  "onnx_max_abs_logit_diff": 3.337860107421875e-06,
+  "onnx_cpu_ms_per_line": 6.84,
+  "class_balance_test": {
+    "ta": 1500,
+    "en": 1500,
+    "si": 1500
+  }
+}
