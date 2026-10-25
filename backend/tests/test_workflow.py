@@ -13,7 +13,7 @@ from conftest import DEVICE_HEADERS, requires_mongo
 
 pytestmark = requires_mongo
 
-DEMO = {"lat": 6.91470, "lon": 79.97290}   # SLIIT-DEMO office reference point
+DEMO = {"lat": 6.91470, "lon": 79.97290}   # MLB-PO (Malabe) trial reference point
 _seq = iter(range(1, 10_000))
 
 
@@ -34,7 +34,7 @@ def new_draft(client, h, *, notify=True):
                       "postcode": "10115"},
         "notification": {"channel": "email" if notify else "none", "contact": "sender@example.test" if notify else "",
                          "language": "en", "updates": "all"},
-        "destination_office_id": "SLIIT-DEMO",
+        "destination_office_id": "MLB-PO",
     }
     r = client.patch(f"/api/intake/drafts/{d['_id']}", headers=h, json=body)
     assert r.status_code == 200, r.text
@@ -152,7 +152,7 @@ def test_full_journey_with_location_review_and_messages(client, tokens):
     assert scan(client, tokens["hub1"], tid, "in_transit", lat=6.9325787, lon=79.8515473).json()["decision"] == "accepted"
 
     # T08: arrival scan clearly outside the destination zone -> held, no status change, no message
-    r = scan(client, tokens["hubdemo"], tid, "at_destination_office", lat=6.95, lon=79.97)
+    r = scan(client, tokens["hub2"], tid, "at_destination_office", lat=6.95, lon=79.97)
     assert r.status_code == 202 and r.json()["decision"] == "held_for_review"
     held_event = r.json()["event_id"]
     assert client.get(f"/api/items/{tid}", headers=h).json()["status"] == "in_transit"
@@ -215,7 +215,7 @@ def test_unlocated_arrival_is_held_T09_and_held_events_never_notify_T14(client, 
     _, item = accept_item(client, h, placement=600)
     tid = item["tracking_id"]
     scan(client, h, tid, "dispatched")
-    r = scan(client, tokens["hubdemo"], tid, "at_destination_office", lat=None)
+    r = scan(client, tokens["hub2"], tid, "at_destination_office", lat=None)
     assert r.json()["decision"] == "held_for_review"
     detail = client.get(f"/api/items/{tid}", headers=h).json()
     assert not any(e["status_code"] == "at_destination_office" for e in detail["outbox"])
@@ -226,12 +226,12 @@ def test_return_path_T17(client, tokens):
     _, item = accept_item(client, h, placement=700, notify=False)
     tid = item["tracking_id"]
     scan(client, h, tid, "dispatched")
-    scan(client, tokens["hubdemo"], tid, "at_destination_office")
+    scan(client, tokens["hub2"], tid, "at_destination_office")
     scan(client, tokens["postman2"], tid, "out_for_delivery")
     assert scan(client, tokens["postman2"], tid, "delivery_attempted").status_code == 422      # reason required
     assert scan(client, tokens["postman2"], tid, "delivery_attempted", reason="house locked").json()["decision"] == "accepted"
     assert scan(client, tokens["pm2"], tid, "return_started", reason="recipient moved").json()["decision"] == "accepted"
-    assert scan(client, tokens["hubdemo"], tid, "in_transit").json()["decision"] == "accepted"
+    assert scan(client, tokens["hub2"], tid, "in_transit").json()["decision"] == "accepted"
     assert scan(client, tokens["pm2"], tid, "returned_to_sender").json()["decision"] == "accepted"
     detail = client.get(f"/api/items/{tid}", headers=h).json()
     assert detail["status"] == "returned_to_sender" and detail["direction"] == "return"
