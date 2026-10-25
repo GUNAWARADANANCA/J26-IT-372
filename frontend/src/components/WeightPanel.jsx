@@ -3,7 +3,7 @@ import { api } from '../api.js'
 import { Alert, Badge, Button, Card, ErrorBox, Field, inputClass } from './ui.jsx'
 
 // Live IoT scale reading with an explicit "use this weight" action (FR06).
-export default function WeightPanel({ draft, devices, onChange, disabled }) {
+export default function WeightPanel({ draft, devices, onChange, disabled, stepProps }) {
   const [chosenDevice, setDeviceId] = useState('')
   const deviceId = chosenDevice || devices[0]?.device_id || ''  // devices arrive after the first render
   const [live, setLive] = useState(null)
@@ -36,7 +36,7 @@ export default function WeightPanel({ draft, devices, onChange, disabled }) {
   const r = live?.reading
   const w = draft.weight
   return (
-    <Card title="4 · Weight">
+    <Card title="Weight" description="Letters of 5–500 g are weighed on the IoT scale." {...stepProps}>
       <div className="space-y-3">
         <ErrorBox error={error} />
         {devices.length > 1 && (
@@ -51,20 +51,21 @@ export default function WeightPanel({ draft, devices, onChange, disabled }) {
           <div className="flex flex-wrap items-center gap-4 rounded-md bg-brand-900 p-4 text-white" aria-live="polite">
             <span className="text-4xl font-bold tabular-nums">{r?.net_g != null ? `${r.net_g.toFixed(1)} g` : '— g'}</span>
             <div className="space-y-1 text-sm">
-              {live?.ready ? <Badge tone="green">stable – ready</Badge> : <Badge tone="amber">{live?.problems?.[0]?.code?.replaceAll('_', ' ').toLowerCase() || 'waiting'}</Badge>}
+              {live?.ready ? <Badge tone="green" dot>Stable – ready</Badge> : <Badge tone="amber" dot>{live?.problems?.[0]?.code?.replaceAll('_', ' ').toLowerCase() || 'waiting for a stable reading'}</Badge>}
               <p className="text-xs text-slate-300">spread {r?.spread_g ?? '–'} g · placement #{r?.placement_id ?? '–'} · {r?.calibration_id || 'not calibrated'}</p>
             </div>
-            <Button className="ml-auto" busy={busy} disabled={!live?.ready || disabled} onClick={pair}>Use this weight</Button>
+            <Button className="ml-auto bg-white! text-brand-900! hover:bg-brand-50! disabled:bg-white/30! disabled:text-white/70!" icon="tick" busy={busy} disabled={!live?.ready || disabled} onClick={pair}>Use this weight</Button>
           </div>
         )}
         {live && !live.ready && live.problems?.length > 0 && <p className="text-xs text-slate-600">{live.problems.map((p) => p.message).join(' · ')}</p>}
         {w && (
-          <Alert tone="green" title={`Paired: ${w.grams} g (${w.source === 'device' ? `scale ${w.device_id}` : 'manual – approved instrument'})`}>
+          <Alert tone="green" title={`Weight recorded: ${w.grams} g (${w.source === 'device' ? `scale ${w.device_id}` : 'manual – approved instrument'})`}>
             Uncertainty ±{w.uncertainty_g} g{w.calibration_id ? ` · calibration ${w.calibration_id}` : ''}{w.manual ? ` · reason: ${w.manual.reason}` : ''}
           </Alert>
         )}
-        <details className="rounded border border-slate-200 p-2">
-          <summary className="cursor-pointer text-sm font-medium">Manual weight from an approved instrument (audited)</summary>
+        <details className="rounded-md border border-slate-200 px-3 py-2">
+          <summary className="cursor-pointer text-sm font-semibold text-brand-800">Enter the weight by hand (approved instrument, audited)</summary>
+          <p className="mt-1 text-xs text-slate-600">Only if the IoT scale cannot be used, e.g. the letter is above its range. All three fields are required.</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             <Field label="Grams"><input className={inputClass} type="number" step="0.1" value={manual.grams} onChange={(e) => setManual({ ...manual, grams: e.target.value })} /></Field>
             <Field label="Instrument"><input className={inputClass} value={manual.instrument} placeholder="Counter scale #2" onChange={(e) => setManual({ ...manual, instrument: e.target.value })} /></Field>
