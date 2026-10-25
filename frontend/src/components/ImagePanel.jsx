@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { api, imageUrl } from '../api.js'
+import Icon from './icons.jsx'
 import { Alert, Badge, Button, Card, ErrorBox, Field, inputClass } from './ui.jsx'
 
 // Envelope image: capture (ESP32-CAM on the scale, webcam or file), crop/rotate, then OCR or typed text.
-export default function ImagePanel({ draft, devices, config, onSuggestion, reload }) {
+export default function ImagePanel({ draft, devices, config, onSuggestion, reload, stepProps }) {
   const [src, setSrc] = useState(null)          // object URL of the stored image
   const [preview, setPreview] = useState(null)  // rotated preview (data URL)
   const [rotate, setRotate] = useState(0)
@@ -86,33 +87,34 @@ export default function ImagePanel({ draft, devices, config, onSuggestion, reloa
   })
 
   return (
-    <Card title="1 · Envelope image" actions={
-      <>
-        {deviceId && <Button tone="secondary" busy={busy === 'capture'} onClick={captureFromScale}>Capture from scale camera</Button>}
-        <Button tone="secondary" onClick={() => setWebcam((w) => !w)}>{webcam ? 'Close webcam' : 'Webcam'}</Button>
-        <label className="inline-flex cursor-pointer items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-50">
-          Upload photo
-          <input type="file" accept="image/jpeg,image/png" className="sr-only" onChange={(e) => e.target.files[0] && upload(e.target.files[0])} />
-        </label>
-      </>
-    }>
+    <Card title="Envelope image" description={config === 'B0' ? 'Optional in manual entry (B0).' : 'Photograph the front of the envelope.'} {...stepProps}>
       <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          {deviceId && <Button size="sm" icon="camera" busy={busy === 'capture'} onClick={captureFromScale}>Capture from scale camera</Button>}
+          <Button size="sm" tone="secondary" icon="eye" onClick={() => setWebcam((w) => !w)}>{webcam ? 'Close webcam' : 'Use webcam'}</Button>
+          <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-brand-300 bg-white px-2.5 py-1 text-xs font-semibold text-brand-800 hover:bg-brand-50 focus-within:outline-3 focus-within:outline-brand-500 ${busy === 'upload' ? 'opacity-60' : ''}`}>
+            <Icon name="upload" className="h-3.5 w-3.5" /> Upload photo
+            <input type="file" accept="image/jpeg,image/png" className="sr-only" onChange={(e) => e.target.files[0] && upload(e.target.files[0])} />
+          </label>
+        </div>
         <ErrorBox error={error} />
         {webcam && <Webcam onCapture={(blob) => { setWebcam(false); upload(blob) }} />}
         {preview ? (
           <>
             <CropBox src={preview} crop={crop} onChange={setCrop} />
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              <Button tone="ghost" onClick={() => { setRotate((r) => (r + 270) % 360); setCrop(null) }}>⟲ Rotate left</Button>
-              <Button tone="ghost" onClick={() => { setRotate((r) => (r + 90) % 360); setCrop(null) }}>⟳ Rotate right</Button>
-              <Button tone="ghost" onClick={() => setCrop(null)} disabled={!crop}>Clear crop</Button>
-              <span className="text-xs text-slate-500">Drag on the image to select the address block.</span>
+              <Button size="sm" tone="ghost" icon="rotateLeft" onClick={() => { setRotate((r) => (r + 270) % 360); setCrop(null) }}>Rotate left</Button>
+              <Button size="sm" tone="ghost" icon="rotateRight" onClick={() => { setRotate((r) => (r + 90) % 360); setCrop(null) }}>Rotate right</Button>
+              <Button size="sm" tone="ghost" icon="close" onClick={() => setCrop(null)} disabled={!crop}>Clear selection</Button>
+              <span className="text-xs text-slate-600">{crop ? 'Address block selected.' : 'Tip: drag over the address block to read only that part.'}</span>
             </div>
           </>
         ) : (
-          <p className="rounded border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-            No image yet. Place the envelope on the scale platform and capture, or upload a photo.
-          </p>
+          <div className="flex flex-col items-center gap-2 rounded-md border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+            <Icon name="camera" className="h-8 w-8 text-slate-400" />
+            <p className="text-sm font-semibold text-slate-700">No envelope photo yet</p>
+            <p className="max-w-xs text-xs text-slate-600">Place the envelope face up on the scale platform and press <b>Capture from scale camera</b>, or upload a photo.</p>
+          </div>
         )}
         {quality && !quality.ok && (
           <Alert tone="amber" title="Image quality">
@@ -121,7 +123,9 @@ export default function ImagePanel({ draft, devices, config, onSuggestion, reloa
         )}
 
         {config !== 'B0' && (
-          <div className="grid gap-2 sm:grid-cols-4">
+          <div className="space-y-2 border-t border-slate-100 pt-3">
+          <p className="text-xs font-semibold text-slate-700">Read the address from the photo</p>
+          <div className="grid gap-2 sm:grid-cols-2">
             <Field label="Fill fields of">
               <select className={inputClass} value={target} onChange={(e) => setTarget(e.target.value)}>
                 <option value="recipient">Recipient</option>
@@ -144,13 +148,14 @@ export default function ImagePanel({ draft, devices, config, onSuggestion, reloa
               </select>
             </Field>
             <div className="flex items-end">
-              <Button className="w-full" busy={busy === 'ocr'} disabled={!preview} onClick={runOcr}>Read address ({mode})</Button>
+              <Button className="w-full" icon="scan" busy={busy === 'ocr'} disabled={!preview} onClick={runOcr}>Read address ({mode})</Button>
             </div>
+          </div>
           </div>
         )}
 
-        <details className="rounded border border-slate-200 p-2" open={config === 'B0'}>
-          <summary className="cursor-pointer text-sm font-medium">Type or paste the address text instead</summary>
+        <details className="rounded-md border border-slate-200 px-3 py-2" open={config === 'B0'}>
+          <summary className="cursor-pointer text-sm font-semibold text-brand-800">Type or paste the address text instead</summary>
           <textarea className={`${inputClass} mt-2 h-28`} lang="si" value={typed} onChange={(e) => setTyped(e.target.value)}
             placeholder={'Mr. A. B. Perera\nNo. 25/3, Galle Road\nColombo 03'} />
           {config !== 'B0' && (
@@ -168,7 +173,8 @@ export default function ImagePanel({ draft, devices, config, onSuggestion, reloa
 
 function OcrSummary({ ocr }) {
   return (
-    <div className="space-y-1 rounded bg-slate-50 p-2 text-xs">
+    <div className="space-y-1.5 rounded-md border border-slate-200 bg-slate-50 p-3 text-xs">
+      <p className="font-semibold text-slate-700">Text read from the envelope</p>
       <div className="flex flex-wrap gap-2">
         {ocr.mode && <Badge tone="blue">{ocr.mode}</Badge>}
         {ocr.script?.script && <Badge>script: {ocr.script.script} ({Math.round((ocr.script.confidence || 0) * 100)}%)</Badge>}
@@ -209,7 +215,7 @@ function CropBox({ src, crop, onChange }) {
       onMouseDown={down} onMouseMove={move} onMouseUp={up} onMouseLeave={up} onTouchStart={down} onTouchMove={move} onTouchEnd={up}>
       <img src={src} alt="Envelope" className="block w-full" draggable={false} />
       {crop && (
-        <div className="pointer-events-none absolute border-2 border-blue-600 bg-blue-500/10"
+        <div className="pointer-events-none absolute border-2 border-amber-500 bg-amber-400/15"
           style={{ left: `${crop.x * 100}%`, top: `${crop.y * 100}%`, width: `${crop.w * 100}%`, height: `${crop.h * 100}%` }} />
       )}
     </div>
