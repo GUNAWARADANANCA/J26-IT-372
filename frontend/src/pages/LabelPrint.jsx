@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api.js'
-import { Alert, Button, ErrorBox, Money, Spinner, inputClass } from '../components/ui.jsx'
+import Icon from '../components/icons.jsx'
+import { Alert, Button, ErrorBox, Loading, Money, inputClass } from '../components/ui.jsx'
 
 // Label for the envelope + sender receipt. Both codes contain only the tracking
 // ID (receipt QR = tracking link); nothing personal is encoded (NFR06).
@@ -34,20 +35,46 @@ export default function LabelPrint() {
     } catch (err) { setVerified(false); setError(err) }
   }
 
-  if (!data) return error ? <ErrorBox error={error} /> : <Spinner />
+  if (!data) return error ? <div className="p-4"><ErrorBox error={error} /></div> : <Loading>Preparing label…</Loading>
   const r = data.recipient
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">
-      <div className="no-print flex flex-wrap items-center gap-3">
-        <Link to="/counter" className="link text-sm">← Counter</Link>
-        <Button icon="printer" onClick={print}>{data.label.prints > 0 ? 'Reprint label & receipt' : 'Print label & receipt'}</Button>
-        <form onSubmit={verify} className="flex items-center gap-2">
-          <input className={inputClass} placeholder="Scan printed barcode to verify" value={scan} onChange={(e) => setScan(e.target.value)} />
-          <Button tone="secondary" type="submit">Verify</Button>
-        </form>
+      <div className="no-print space-y-4">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-slate-600">
+          <Link to="/counter" className="font-medium text-brand-700 hover:underline">Counter intake</Link>
+          <Icon name="chevron" className="h-3 w-3 text-slate-400" />
+          <Link to={`/items/${trackingId}`} className="font-medium text-brand-700 hover:underline">{trackingId}</Link>
+          <Icon name="chevron" className="h-3 w-3 text-slate-400" />
+          <span aria-current="page">Label &amp; receipt</span>
+        </nav>
+        <div className="rounded-lg border border-line bg-white p-5">
+          <h1 className="text-xl font-bold text-brand-900">Label and receipt</h1>
+          <p className="text-sm text-slate-600">The letter is registered. Finish these steps before handing the receipt to the sender.</p>
+          <ol className="mt-4 grid gap-4 md:grid-cols-3">
+            <li className="space-y-2">
+              <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Done ok={data.label.prints > 0} n={1} /> Print the label and receipt
+              </p>
+              <Button icon="printer" onClick={print}>{data.label.prints > 0 ? 'Reprint label & receipt' : 'Print label & receipt'}</Button>
+              {data.label.prints > 0 && <p className="text-xs text-slate-500">Printed {data.label.prints} time(s). A reprint asks for a reason.</p>}
+            </li>
+            <li className="space-y-2">
+              <p className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Done ok={verified === true || Boolean(data.label.verified_at)} n={2} /> Scan the printed barcode</p>
+              <form onSubmit={verify} className="flex items-center gap-2">
+                <input className={inputClass} aria-label="Scanned barcode value" placeholder="Scan the label barcode" value={scan} onChange={(e) => setScan(e.target.value)} />
+                <Button tone="secondary" type="submit" disabled={!scan.trim()}>Verify</Button>
+              </form>
+            </li>
+            <li className="space-y-2">
+              <p className="flex items-center gap-2 text-sm font-semibold text-slate-900"><Done ok={false} n={3} /> Stick the label and file the letter</p>
+              <p className="text-xs text-slate-600">Fix the label to the envelope, give the receipt to the sender and place the letter in the dispatch tray.</p>
+            </li>
+          </ol>
+        </div>
+        <ErrorBox error={error} />
+        {verified && <Alert tone="green" title="Label verified">The printed code reads back as {trackingId}. Place the letter in the dispatch tray.</Alert>}
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Print preview</p>
       </div>
-      <ErrorBox error={error} />
-      {verified && <Alert tone="green" title="Label verified">The printed code reads back as {trackingId}. Place the letter in the dispatch tray.</Alert>}
 
       <section className="print-area rounded-lg border-2 border-black bg-white p-4" aria-label="Envelope label">
         <div className="flex items-start justify-between">
@@ -90,4 +117,10 @@ export default function LabelPrint() {
       </section>
     </div>
   )
+}
+
+function Done({ ok, n }) {
+  return ok
+    ? <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-600 text-white"><Icon name="tick" className="h-3.5 w-3.5" /><span className="sr-only">done</span></span>
+    : <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-700 text-xs font-bold text-white">{n}</span>
 }
