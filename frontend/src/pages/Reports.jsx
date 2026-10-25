@@ -28,18 +28,29 @@ export default function Reports() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Reports and experiment settings" />
+      <PageHeader title="Reports & settings" breadcrumbs={[{ label: 'Dashboard', to: '/' }, { label: 'Reports & settings' }]}
+        subtitle="Download evaluation data and manage the location policy and tariff versions." />
       <ErrorBox error={error} />
       {msg && <Alert tone="green">{msg}</Alert>}
-      <Card title="Evaluation exports (no names or addresses)">
-        <div className="flex flex-wrap gap-2">
-          <Button tone="secondary" onClick={() => downloadFile('/api/reports/intake.csv', 'intake_tasks.csv')}>Intake tasks (time, corrections, config)</Button>
-          <Button tone="secondary" onClick={() => downloadFile('/api/reports/events.csv', 'scan_events.csv')}>Scan events (decisions, location)</Button>
-          <Button tone="secondary" onClick={() => downloadFile('/api/reports/notifications.csv', 'notifications.csv')}>Notifications (outcomes, latency)</Button>
+      <Card title="Evaluation exports" description="CSV files for analysis. They contain no names or addresses.">
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            ['Intake tasks', 'Time taken, corrections and capture mode per registration', '/api/reports/intake.csv', 'intake_tasks.csv'],
+            ['Scan events', 'Decisions and location checks for every scan', '/api/reports/events.csv', 'scan_events.csv'],
+            ['Sender messages', 'Outcomes and delivery latency of notifications', '/api/reports/notifications.csv', 'notifications.csv'],
+          ].map(([title, text, url, file]) => (
+            <div key={file} className="flex flex-col justify-between gap-3 rounded-md border border-slate-200 p-4">
+              <div>
+                <p className="font-semibold text-slate-900">{title}</p>
+                <p className="text-xs text-slate-600">{text}</p>
+              </div>
+              <Button size="sm" tone="secondary" icon="download" className="self-start" onClick={() => downloadFile(url, file)}>Download CSV</Button>
+            </div>
+          ))}
         </div>
       </Card>
       {policy && (
-        <Card title="Location policy (proposal L0 / L1 / L2)">
+        <Card title="Location policy" description="How scan locations are judged (L0 / L1 / L2 from the proposal).">
           <p className="text-sm">Active: <b>{policy.policy_version}</b> – mode {policy.mode}, accuracy read as {Math.round(policy.accuracy_confidence * 100)} % radius,
             consistent if P(inside) ≥ {policy.p_consistent}, mismatch if ≤ {policy.p_mismatch}, max fix age {policy.max_fix_age_s} s.</p>
           {user.role === 'admin' && (
@@ -55,10 +66,10 @@ export default function Reports() {
           )}
         </Card>
       )}
-      <Card title="Tariff versions">
-        <ul className="space-y-2 text-sm">
+      <Card title="Tariff versions" description="Postage bands and registration fee used to calculate the counter charge.">
+        <ul className="divide-y divide-slate-100 text-sm">
           {tariffs.map((t) => (
-            <li key={t.tariff_version} className="flex flex-wrap items-center gap-2">
+            <li key={t.tariff_version} className="flex flex-wrap items-center gap-2 py-2 first:pt-0 last:pb-0">
               <b>{t.tariff_version}</b> effective {String(t.effective_from).slice(0, 10)}
               <Badge tone={t.approval_status === 'approved' ? 'green' : 'amber'}>{t.approval_status}</Badge>
               <span className="text-xs text-slate-500">registration Rs. {t.registration_fee_lkr} · {t.letter_postage_bands.length} bands</span>
