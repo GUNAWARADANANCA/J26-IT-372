@@ -57,10 +57,10 @@ Run it (listening on all interfaces so the phone and the ESP32 can reach it):
 ### Demo accounts (password = `DEMO_PASSWORD`)
 | Username | Role | Office | Use it for |
 |---|---|---|---|
-| `counter2` | counter officer | SLIIT Malabe demo counter (owns `SCALECAM-01`) | counter intake with the IoT scale |
-| `hubdemo` | hub officer | SLIIT demo | dispatch / arrival scans in campus trials |
-| `postman2` | postman | SLIIT demo | mobile app: out for delivery, delivered |
-| `pm2` | postmaster | SLIIT demo | review queue, messages, reports, offices |
+| `counter2` | counter officer | Malabe Post Office (owns `SCALECAM-01`) | counter intake with the IoT scale |
+| `hub2` | hub officer | Malabe Post Office | dispatch / arrival scans in campus trials |
+| `postman2` | postman | Malabe Post Office | mobile app: out for delivery, delivered |
+| `pm2` | postmaster | Malabe Post Office | review queue, messages, reports, offices |
 | `counter1`, `hub1`, `hubjaf`, `postman1`, `pm1` | – | Kaduwela, Central Mail Exchange, Jaffna | the Kaduwela → Colombo → Jaffna journey (proposal §4.5) |
 | `admin` | administrator | – | devices, users, tariff approval, location-policy switch |
 
@@ -163,11 +163,11 @@ Details: [ml/README.md](../ml/README.md) and [Datasets/README.md](../Datasets/RE
      මොරටුව 10400
      ```
      and press **Split into fields**. Fields fill in with confidence badges; the town/postcode check turns green.
-   * Fill the sender (or parse it the same way), choose the **destination office** *SLIIT Malabe demo counter*, choose e-mail updates (any test address – messages are written to `backend/storage/outbox_mail/` as `.eml` files), **confirm fields**.
+   * Fill the sender (or parse it the same way), choose the **destination office** *Malabe Post Office*, choose e-mail updates (any test address – messages are written to `backend/storage/outbox_mail/` as `.eml` files), **confirm fields**.
    * Place the letter on the scale (simulator: `w 20`) → **Use this weight** → **Calculate charge** → Rs 130.00 (70 + 60) → **accept & print label**.
    * On the label page: **Print**, then type/scan the ID into *Verify*.
-3. **Dispatch (web, `hubdemo`)** → *Record scan* → paste the ID → *Dispatched* → allow location.
-4. **Arrival with a bad location (field app or web, `hubdemo`)** → *At destination office* from somewhere far away → it is **held for review** (status does not change, no message).
+3. **Dispatch (web, `hub2`)** → *Record scan* → paste the ID → *Dispatched* → allow location.
+4. **Arrival with a bad location (field app or web, `hub2`)** → *At destination office* from somewhere far away → it is **held for review** (status does not change, no message).
 5. **Review (web, `pm2`)** → *Review queue* → read the reason → approve with a reason.
 6. **Delivery (field app, `postman2`)** → scan the label on the screen → *Out for delivery* → scan again → *Delivered* → recipient name + signature.
 7. **Sender view** → open the tracking link printed on the receipt (`/track/<ID>#t=…`): office names and times only, no coordinates or staff names.
