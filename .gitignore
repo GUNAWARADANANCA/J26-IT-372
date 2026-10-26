@@ -74,3 +74,4 @@ Datasets/processed/synthetic_envelopes/images/
 ml/reports/**/grid.crfsuite
 mobile_app/.expo/
 mobile_app/dist/
+firmware/*.pt
