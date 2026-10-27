@@ -54,12 +54,12 @@ English description, shows a confidence score, sends uncertain cases to an autho
 officer's daily KPI achievement with coaching suggestions. Everything is decision support: the officer approves every
 ledger decision and a person decides on every pay, warning or promotion matter.
 
-| # | Component | Owner |
-|---|---|---|
-| 1 | Smart Registered Mail Intake and Tracking | Senarathna W.L.S.K (IT23324138) |
-| 2 | Postal Delivery Operations and Relief Assignment | team member |
-| **3** | **Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk** (research title: *Intelligent Ledger and KPI Prediction Module*) | **Gunawardena N C A (IT23323216)** |
-| 4 | Postal Address City Extraction | team member |
+| # | Component | What it does | Main code |
+|---|---|---|---|
+| 1 | Smart Registered Mail Intake and Tracking – Senarathna W.L.S.K (IT23324138) | counter acceptance of registered letters with trilingual assisted address reading and an IoT scale and camera, versioned tariff, barcode/QR labels, location-aware tracking scans with offline sync, review, sender notifications, public tracking | `backend/app/`, `frontend/src/pages/`, `frontend/src/components/`, `mobile_app/flutter_app/`, `iot/`, `ml/` |
+| 2 | Postal Delivery Operations and Relief Assignment | helps postmen with delivery assignments, delivery locations, routes and delivery progress; starts from a labelled delivery-area dataset for the Kaduwela area | `Datasets/kaduwela_postal_dataset_Final.xlsx` |
+| **3** | **Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk** (research title: *Intelligent Ledger and KPI Prediction Module*) – **Gunawardena N C A (IT23323216)** | employee records, daily KPI log, attendance with location and door codes, productivity and next-week KPI forecasts, entitlements and payroll (EPF/ETF), daily-accounts import, cash reconciliation and GL-code suggestions, Power BI reporting | `backend/main.py`, `backend/routes.py`, `backend/attendance.py`, `backend/payroll.py`, `backend/productivity.py`, `frontend/src/admin/`, `frontend/src/attendance/`, `frontend/src/entitlements/` |
+| 4 | Postal Address City Extraction | crops the recipient label from a mail photo, reads it with Tesseract in four orientations and picks the most likely city by pattern and fuzzy matching | `firmware/address_extraction.ipynb` |
 
 What this component does in a post office:
 
