@@ -7,18 +7,17 @@ import tailwindcss from '@tailwindcss/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
-const useHttps = process.env.HTTPS === 'true'
 
-<<<<<<< HEAD
 // The React app talks to the FastAPI backend through /api (and /health for the KPI desk).
 // In development Vite proxies them to VITE_API_PROXY (default http://127.0.0.1:8000),
 // so the browser only ever sees one origin.
-// The dev server can use HTTPS (self-signed) so phones on the Wi-Fi may use location and camera
-// (attendance QR, webcam capture). Set VITE_HTTPS=false in frontend/.env for plain http.
+// HTTPS is enabled by default for camera and location support. Set VITE_HTTPS=false for HTTP.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const api = env.VITE_API_PROXY || 'http://127.0.0.1:8000'
-  const enableSsl = env.VITE_HTTPS === 'false' ? false : (env.VITE_HTTPS === 'true' || process.env.HTTPS === 'true')
+  const enableSsl = env.VITE_HTTPS === 'false'
+    ? false
+    : env.VITE_HTTPS === 'true' || process.env.HTTPS === 'true' || !env.VITE_HTTPS
 
   return {
     plugins: [
@@ -43,7 +42,7 @@ export default defineConfig(({ mode }) => {
             proxy.on('error', (err, _req, res) => {
               if (res && !res.headersSent) {
                 res.writeHead(502, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify({ detail: `FastAPI backend at ${api} is unreachable: ${err.message}` }))
+                res.end(JSON.stringify({ detail: `FastAPI backend on ${api} is unreachable: ${err.message}` }))
               }
             })
           },
@@ -75,72 +74,4 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 600,
     },
   }
-=======
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    ...(useHttps ? [basicSsl()] : []),
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(root, 'src'),
-    },
-  },
-  server: {
-    host: '::',
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        timeout: 120000,
-        configure: (proxy) => {
-          proxy.on('error', (err, _req, res) => {
-            if (res && !res.headersSent) {
-              res.writeHead(502, { 'Content-Type': 'application/json' })
-              res.end(JSON.stringify({ detail: `FastAPI backend on port 8000 is unreachable: ${err.message}` }))
-            }
-          })
-        },
-      },
-      '/health': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        timeout: 30000,
-      },
-    },
-  },
-  preview: {
-    host: '::',
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        timeout: 120000,
-      },
-      '/health': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        timeout: 30000,
-      },
-    },
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@mui') || id.includes('@emotion')) return 'vendor-mui'
-            if (id.includes('lucide-react')) return 'vendor-lucide'
-            if (id.includes('recharts') || id.includes('d3')) return 'vendor-charts'
-            if (id.includes('xlsx')) return 'vendor-xlsx'
-          }
-        },
-      },
-    },
-    chunkSizeWarningLimit: 600,
-  },
->>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 })
