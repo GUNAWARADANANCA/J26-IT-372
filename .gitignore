@@ -82,6 +82,21 @@ backend/models/kpi_forecast_model.joblib
 # IDE and OS files
 .vs/
 .vscode/
+.claude/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# --- Smart Registered Mail component ---------------------------------------
+# Runtime data (may contain personal data: envelope images, e-mails)
+backend/storage/
+# Firmware secrets
+iot/**/config.h
+# Regenerable datasets (see Datasets/README.md)
+Datasets/processed/script_id/*.npz
+Datasets/processed/synthetic_envelopes/images/
+# ML scratch
+ml/reports/**/grid.crfsuite
+mobile_app/.expo/
+mobile_app/dist/
+firmware/*.pt

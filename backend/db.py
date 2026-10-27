@@ -122,8 +122,11 @@ def reset_client() -> None:
 
 
 def get_db() -> Database:
-    name = (os.environ.get("KPI_MONGODB_DB", "").strip() or os.environ.get("MONGODB_DB", "postassist").strip()
-            or "postassist")
+    name = (
+        os.environ.get("KPI_MONGODB_DB", "").strip()
+        or os.environ.get("MONGODB_DB", "postassist").strip()
+        or "postassist"
+    )
     try:
         return connect()[name]
     except Exception:

@@ -29,21 +29,14 @@ import DeskLayout from './admin/layout/DeskLayout'
 import frappeTheme from './admin/theme'
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
-import { AuthProvider, useAuth as usePostmasterAuth } from './admin/data/auth'
+import { AuthProvider as KpiAuthProvider, useAuth as useKpiAuth } from './admin/data/auth'
 
-// ------------------------------------------------------------------ registered mail (staff sign-in)
-function Protected({ children }) {
-  const { user, loading } = useAuth()
-  if (loading) return <div className="grid h-full place-items-center"><Spinner /></div>
-  if (!user) return <Navigate to="/login" replace />
-  return children
-}
-
-// ------------------------------------------------------------------ Postal KPI desk
-// Lazy-loaded pages for code splitting & fast initial paint
+// Lazy-loaded pages for Postal KPI desk & Daily Accounts
 const EmployeeList = lazy(() => import('./admin/pages/EmployeeList'))
 const EmployeeForm = lazy(() => import('./admin/pages/EmployeeForm'))
 const DailyAttendancePage = lazy(() => import('./admin/pages/DailyAttendancePage'))
+const DailyKpiList = lazy(() => import('./admin/pages/DailyKpiList'))
+const DailyKpiForm = lazy(() => import('./admin/pages/DailyKpiForm'))
 const AttendanceLogList = lazy(() => import('./admin/pages/AttendanceLogList'))
 const AttendanceLogForm = lazy(() => import('./admin/pages/AttendanceLogForm'))
 const SettingsPage = lazy(() => import('./admin/pages/SettingsPage'))
@@ -60,6 +53,15 @@ const EntitlementDashboard = lazy(() => import('./entitlements/EntitlementDashbo
 const PayrollPage = lazy(() => import('./entitlements/PayrollPage'))
 const EntitlementPage = lazy(() => import('./entitlements/EntitlementPage'))
 
+// Registered mail route protection
+function Protected({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="grid h-full place-items-center"><Spinner /></div>
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
+// ------------------------------------------------------------------ Postal KPI desk helpers
 function PageLoadingFallback() {
   return (
     <Box
@@ -82,7 +84,7 @@ function PageLoadingFallback() {
 }
 
 function RequirePostmaster({ children }) {
-  const { user } = usePostmasterAuth()
+  const { user } = useKpiAuth()
   if (user?.role !== 'postmaster') {
     return <Navigate to="/employee" replace />
   }
@@ -92,6 +94,12 @@ function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
   return <EmployeeForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
+}
+
+function DailyKpiFormRoute({ onSaved }) {
+  const { id } = useParams()
+  const isNew = id === 'new'
+  return <DailyKpiForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
 }
 
 function AttendanceLogFormRoute({ onSaved }) {
@@ -117,7 +125,7 @@ function BootScreen({ children }) {
   )
 }
 
-// The desk's own theme, start-up check and dropdown options apply to its pages only.
+// The desk's own theme, start-up check, auth provider, and dropdown options apply to its pages only.
 function KpiDeskShell() {
   const [ready, setReady] = useState(false)
   const [bootError, setBootError] = useState('')
@@ -150,12 +158,18 @@ function KpiDeskShell() {
       </BootScreen>
     )
   } else {
-    body = <FieldOptionsProvider><Outlet /></FieldOptionsProvider>
+    body = <Outlet />
   }
   return (
     <ThemeProvider theme={frappeTheme}>
       <CssBaseline />
-      {body}
+      <KpiAuthProvider>
+        <FieldOptionsProvider>
+          <Suspense fallback={<PageLoadingFallback />}>
+            {body}
+          </Suspense>
+        </FieldOptionsProvider>
+      </KpiAuthProvider>
     </ThemeProvider>
   )
 }
@@ -165,9 +179,7 @@ export default function App() {
   const bump = useCallback(() => setRefreshKey((k) => k + 1), [])
 
   return (
-    <AuthProvider>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Routes>
+    <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/track/:trackingId" element={<Track />} />
           <Route path="/items/:trackingId/print" element={<Protected><LabelPrint /></Protected>} />
@@ -194,9 +206,9 @@ export default function App() {
             <Route element={<DeskLayout />}>
               <Route path="employee" element={<EmployeeList refreshKey={refreshKey} />} />
               <Route path="employee/:id" element={<EmployeeFormRoute onSaved={bump} />} />
+              <Route path="daily-kpi-log" element={<DailyKpiList refreshKey={refreshKey} />} />
+              <Route path="daily-kpi-log/:id" element={<DailyKpiFormRoute onSaved={bump} />} />
               <Route path="daily-attendance" element={<DailyAttendancePage refreshKey={refreshKey} />} />
-              <Route path="daily-kpi-log" element={<Navigate to="/attendance-log" replace />} />
-              <Route path="daily-kpi-log/*" element={<Navigate to="/attendance-log" replace />} />
               <Route path="attendance-log" element={<AttendanceLogList refreshKey={refreshKey} />} />
               <Route path="attendance-log/:id" element={<AttendanceLogFormRoute onSaved={bump} />} />
               <Route path="settings" element={<SettingsPage />} />
@@ -224,8 +236,6 @@ export default function App() {
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </AuthProvider>
+    </Routes>
   )
 }
