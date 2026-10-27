@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PostAssist LK – Intelligent Backbone for Local Postal Services
 
 **SLIIT final-year research project · J26-IT-372**
@@ -797,6 +798,9 @@ settings).
   position; results depend on photo quality and on the installed Tesseract language packs.
 * Research prototype: use synthetic mail and synthetic staff data unless operational and ethics approval has been
   obtained.
+=======
+# J26-IT-372
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 
 ## Postmaster sign-in
 
@@ -896,3 +900,7 @@ POWERBI_REPORT_POSTAL_KPI_DASHBOARD=
 The API exposes `GET /api/powerbi/status` and `POST /api/powerbi/embed` to a postmaster session. Status returns setting names that are still empty. It does not return secret values. Embed asks Microsoft for a view token only when every setting above is present. Opening a page does not refresh a dataset. Schedule that refresh in the Power BI service.
 
 Create the reports in a workspace that the service principal can access. Use the existing KPI and forecast collections as the dataset source. The application model remains responsible for predictions. Employee row-level security is not applied by this integration. A postmaster session is required before an embed token is issued. Power BI Pro or a capacity licence is required for app-owns-data embedding; this repository does not supply that licence.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae

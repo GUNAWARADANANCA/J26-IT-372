@@ -1,7 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+<<<<<<< HEAD
 import { Navigate, Outlet, Route, Routes, useParams } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+=======
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
@@ -26,17 +30,28 @@ import ScanEvent from './pages/ScanEvent.jsx'
 import Track from './pages/Track.jsx'
 // Postal KPI desk (employees, daily KPI, attendance, productivity, entitlements and payroll)
 import DeskLayout from './admin/layout/DeskLayout'
+<<<<<<< HEAD
 import frappeTheme from './admin/theme'
+=======
+import { AuthProvider, useAuth } from './admin/data/auth'
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 import { ensureSeeded } from './admin/data/seed'
 import { FieldOptionsProvider } from './admin/data/fieldOptions'
 import { AuthProvider as KpiAuthProvider, useAuth as useKpiAuth } from './admin/data/auth'
 
+<<<<<<< HEAD
 // Lazy-loaded pages for Postal KPI desk & Daily Accounts
 const EmployeeList = lazy(() => import('./admin/pages/EmployeeList'))
 const EmployeeForm = lazy(() => import('./admin/pages/EmployeeForm'))
 const DailyAttendancePage = lazy(() => import('./admin/pages/DailyAttendancePage'))
 const DailyKpiList = lazy(() => import('./admin/pages/DailyKpiList'))
 const DailyKpiForm = lazy(() => import('./admin/pages/DailyKpiForm'))
+=======
+// Lazy-loaded pages for code splitting & fast initial paint
+const EmployeeList = lazy(() => import('./admin/pages/EmployeeList'))
+const EmployeeForm = lazy(() => import('./admin/pages/EmployeeForm'))
+const DailyAttendancePage = lazy(() => import('./admin/pages/DailyAttendancePage'))
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 const AttendanceLogList = lazy(() => import('./admin/pages/AttendanceLogList'))
 const AttendanceLogForm = lazy(() => import('./admin/pages/AttendanceLogForm'))
 const SettingsPage = lazy(() => import('./admin/pages/SettingsPage'))
@@ -53,6 +68,7 @@ const EntitlementDashboard = lazy(() => import('./entitlements/EntitlementDashbo
 const PayrollPage = lazy(() => import('./entitlements/PayrollPage'))
 const EntitlementPage = lazy(() => import('./entitlements/EntitlementPage'))
 
+<<<<<<< HEAD
 // Registered mail route protection
 function Protected({ children }) {
   const { user, loading } = useAuth()
@@ -62,6 +78,8 @@ function Protected({ children }) {
 }
 
 // ------------------------------------------------------------------ Postal KPI desk helpers
+=======
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 function PageLoadingFallback() {
   return (
     <Box
@@ -84,24 +102,35 @@ function PageLoadingFallback() {
 }
 
 function RequirePostmaster({ children }) {
+<<<<<<< HEAD
   const { user } = useKpiAuth()
+=======
+  const { user } = useAuth()
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
   if (user?.role !== 'postmaster') {
     return <Navigate to="/employee" replace />
   }
   return children
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 function EmployeeFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
   return <EmployeeForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
 }
 
+<<<<<<< HEAD
 function DailyKpiFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
   return <DailyKpiForm name={isNew ? null : decodeURIComponent(id)} isNew={isNew} onSaved={onSaved} />
 }
 
+=======
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
 function AttendanceLogFormRoute({ onSaved }) {
   const { id } = useParams()
   const isNew = id === 'new'
@@ -161,6 +190,7 @@ function KpiDeskShell() {
     body = <Outlet />
   }
   return (
+<<<<<<< HEAD
     <ThemeProvider theme={frappeTheme}>
       <CssBaseline />
       <KpiAuthProvider>
@@ -199,10 +229,17 @@ export default function App() {
           </Route>
 
           <Route element={<KpiDeskShell />}>
+=======
+    <AuthProvider>
+      <FieldOptionsProvider>
+        <Suspense fallback={<PageLoadingFallback />}>
+          <Routes>
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
             <Route path="attendance-qr/token" element={<AttendanceQrPage />} />
             <Route path="sign-in" element={<SignInPage />} />
             <Route path="daily-accounts" element={<DailyAccountsPage />} />
             <Route path="daily-accounts/*" element={<DailyAccountsPage />} />
+<<<<<<< HEAD
             <Route element={<DeskLayout />}>
               <Route path="employee" element={<EmployeeList refreshKey={refreshKey} />} />
               <Route path="employee/:id" element={<EmployeeFormRoute onSaved={bump} />} />
@@ -211,6 +248,38 @@ export default function App() {
               <Route path="daily-attendance" element={<DailyAttendancePage refreshKey={refreshKey} />} />
               <Route path="attendance-log" element={<AttendanceLogList refreshKey={refreshKey} />} />
               <Route path="attendance-log/:id" element={<AttendanceLogFormRoute onSaved={bump} />} />
+=======
+            <Route index element={<Navigate to="/sign-in" replace />} />
+            <Route element={<DeskLayout />}>
+              <Route
+                path="employee"
+                element={<EmployeeList refreshKey={refreshKey} />}
+              />
+              <Route
+                path="employee/:id"
+                element={<EmployeeFormRoute onSaved={bump} />}
+              />
+              <Route
+                path="daily-attendance"
+                element={<DailyAttendancePage refreshKey={refreshKey} />}
+              />
+              <Route
+                path="daily-kpi-log"
+                element={<Navigate to="/attendance-log" replace />}
+              />
+              <Route
+                path="daily-kpi-log/*"
+                element={<Navigate to="/attendance-log" replace />}
+              />
+              <Route
+                path="attendance-log"
+                element={<AttendanceLogList refreshKey={refreshKey} />}
+              />
+              <Route
+                path="attendance-log/:id"
+                element={<AttendanceLogFormRoute onSaved={bump} />}
+              />
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
               <Route path="settings" element={<SettingsPage />} />
               <Route path="productivity" element={<ProductivityPage />} />
               <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
@@ -233,9 +302,16 @@ export default function App() {
               <Route path="entitlements/loans" element={<EntitlementPage pageKey="loans" />} />
               <Route path="*" element={<Navigate to="/employee" replace />} />
             </Route>
+<<<<<<< HEAD
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+=======
+          </Routes>
+        </Suspense>
+      </FieldOptionsProvider>
+    </AuthProvider>
+>>>>>>> 9d23eff4f7a18d59ab13c66ac499ca36202d5cae
   )
 }
