@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createFieldOption, getFieldOptions } from './repository'
+import { useAuth } from './auth'
 
 const FieldOptionsContext = createContext(null)
 
@@ -18,10 +19,16 @@ function mergeOptions(builtIn = [], extras = [], current) {
 }
 
 export function FieldOptionsProvider({ children }) {
+  const auth = useAuth()
+  const user = auth?.user
   const [extra, setExtra] = useState({})
 
   useEffect(() => {
     let cancelled = false
+    if (!user) {
+      setExtra({})
+      return
+    }
     getFieldOptions()
       .then((data) => {
         if (!cancelled) setExtra(data || {})
@@ -30,7 +37,7 @@ export function FieldOptionsProvider({ children }) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [user])
 
   async function addOption(field, value) {
     const saved = await createFieldOption(field, value.trim())

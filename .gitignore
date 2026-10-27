@@ -1,34 +1,29 @@
+# Environment files
 .env
 .env.local
 .env.development
 .env.production
 .env.test
 *.env
-
 !.env.example
 !environment.example
 
-
-
+# Python
 *.py[cod]
 *$py.class
-
 venv/
 env/
 .venv/
 ENV/
 .python-version
-
 build/
 dist/
 *.egg-info/
 .eggs/
 *.egg
 pip-wheel-metadata/
-
 Pipfile.lock
 poetry.lock
-
 .pytest_cache/
 .coverage
 .coverage.*
@@ -39,39 +34,44 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 .hypothesis/
-
-# Jupyter Notebook
 .ipynb_checkpoints/
 
-
-
+# Node, Vite, and frontend build output
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
 build/
 dist/
 .next/
 out/
-
 .vite/
 vite.config.ts.timestamp-*
 vite.config.js.timestamp-*
-
 .pnpm-store/
 
-# --- Smart Registered Mail component ---------------------------------------
-# Runtime data (may contain personal data: envelope images, e-mails)
+# Registered-mail runtime data can contain personal information
 backend/storage/
-# Firmware secrets
+
+# Firmware credentials and generated datasets
 iot/**/config.h
-# Regenerable datasets (see Datasets/README.md)
 Datasets/processed/script_id/*.npz
 Datasets/processed/synthetic_envelopes/images/
-# ML scratch
+
+# ML scratch and local model artifact
 ml/reports/**/grid.crfsuite
+backend/models/kpi_forecast_model.joblib
+firmware/*.pt
+
+# Mobile build output
 mobile_app/.expo/
 mobile_app/dist/
-firmware/*.pt
+
+# IDE, agent, and OS files
+.vs/
+.vscode/
+.claude/
+Thumbs.db
+Desktop.ini
+.DS_Store
