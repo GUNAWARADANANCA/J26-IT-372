@@ -2,14 +2,15 @@
 
 **SLIIT final-year research project · J26-IT-372**
 
-PostAssist LK digitises the daily work of a Sri Lankan post office: accepting and tracking registered mail,
-organising delivery areas and postmen, managing staff attendance, KPIs, entitlements and pay, reconciling the
-office's daily accounts, and reading addresses from mail images. This repository holds the whole system – the
-shared FastAPI backend, the React web app, the Flutter staff mobile app, the IoT scale and camera firmware, the
-machine-learning pipelines, the datasets and the documentation of every component.
+PostAssist LK digitises the daily work of a Sri Lankan post office: managing staff attendance, KPIs, entitlements
+and pay, reconciling the office's daily accounts, accepting and tracking registered mail, organising delivery areas
+and postmen, and reading addresses from mail images. This repository holds the whole system – the shared FastAPI
+backend, the React web app, the Flutter staff mobile app, the IoT scale and camera firmware, the machine-learning
+pipelines, the datasets and the documentation of every component.
 
-**Stack:** Python (FastAPI) · MongoDB · React (Vite, Tailwind, MUI) · Flutter (Android/iOS) · ESP32-CAM (Arduino) ·
-scikit-learn and PyTorch → ONNX models · Tesseract OCR · Power BI (optional reporting).
+**Stack:** Python (FastAPI) · MongoDB · React (Vite, MUI, Tailwind) · scikit-learn (gradient-boosting and random-forest
+KPI models) · Excel/CSV import · Power BI (reporting and embedding) · Postman (API tests) · Flutter (Android/iOS) ·
+ESP32-CAM (Arduino) · PyTorch → ONNX models · Tesseract OCR.
 
 > **Status.** The KPI desk (§7) and, on the feature branch, daily accounts, reconciliation and GL-code suggestion
 > (§6) are implemented. The multilingual GL classifier, confidence routing, feedback learning, the ledger API (§4)
@@ -44,7 +45,7 @@ scikit-learn and PyTorch → ONNX models · Tesseract OCR · Power BI (optional 
 
 ## 1. Component overview and objectives
 
-PostAssist LK has four components. This README covers component 3.
+PostAssist LK has four components. This README covers component 1.
 
 **Intelligent Ledger and KPI Prediction Module** · Gunawardena N C A (IT23323216) · supervisors Dr. Junius Anjana
 and Mrs. Poorna Panduwawala. It is the accounts and performance part of PostAssist LK. It covers the postmaster's
@@ -56,10 +57,10 @@ ledger decision and a person decides on every pay, warning or promotion matter.
 
 | # | Component | What it does | Main code |
 |---|---|---|---|
-| 1 | Smart Registered Mail Intake and Tracking – Senarathna W.L.S.K (IT23324138) | counter acceptance of registered letters with trilingual assisted address reading and an IoT scale and camera, versioned tariff, barcode/QR labels, location-aware tracking scans with offline sync, review, sender notifications, public tracking | `backend/app/`, `frontend/src/pages/`, `frontend/src/components/`, `mobile_app/flutter_app/`, `iot/`, `ml/` |
-| 2 | Postal Delivery Operations and Relief Assignment | helps postmen with delivery assignments, delivery locations, routes and delivery progress; starts from a labelled delivery-area dataset for the Kaduwela area | `Datasets/kaduwela_postal_dataset_Final.xlsx` |
-| **3** | **Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk** (research title: *Intelligent Ledger and KPI Prediction Module*) – **Gunawardena N C A (IT23323216)** | employee records, daily KPI log, attendance with location and door codes, productivity and next-week KPI forecasts, entitlements and payroll (EPF/ETF), daily-accounts import, cash reconciliation and GL-code suggestions, Power BI reporting | `backend/main.py`, `backend/routes.py`, `backend/attendance.py`, `backend/payroll.py`, `backend/productivity.py`, `frontend/src/admin/`, `frontend/src/attendance/`, `frontend/src/entitlements/` |
-| 4 | Postal Address City Extraction | crops the recipient label from a mail photo, reads it with Tesseract in four orientations and picks the most likely city by pattern and fuzzy matching | `firmware/address_extraction.ipynb` |
+| **1** | **Intelligent Ledger and KPI Prediction Module** (Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk) – **Gunawardena N C A (IT23323216)** | employee records, daily KPI log, attendance with location and door codes, productivity and next-week KPI forecasts, entitlements and payroll (EPF/ETF), daily-accounts import, cash reconciliation and GL-code suggestions, Power BI reporting | `backend/main.py`, `backend/routes.py`, `backend/attendance.py`, `backend/payroll.py`, `backend/productivity.py`, `frontend/src/admin/`, `frontend/src/attendance/`, `frontend/src/entitlements/` |
+| 2 | Smart Registered Mail Intake and Tracking – Senarathna W.L.S.K (IT23324138) | counter acceptance of registered letters with trilingual assisted address reading and an IoT scale and camera, versioned tariff, barcode/QR labels, location-aware tracking scans with offline sync, review, sender notifications, public tracking | `backend/app/`, `frontend/src/pages/`, `frontend/src/components/`, `mobile_app/flutter_app/`, `iot/`, `ml/` |
+| 3 | Postal Delivery Operations and Relief Assignment | helps postmen with delivery assignments, delivery locations, routes and delivery progress; starts from a labelled delivery-area dataset for the Kaduwela area | `Datasets/kaduwela_postal_dataset_Final.xlsx` |
+| 4 | Postal Address Beat Extraction | crops the recipient label from a mail photo, reads it with Tesseract in four orientations and picks the most likely city by pattern and fuzzy matching | `firmware/address_extraction.ipynb` |
 
 What this component does in a post office:
 
@@ -72,7 +73,7 @@ What this component does in a post office:
 * **Power BI dashboards** show ledger postings, reconciliation status, revenue, GL accuracy, confidence levels and
   KPI results to managers and postmasters.
 
-Components 1 and 3 already share one backend process (port 8000) and one web app (port 5173). Other components may
+Components 1 and 2 already share one backend process (port 8000) and one web app (port 5173). Other components may
 later consume approved, versioned APIs from this module without access to the complete financial database.
 
 ### Specific objectives and proposed acceptance targets
@@ -364,7 +365,7 @@ test values and must not show unauthorised private data.
 `frontend/` – one Vite app (React 19) served on `https://localhost:5173` (also `https://<laptop-IP>:5173` on the
 LAN). Vite forwards `/api` to the backend. The KPI desk uses MUI.
 
-**Postal KPI desk (component 3)**
+**Postal KPI desk (component 1)**
 
 | Page | Route |
 |---|---|
@@ -392,7 +393,7 @@ for plain HTTP.
 One process: `uvicorn app.main:app` in `backend/` serves the registered-mail API and, when its packages are
 installed, the KPI desk API. Interactive documentation at <http://localhost:8000/docs>.
 
-**Postal KPI desk (component 3)** – `backend/routes.py`, health at `/health`
+**Postal KPI desk (component 1)** – `backend/routes.py`, health at `/health`
 
 | Endpoints | Purpose |
 |---|---|
@@ -448,7 +449,7 @@ preferred. None of these datasets claims to represent all Sri Lankan postal bran
 
 ## 13. Repository layout
 
-Component 3 files in the shared repository (planned additions in italics):
+Component 1 files in the shared repository (planned additions in italics):
 
 ```
 J26-IT-372/
@@ -558,7 +559,7 @@ npm run dev                     # https://localhost:5173
 
 | Component | Branch | In `main` |
 |---|---|---|
-| 3 – Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk | `feature/daily-accounts-reconciliation-ledger-prediction` | KPI desk core merged ([PR #2](https://github.com/GUNAWARADANANCA/J26-IT-372/pull/2)); daily accounts, sign-in, forecasts, simulator, coach, work allocation and reporting still on the branch |
+| 1 – Intelligent Ledger and KPI Prediction Module (Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk) | `feature/daily-accounts-reconciliation-ledger-prediction` | KPI desk core merged ([PR #2](https://github.com/GUNAWARADANANCA/J26-IT-372/pull/2)); daily accounts, sign-in, forecasts, simulator, coach, work allocation and reporting still on the branch |
 
 **Work packages (provisional 24 weeks, about 600 planned hours)**
 
