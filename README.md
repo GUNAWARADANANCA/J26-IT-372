@@ -16,6 +16,9 @@ officer's review.
 The primary research focus documented here is **Component 1: the Intelligent Ledger and KPI Prediction Module**,
 also referred to as Daily Accounts Reconciliation, Ledger Prediction and the Postal KPI Desk.
 
+Component 1 is led by Gunawardena N C A (IT23323216), under supervisors Dr. Junius Anjana and
+Mrs. Poorna Panduwawala. The registered-mail component is led by Senarathna W.L.S.K (IT23324138).
+
 | # | Component | Purpose | Current implementation | Key code or data locations |
 |---|---|---|---|---|
 | **1** | **Intelligent Ledger and KPI Prediction Module** (Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk) | Manage staff, attendance, daily KPIs, entitlements, payroll, productivity, and office accounts | FastAPI routes and React desk pages, including daily-account imports, reconciliation, reporting, and GL-code suggestions | `backend/main.py`, `backend/routes.py`, `backend/attendance.py`, `backend/payroll.py`, `backend/productivity.py`, `frontend/src/admin/`, `frontend/src/attendance/`, `frontend/src/entitlements/` |
@@ -167,6 +170,9 @@ Proposed acceptance targets include at least 95% of API tests passing with unaut
 pilot users. These are **targets only**; they require feasibility review and supervisor approval before held-out
 evaluation. No test counts, model scores or security certification are claimed here as completed results.
 
+Additional proposed non-functional criteria are no duplicate ledger records during idempotency tests, manual selection
+for every low-confidence test case, and no private transaction or employee data in ordinary logs.
+
 The proposal estimates 1,000–1,500 unique primary postal transactions for GL evaluation, a separate multilingual
 secondary dataset, and 500–1,000 operational or synthetic KPI records. These are **planning estimates**, not
 datasets confirmed as available or collected. Sample sizes, labels, data permissions and class coverage must be
@@ -228,6 +234,29 @@ The branch's KPI forecast model uses work counts/rates, route length, leave, ove
 office attributes; its feature documentation describes 26 inputs and provisional 0.40/0.30/0.30 completion,
 accuracy and timeliness weights. Forecasts, coaching and work-allocation or performance-review suggestions are
 decision-support only; they do not change pay, warnings or promotions without an authorised person's decision.
+
+The KPI desk's existing records and attendance settings support staff, daily work, office location and attendance
+windows, payroll, EPF/ETF contributions, leave and other entitlements. Forecast weights and example review thresholds
+are prototype settings, not official employment or Sri Lanka Post policy.
+
+#### Web routes and API surface
+
+The React app exposes the following principal KPI desk routes:
+
+| Area | Routes |
+|---|---|
+| Employees and daily KPI | `/employee`, `/employee/:id`, `/daily-kpi-log`, `/daily-kpi-log/:id` |
+| Attendance | `/attendance-qr/token`, `/daily-attendance`, `/attendance-log`, `/attendance-log/:id` |
+| Daily accounts | `/daily-accounts` |
+| Productivity and forecast tools | `/productivity`, `/kpi-simulator`, `/kpi-forecasts`, `/forecast-monitoring` |
+| Administration and reporting | `/settings`, `/postal-kpi-dashboard`, `/work-allocation` |
+| Entitlements and payroll | `/entitlements`, `/entitlements/payroll`, `/entitlements/epf`, `/entitlements/etf`, `/entitlements/leave`, `/entitlements/holiday-pay`, `/entitlements/overtime`, `/entitlements/gratuity`, `/entitlements/promotions`, `/entitlements/transfers`, `/entitlements/family-benefits`, `/entitlements/retirement`, `/entitlements/loans` |
+
+These are routes in the current frontend, not a claim that the separate research ledger screens are implemented. The
+backend exposes KPI-desk route groups for authentication, daily accounts, attendance, payroll, entitlements,
+productivity/coaching, forecasts, allocation, reporting and optional Power BI. Consult the running OpenAPI page at
+<http://localhost:8000/docs> for exact methods and request schemas. The proposed ledger endpoints and fields above
+remain separate from the implemented `/api/daily-accounts/` API.
 
 ### Research and hardware
 
@@ -406,6 +435,11 @@ flutter test
 
 ML training and evaluation instructions are in [ml/README.md](ml/README.md). Hardware verification steps are in
 the [IoT integration test flow](Documents/IoT_Integration_Test_Flow.md).
+
+The repository includes the weekly KPI model at `backend/models/weekly_kpi_model.joblib`, a next-week evaluation
+script at `backend/evaluation/evaluate_next_week_kpi.py`, and synthetic employee-week data at
+`backend/data/synthetic/synthetic_employee_weeks.csv`. A planned multilingual GL model and ledger-prediction
+evaluation are not represented as completed models or results here.
 
 Ledger-research validation is planned to cover invalid and duplicate submissions, authentication and role checks,
 Sinhala/Tamil/English inputs, confidence routing, officer approval and correction, reconciliation exceptions,
