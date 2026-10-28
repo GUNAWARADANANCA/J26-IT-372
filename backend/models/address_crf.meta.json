@@ -1,0 +1,27 @@
+{
+  "model_version": "address-crf-20261001",
+  "trained_at": "2026-10-01T16:58:28+00:00",
+  "feature_version": "2026.10-v1",
+  "labels": [
+    "NAME",
+    "HOUSE",
+    "STREET",
+    "LOCALITY",
+    "CITY",
+    "REGION",
+    "POSTCODE",
+    "COUNTRY",
+    "O"
+  ],
+  "c1": 0.1,
+  "c2": 0.01,
+  "review_threshold": 0.974,
+  "test_metrics": {
+    "token_accuracy": 0.9968,
+    "macro_f1": 0.9948,
+    "required_field_exact_match": 0.9943,
+    "address_exact_match": 0.9833,
+    "ece": 0.0024
+  },
+  "training_data": "Datasets/processed/address_tagging (see Datasets/README.md)"
+}

@@ -1,0 +1,64 @@
+{
+  "_about": "Author-curated trilingual vocabulary of Sri Lankan postal-address markers. Used as (a) gazetteer-style features for the address-field tagger and (b) building blocks for synthetic envelope addresses. Spellings must be reviewed by native Sinhala and Tamil speakers before final evaluation (see Datasets/README.md, section 'Curated resources').",
+  "version": "2026-10-01",
+  "honorific_prefix": {
+    "en": ["Mr", "Mr.", "Mrs", "Mrs.", "Ms", "Ms.", "Miss", "Dr", "Dr.", "Rev", "Rev.", "Ven", "Ven.", "Prof", "Prof.", "Hon", "Hon.", "Master"],
+    "si": ["ගරු", "පූජ්‍ය", "ආචාර්ය", "වෛද්‍ය", "මහාචාර්ය"],
+    "ta": ["திரு", "திரு.", "திருமதி", "திருமதி.", "செல்வி", "செல்வி.", "கலாநிதி", "வைத்தியர்", "டாக்டர்", "பேராசிரியர்", "அருட்திரு"]
+  },
+  "honorific_suffix": {
+    "en": [],
+    "si": ["මහතා", "මහත්මිය", "මෙනවිය", "මයා", "මිය", "හාමුදුරුවෝ"],
+    "ta": ["அவர்கள்"]
+  },
+  "addressee_marker": {
+    "en": ["To", "To:", "To,", "Attn", "Attn:"],
+    "si": ["වෙත", "වෙත,"],
+    "ta": ["அவர்களுக்கு"]
+  },
+  "care_of": {
+    "en": ["C/O", "C/o", "c/o", "C/O.", "Care"],
+    "si": [],
+    "ta": []
+  },
+  "house_marker": {
+    "en": ["No", "No.", "No:", "Number", "#", "Nr"],
+    "si": ["අංක", "අංක:", "අංක."],
+    "ta": ["இல", "இல.", "இல:", "இலக்கம்"]
+  },
+  "street_type": {
+    "en": ["Road", "Rd", "Rd.", "Mawatha", "Mw", "Mw.", "Mawatte", "Street", "St", "St.", "Lane", "Ln", "Avenue", "Ave", "Ave.", "Place", "Pl", "Gardens", "Gdns", "Terrace", "Drive", "Crescent", "Junction", "Hill", "Path", "Passage", "Highway", "Para", "Veediya", "Patumaga"],
+    "si": ["පාර", "මාවත", "වීදිය", "පටුමඟ", "පෙදෙස", "මාර්ගය", "හන්දිය", "උයන", "ඇවනියු", "ප්ලේස්", "ලේන්", "රෝඩ්", "වත්ත"],
+    "ta": ["வீதி", "ஒழுங்கை", "தெரு", "சாலை", "பாதை", "சந்தி", "வழி", "அவென்யூ", "லேன்", "ரோட்", "குறுக்குத்தெரு"]
+  },
+  "region_word": {
+    "en": ["District", "Dist", "Dist.", "Province", "Prov", "Prov."],
+    "si": ["දිස්ත්‍රික්කය", "පළාත"],
+    "ta": ["மாவட்டம்", "மாகாணம்"]
+  },
+  "country": {
+    "en": ["Sri", "Lanka", "SriLanka", "LK", "LKA", "S.L."],
+    "si": ["ශ්‍රී", "ලංකාව", "ලංකා"],
+    "ta": ["இலங்கை", "ஸ்ரீலங்கா", "ஸ்ரீ", "லங்கா"]
+  },
+  "country_phrase": {
+    "en": ["Sri Lanka"],
+    "si": ["ශ්‍රී ලංකාව"],
+    "ta": ["இலங்கை"]
+  },
+  "initials": {
+    "en": ["A.", "B.", "C.", "D.", "E.", "G.", "H.", "J.", "K.", "L.", "M.", "N.", "P.", "R.", "S.", "T.", "U.", "W."],
+    "si": ["ඒ.", "බී.", "සී.", "ඩී.", "ඊ.", "ජී.", "එච්.", "ජේ.", "කේ.", "එල්.", "එම්.", "එන්.", "පී.", "ආර්.", "එස්.", "ටී.", "යූ.", "ඩබ්ලිව්."],
+    "ta": ["க.", "சி.", "ப.", "த.", "ம.", "இ.", "ச.", "வ.", "ந.", "ஆ.", "எஸ்.", "ஏ.", "ஆர்.", "எம்.", "கே.", "ஜே."]
+  },
+  "colombo_name": {
+    "en": "Colombo",
+    "si": "කොළඹ",
+    "ta": "கொழும்பு"
+  },
+  "colombo_zones": {
+    "_about": "Colombo postal zones are written as 'Colombo 03' etc.; the zone number maps to postcode 00300.",
+    "1": "00100", "2": "00200", "3": "00300", "4": "00400", "5": "00500", "6": "00600", "7": "00700", "8": "00800",
+    "9": "00900", "10": "01000", "11": "01100", "12": "01200", "13": "01300", "14": "01400", "15": "01500"
+  }
+}

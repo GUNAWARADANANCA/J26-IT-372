@@ -1,0 +1,9139 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-01T15:19:21Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 254367470,
+  "lat": 6.7175451,
+  "lon": 80.0684241,
+  "tags": {
+    "addr:postcode": "12400",
+    "amenity": "post_office",
+    "name": "Horana post office",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 266478499,
+  "lat": 5.9505111,
+  "lon": 80.4553550,
+  "tags": {
+    "addr:city": "Mirissa",
+    "addr:street": "Colombo -Matara Road",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 331444092,
+  "lat": 6.8465944,
+  "lon": 79.9255936,
+  "tags": {
+    "addr:city": "Maharagama",
+    "addr:street": "Dehiwala Road",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 619297604,
+  "lat": 6.9213534,
+  "lon": 79.8709201,
+  "tags": {
+    "addr:city": "Punchi Borella",
+    "addr:street": "Gnanartha Pradeepa Mawatha",
+    "amenity": "post_office",
+    "check_date": "2023-01-05",
+    "name": "Post Office Punchi Borerella"
+  }
+},
+{
+  "type": "node",
+  "id": 625786574,
+  "lat": 6.8750726,
+  "lon": 79.9353569,
+  "tags": {
+    "addr:city": "Talawatugoda",
+    "addr:street": "Talawatugoda Road",
+    "amenity": "post_office",
+    "name": "Post Office Talawatugoda",
+    "note": "Toponomy corrected in line with Standard Naming Conventions of Survey Dept. of Sri Lanka."
+  }
+},
+{
+  "type": "node",
+  "id": 678287424,
+  "lat": 6.9229035,
+  "lon": 79.8531208,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Slave Island"
+  }
+},
+{
+  "type": "node",
+  "id": 1134708432,
+  "lat": 7.2772505,
+  "lon": 79.8598528,
+  "tags": {
+    "addr:city": "Waikkala",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1138325375,
+  "lat": 6.7749155,
+  "lon": 79.8828845,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Moratuwa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1140291161,
+  "lat": 7.1560749,
+  "lon": 80.0560933,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Veyangoda Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1148495473,
+  "lat": 9.8235890,
+  "lon": 80.2369809,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Point Pedro Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1181986264,
+  "lat": 8.3330301,
+  "lon": 80.4104018,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Anuradhapura Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1243358327,
+  "lat": 8.5684550,
+  "lon": 81.2331673,
+  "tags": {
+    "addr:city": "Trincomalee",
+    "addr:street": "Post Office Road",
+    "amenity": "post_office",
+    "name": "Post Office Trincomalee",
+    "operator": "Sri Lanka POst",
+    "ref": "Trinco"
+  }
+},
+{
+  "type": "node",
+  "id": 1261066169,
+  "lat": 6.8749900,
+  "lon": 79.8609684,
+  "tags": {
+    "addr:city": "Wellawatte - Colombo 06",
+    "amenity": "post_office",
+    "branch": "Wellawatte",
+    "name": "Post Office Wellawatte",
+    "opening_hours": "Mo-Fr 09:00-15:00",
+    "wikidata": "Q3610628",
+    "wikipedia": "en:Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 1398239719,
+  "lat": 5.9752824,
+  "lon": 80.4294463,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Weligama Post office",
+    "ref": "Weligama Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 1420480932,
+  "lat": 6.8752209,
+  "lon": 79.9010879,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mirihana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1478762113,
+  "lat": 7.3764064,
+  "lon": 79.9002602,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Koswatta Post Office",
+    "ref": "61158"
+  }
+},
+{
+  "type": "node",
+  "id": 1528649536,
+  "lat": 6.8478635,
+  "lon": 79.8704876,
+  "tags": {
+    "amenity": "post_office",
+    "name": "KAwdana Sub Post Office",
+    "operator": "Postal Departmant"
+  }
+},
+{
+  "type": "node",
+  "id": 1533923901,
+  "lat": 6.8478712,
+  "lon": 79.8705937,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kawdana Post Office",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 1621585113,
+  "lat": 6.4197541,
+  "lon": 80.0023121,
+  "tags": {
+    "amenity": "post_office",
+    "brand": "DHL",
+    "brand:wikidata": "Q489815",
+    "name": "DHL",
+    "operator": "DHL"
+  }
+},
+{
+  "type": "node",
+  "id": 1796683547,
+  "lat": 6.7132839,
+  "lon": 79.9904923,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Bandaragama"
+  }
+},
+{
+  "type": "node",
+  "id": 1798382660,
+  "lat": 7.2253073,
+  "lon": 80.1976884,
+  "tags": {
+    "addr:city": "warakapola",
+    "addr:street": "Colombo-Kandy Road",
+    "amenity": "post_office",
+    "check_date": "2024-08-22",
+    "name": "Warakapola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1815547363,
+  "lat": 6.9248799,
+  "lon": 79.9406299,
+  "tags": {
+    "amenity": "post_office",
+    "operator": "gov",
+    "ref": "Mulleriyawa sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1815549235,
+  "lat": 6.9270648,
+  "lon": 79.9278928,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mulleriyawa Post Office",
+    "operator": "gov"
+  }
+},
+{
+  "type": "node",
+  "id": 1819857210,
+  "lat": 6.9366165,
+  "lon": 80.9907575,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ettampitiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1822753288,
+  "lat": 6.5837102,
+  "lon": 79.9593632,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kalutara"
+  }
+},
+{
+  "type": "node",
+  "id": 1830490111,
+  "lat": 7.1626160,
+  "lon": 80.5701196,
+  "tags": {
+    "addr:city": "Gampola",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1839503222,
+  "lat": 6.8866576,
+  "lon": 79.9104880,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Beddagana Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1847947555,
+  "lat": 7.1696196,
+  "lon": 79.9501574,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office Minuwangoda"
+  }
+},
+{
+  "type": "node",
+  "id": 1848020330,
+  "lat": 7.3216367,
+  "lon": 79.9770202,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Makandura Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1854600560,
+  "lat": 6.9398941,
+  "lon": 80.1373713,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kosgama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1862625149,
+  "lat": 6.9030792,
+  "lon": 80.0872170,
+  "tags": {
+    "amenity": "post_office",
+    "ele": "18.2",
+    "name": "Pahathgama Post Office",
+    "time": "2012-08-12T06:36:13.257Z"
+  }
+},
+{
+  "type": "node",
+  "id": 1879028084,
+  "lat": 7.3658205,
+  "lon": 81.8108460,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office - Sammanturai"
+  }
+},
+{
+  "type": "node",
+  "id": 1932028157,
+  "lat": 6.1508981,
+  "lon": 80.6973623,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Walasmulla"
+  }
+},
+{
+  "type": "node",
+  "id": 1934641449,
+  "lat": 7.1543603,
+  "lon": 80.6709200,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 1945644654,
+  "lat": 6.9349087,
+  "lon": 81.1542901,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Passara Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1969471282,
+  "lat": 6.5208928,
+  "lon": 80.1167553,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Matugama"
+  }
+},
+{
+  "type": "node",
+  "id": 1974728777,
+  "lat": 7.6706280,
+  "lon": 81.0462230,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dehiattakandiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 1974740755,
+  "lat": 7.7284344,
+  "lon": 81.0159844,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Siripura"
+  }
+},
+{
+  "type": "node",
+  "id": 1980792496,
+  "lat": 6.0632822,
+  "lon": 80.1757746,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Gintota"
+  }
+},
+{
+  "type": "node",
+  "id": 1990941099,
+  "lat": 6.8326492,
+  "lon": 79.8664425,
+  "tags": {
+    "addr:city": "Mount Lavinia",
+    "addr:street": "Station Road",
+    "amenity": "post_office",
+    "name": "mount lavinia post office",
+    "operator": "asanka"
+  }
+},
+{
+  "type": "node",
+  "id": 2045858055,
+  "lat": 6.8417900,
+  "lon": 79.9638822,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office, Kottawa",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 2045960596,
+  "lat": 6.8284841,
+  "lon": 79.9764959,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hiripitiya sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 2091835070,
+  "lat": 6.9370655,
+  "lon": 79.8967910,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office - Wellampitiya",
+    "ref": "10600"
+  }
+},
+{
+  "type": "node",
+  "id": 2094344647,
+  "lat": 6.9143804,
+  "lon": 79.8785152,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2025-11-07",
+    "name": "Borella Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2097460290,
+  "lat": 6.7199627,
+  "lon": 80.0718457,
+  "tags": {
+    "amenity": "post_office",
+    "atm": "no",
+    "name": "Munagama Sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 2105362425,
+  "lat": 6.8711913,
+  "lon": 79.8895222,
+  "tags": {
+    "addr:city": "Nugegoda",
+    "amenity": "post_office",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 2146224166,
+  "lat": 6.7799231,
+  "lon": 80.3623492,
+  "tags": {
+    "addr:city": "Kuruwita",
+    "addr:street": "Colombo-Ratnapura Road",
+    "amenity": "post_office",
+    "name": "Kuruwita Post Office",
+    "opening_hours": "Kuruwita"
+  }
+},
+{
+  "type": "node",
+  "id": 2151690225,
+  "lat": 6.6231688,
+  "lon": 80.5434478,
+  "tags": {
+    "addr:city": "Pelmadulla",
+    "addr:street": "Pelmadulla - Embilipitiya - Nonagama Highway",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2155827197,
+  "lat": 6.2932256,
+  "lon": 80.5450397,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kotapola"
+  }
+},
+{
+  "type": "node",
+  "id": 2155827630,
+  "lat": 6.3788973,
+  "lon": 80.3609476,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Neluwa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2164965750,
+  "lat": 6.0998088,
+  "lon": 80.4765301,
+  "tags": {
+    "addr:city": "Akuressa",
+    "addr:postcode": "81400",
+    "amenity": "post_office",
+    "name": "Akuressa"
+  }
+},
+{
+  "type": "node",
+  "id": 2199126869,
+  "lat": 7.2657794,
+  "lon": 79.8592766,
+  "tags": {
+    "addr:city": "Kochchikade",
+    "amenity": "post_office",
+    "name": "Kochchikade"
+  }
+},
+{
+  "type": "node",
+  "id": 2279222353,
+  "lat": 7.9301480,
+  "lon": 81.0328852,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kaduruwela"
+  }
+},
+{
+  "type": "node",
+  "id": 2286402637,
+  "lat": 8.1406870,
+  "lon": 80.9634562,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Medirigiriya",
+    "name:en": "40 Medrigriya Town Internal Road"
+  }
+},
+{
+  "type": "node",
+  "id": 2303597280,
+  "lat": 7.9467652,
+  "lon": 81.2460355,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Welikanda"
+  }
+},
+{
+  "type": "node",
+  "id": 2312756053,
+  "lat": 7.2955406,
+  "lon": 80.8530297,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hunnasgiriya"
+  }
+},
+{
+  "type": "node",
+  "id": 2315533332,
+  "lat": 7.2888627,
+  "lon": 80.8155834,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Medamahanuwara"
+  }
+},
+{
+  "type": "node",
+  "id": 2323963206,
+  "lat": 7.2963959,
+  "lon": 80.2333207,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Alawwa Post Office",
+    "ref": "60280"
+  }
+},
+{
+  "type": "node",
+  "id": 2323963207,
+  "lat": 7.2746501,
+  "lon": 80.2109593,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Bujjomuwa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2328940514,
+  "lat": 6.9325666,
+  "lon": 79.8512184,
+  "tags": {
+    "amenity": "post_office",
+    "name": "EMS Speed Post",
+    "name:zh": "EMS 速运"
+  }
+},
+{
+  "type": "node",
+  "id": 2335141829,
+  "lat": 7.2970312,
+  "lon": 80.7341678,
+  "tags": {
+    "addr:city": "Digana",
+    "amenity": "post_office",
+    "name": "Rajawella Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2339029353,
+  "lat": 7.1986488,
+  "lon": 80.4579959,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub-post office",
+    "operator": "SLPost"
+  }
+},
+{
+  "type": "node",
+  "id": 2343111704,
+  "lat": 7.3030762,
+  "lon": 80.6675998,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Amunugama Sub Post Office",
+    "ref": "Google"
+  }
+},
+{
+  "type": "node",
+  "id": 2343140822,
+  "lat": 7.3170694,
+  "lon": 80.7002762,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Menikhinna Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2343202890,
+  "lat": 7.3154679,
+  "lon": 80.6692377,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Gunnepana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2347272762,
+  "lat": 6.9497295,
+  "lon": 80.0954809,
+  "tags": {
+    "addr:city": "Kapugoda",
+    "amenity": "post_office",
+    "name": "Kapugoda"
+  }
+},
+{
+  "type": "node",
+  "id": 2375714085,
+  "lat": 8.2366426,
+  "lon": 79.7659338,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kalpitiya Post Office",
+    "postal_code": "61360"
+  }
+},
+{
+  "type": "node",
+  "id": 2380386316,
+  "lat": 9.6609872,
+  "lon": 80.0291360,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Chundikuli Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2380847329,
+  "lat": 7.2813259,
+  "lon": 80.6845368,
+  "tags": {
+    "addr:city": "Kundasale",
+    "addr:postcode": "20168",
+    "addr:street": "Kundasale New Town",
+    "amenity": "post_office",
+    "name": "Kundasale Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2426343702,
+  "lat": 6.7437323,
+  "lon": 80.1737274,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ingiriya"
+  }
+},
+{
+  "type": "node",
+  "id": 2504602511,
+  "lat": 9.3493955,
+  "lon": 80.0792804,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Veravil",
+    "operator": "SLPOST"
+  }
+},
+{
+  "type": "node",
+  "id": 2521211192,
+  "lat": 6.8072805,
+  "lon": 80.9570263,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 2523355919,
+  "lat": 6.8310692,
+  "lon": 80.9889155,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Bandarawela Main Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2610271945,
+  "lat": 6.3082887,
+  "lon": 80.2486830,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2610355422,
+  "lat": 6.2013154,
+  "lon": 80.2536877,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2678443904,
+  "lat": 6.3318896,
+  "lon": 80.0320373,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kosgoda"
+  }
+},
+{
+  "type": "node",
+  "id": 2678507342,
+  "lat": 6.3142464,
+  "lon": 80.0367813,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ahungalla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2755707863,
+  "lat": 6.2622635,
+  "lon": 80.0586967,
+  "tags": {
+    "amenity": "post_office",
+    "collection_times": "07:00, 10:30, 14:00",
+    "name": "Wathugedara Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2755818385,
+  "lat": 6.9335663,
+  "lon": 79.9835762,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kaduwela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2821336752,
+  "lat": 7.9140227,
+  "lon": 81.0009292,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Newtown Branch"
+  }
+},
+{
+  "type": "node",
+  "id": 2822277572,
+  "lat": 7.9405123,
+  "lon": 81.0020171,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Polonnaruwa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2834980601,
+  "lat": 8.0650285,
+  "lon": 80.7072614,
+  "tags": {
+    "amenity": "post_office",
+    "man_made": "works"
+  }
+},
+{
+  "type": "node",
+  "id": 2835863869,
+  "lat": 8.2968162,
+  "lon": 80.3760958,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 2902370580,
+  "lat": 7.3667720,
+  "lon": 80.1482691,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office",
+    "operator": "SL post",
+    "ref": "60***"
+  }
+},
+{
+  "type": "node",
+  "id": 2907433897,
+  "lat": 6.1655127,
+  "lon": 80.1801478,
+  "tags": {
+    "addr:city": "Baddegama",
+    "amenity": "post_office",
+    "designation": "Government",
+    "name": "Post Office",
+    "ref": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 2911468050,
+  "lat": 6.8894455,
+  "lon": 80.9239915,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Yalpathwela",
+    "operator": "government",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 2920667728,
+  "lat": 6.5039740,
+  "lon": 80.6472950,
+  "tags": {
+    "addr:city": "Godakawela",
+    "addr:street": "Rathnapura - Embilipitiya Road",
+    "amenity": "post_office",
+    "name": "Post Office",
+    "ref": "post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3077742647,
+  "lat": 6.8535258,
+  "lon": 79.8762096,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub-Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3137971201,
+  "lat": 7.5100145,
+  "lon": 80.3638330,
+  "tags": {
+    "amenity": "post_office",
+    "name": "wewagedara ",
+    "operator": "kurunegala",
+    "ref": "sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3207187960,
+  "lat": 7.4304626,
+  "lon": 80.4498519,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mawathagama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3216905256,
+  "lat": 6.9981372,
+  "lon": 80.4099021,
+  "tags": {
+    "addr:city": "Kithulgala",
+    "amenity": "post_office",
+    "name": "Kithulgala"
+  }
+},
+{
+  "type": "node",
+  "id": 3220247861,
+  "lat": 9.7421205,
+  "lon": 79.8849612,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 3224617306,
+  "lat": 7.2861216,
+  "lon": 80.3845225,
+  "tags": {
+    "addr:city": "Hiriwadunna",
+    "addr:street": "Karandupana-Rambukkana Road",
+    "amenity": "post_office",
+    "name": "Hiriwadunna Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3235924899,
+  "lat": 7.2573166,
+  "lon": 80.5207630,
+  "tags": {
+    "addr:city": "Kadugannawa",
+    "amenity": "post_office",
+    "check_date": "2024-08-22",
+    "name": "Kadugannawa"
+  }
+},
+{
+  "type": "node",
+  "id": 3237459436,
+  "lat": 7.2096898,
+  "lon": 80.5634538,
+  "tags": {
+    "addr:city": "Bambaradeniya",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3247327793,
+  "lat": 6.8786199,
+  "lon": 79.9215875,
+  "tags": {
+    "addr:city": "Madiwela",
+    "amenity": "post_office",
+    "name": "Madiwela"
+  }
+},
+{
+  "type": "node",
+  "id": 3269993226,
+  "lat": 7.2880947,
+  "lon": 80.6093228,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3276158577,
+  "lat": 6.2769795,
+  "lon": 81.2896970,
+  "tags": {
+    "addr:city": "Thissamaharama SP",
+    "amenity": "post_office",
+    "name": "Dhammika Agency Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3301935963,
+  "lat": 7.0015753,
+  "lon": 81.0569385,
+  "tags": {
+    "addr:city": "Badulla",
+    "amenity": "post_office",
+    "name": "Puwakodamulla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3302171947,
+  "lat": 7.2232517,
+  "lon": 81.8502620,
+  "tags": {
+    "addr:city": "Akkaraipattu",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3314166642,
+  "lat": 7.2682124,
+  "lon": 81.8624464,
+  "tags": {
+    "addr:city": "Palamunai",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3316577727,
+  "lat": 7.3890553,
+  "lon": 81.8436649,
+  "tags": {
+    "addr:city": "Sainthamruthu",
+    "amenity": "post_office",
+    "name": "Maligaikadu Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3317976546,
+  "lat": 7.3949720,
+  "lon": 81.8337004,
+  "tags": {
+    "addr:city": "Sainthamaruthu",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 3320212328,
+  "lat": 7.4160995,
+  "lon": 81.8237242,
+  "tags": {
+    "addr:city": "Kalmunai",
+    "amenity": "post_office",
+    "name": "Chief Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3370212785,
+  "lat": 6.5911715,
+  "lon": 80.1639241,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mahagama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3401481195,
+  "lat": 6.8611518,
+  "lon": 79.8644587,
+  "tags": {
+    "addr:city": "Dehiwala",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3419384220,
+  "lat": 6.9363861,
+  "lon": 80.0892595,
+  "tags": {
+    "addr:city": "Thiththapattara",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3421059733,
+  "lat": 6.6693599,
+  "lon": 79.9281032,
+  "tags": {
+    "addr:city": "Wadduwa",
+    "amenity": "post_office",
+    "name": "Agency Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3455643229,
+  "lat": 9.6606697,
+  "lon": 80.0417615,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ariyalai Sub Post Office",
+    "operator": "Government of Sri Lanka"
+  }
+},
+{
+  "type": "node",
+  "id": 3474435579,
+  "lat": 9.3851852,
+  "lon": 80.4193714,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thiruvaiaru Sub Post Office",
+    "operator": "SL Post"
+  }
+},
+{
+  "type": "node",
+  "id": 3474550886,
+  "lat": 6.9422367,
+  "lon": 79.9882576,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 3477986651,
+  "lat": 7.0022672,
+  "lon": 79.9497795,
+  "tags": {
+    "addr:city": "Kadawatha",
+    "addr:street": "Ragama-Kadawatha Road",
+    "amenity": "post_office",
+    "name": "Kadawath Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3493140358,
+  "lat": 6.0228656,
+  "lon": 80.4070883,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Horadugoda sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3504275661,
+  "lat": 6.8513223,
+  "lon": 79.8931397,
+  "tags": {
+    "addr:city": "Divulpitiya (Boralesgamuwa)",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3504311600,
+  "lat": 6.8397842,
+  "lon": 79.9032510,
+  "tags": {
+    "addr:city": "Boralesgamuwa",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3504454088,
+  "lat": 6.8386730,
+  "lon": 79.9209142,
+  "tags": {
+    "addr:city": "Maharagama",
+    "amenity": "post_office",
+    "name": "Sub Post Office, Cancer Hospital"
+  }
+},
+{
+  "type": "node",
+  "id": 3508111710,
+  "lat": 6.0140185,
+  "lon": 80.5671790,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thihagoda Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3540588814,
+  "lat": 9.6053149,
+  "lon": 79.8129414,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Irrupiddy Sub Post Office",
+    "operator": "SLPOST"
+  }
+},
+{
+  "type": "node",
+  "id": 3558209997,
+  "lat": 6.1767042,
+  "lon": 80.1855051,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nayapamula"
+  }
+},
+{
+  "type": "node",
+  "id": 3570731865,
+  "lat": 7.2937831,
+  "lon": 80.6815607,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dumdarasiri Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3570787469,
+  "lat": 7.1908123,
+  "lon": 80.5746685,
+  "tags": {
+    "addr:city": "Hondiyadeniya",
+    "addr:street": "Weligalla-Ganhata Rd",
+    "amenity": "post_office",
+    "junction": "yes",
+    "name": "Hondiyadeniya;Hondiyadeniya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3588043677,
+  "lat": 7.0939228,
+  "lon": 80.8611118,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Walapane Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3590070475,
+  "lat": 5.9570710,
+  "lon": 80.4962229,
+  "tags": {
+    "amenity": "post_office",
+    "name": "labeema"
+  }
+},
+{
+  "type": "node",
+  "id": 3598835033,
+  "lat": 6.1226959,
+  "lon": 81.0226717,
+  "tags": {
+    "addr:city": "Ambalanthota",
+    "addr:street": "Tissa Road",
+    "alt_name": "Ambalantota Branch",
+    "amenity": "post_office",
+    "name": "Ambalantota Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3621425958,
+  "lat": 6.0101279,
+  "lon": 80.5167802,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Malimbada"
+  }
+},
+{
+  "type": "node",
+  "id": 3630805424,
+  "lat": 6.9315002,
+  "lon": 79.8674913,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Maligawatta Post Office",
+    "opening_hours": "Mo-Fr 08:30-16:15",
+    "operator": "Government"
+  }
+},
+{
+  "type": "node",
+  "id": 3633692199,
+  "lat": 6.3073483,
+  "lon": 80.6311791,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Urubokka Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3633720594,
+  "lat": 6.2662340,
+  "lon": 80.6931221,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Katuwana - post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3634825144,
+  "lat": 6.1542922,
+  "lon": 80.7687386,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Weeraketiya"
+  }
+},
+{
+  "type": "node",
+  "id": 3634917200,
+  "lat": 7.6305395,
+  "lon": 81.0289647,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3634976899,
+  "lat": 7.5693383,
+  "lon": 81.0417537,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nawa madagama"
+  }
+},
+{
+  "type": "node",
+  "id": 3635197512,
+  "lat": 6.0646139,
+  "lon": 80.8377217,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Netolpitiya"
+  }
+},
+{
+  "type": "node",
+  "id": 3655215877,
+  "lat": 7.5797559,
+  "lon": 79.7950892,
+  "tags": {
+    "addr:city": "Chilaw",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3658467144,
+  "lat": 7.3423026,
+  "lon": 79.8418076,
+  "tags": {
+    "addr:city": "Wennappuwa",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3658555384,
+  "lat": 7.3641404,
+  "lon": 79.8332481,
+  "tags": {
+    "addr:city": "Katuneriya",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3661285346,
+  "lat": 7.4630529,
+  "lon": 79.8045475,
+  "tags": {
+    "addr:city": "Kudamaduwella",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3661330168,
+  "lat": 7.4762509,
+  "lon": 79.8027542,
+  "tags": {
+    "addr:city": "Thoduwawa",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3664251343,
+  "lat": 7.4957567,
+  "lon": 79.8410470,
+  "tags": {
+    "addr:city": "Madampe",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3664367079,
+  "lat": 7.4949148,
+  "lon": 79.8826779,
+  "tags": {
+    "addr:city": "Galmuruwa",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3664405333,
+  "lat": 7.4935508,
+  "lon": 79.9137704,
+  "tags": {
+    "addr:city": "Dummalasuriya",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3679734950,
+  "lat": 7.0428559,
+  "lon": 79.8590558,
+  "tags": {
+    "addr:city": "Uswetakeiyawa",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3691190362,
+  "lat": 7.9055830,
+  "lon": 79.8218782,
+  "tags": {
+    "addr:city": "Madurankuliya",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3692732907,
+  "lat": 7.7449664,
+  "lon": 79.7918367,
+  "tags": {
+    "addr:city": "Udappuwa",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3693072135,
+  "lat": 7.9807260,
+  "lon": 79.8341106,
+  "tags": {
+    "addr:city": "Palavi",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3716323906,
+  "lat": 6.9695985,
+  "lon": 80.0008900,
+  "tags": {
+    "addr:city": "Waduwegama",
+    "addr:street": "New Kandy Rd",
+    "amenity": "post_office",
+    "name": "Waduwegama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3728661134,
+  "lat": 6.0740178,
+  "lon": 80.1980456,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hapugala sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3729557770,
+  "lat": 6.0592781,
+  "lon": 80.2030627,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office - Kalegana"
+  }
+},
+{
+  "type": "node",
+  "id": 3731590341,
+  "lat": 7.2713839,
+  "lon": 80.0944376,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nawana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3737231773,
+  "lat": 7.1171325,
+  "lon": 80.0578661,
+  "tags": {
+    "addr:city": "kalagedihena",
+    "addr:street": "Colombo-Kandy Road",
+    "amenity": "post_office",
+    "name": "Kalagedihena Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3738516908,
+  "lat": 6.8629543,
+  "lon": 79.9130723,
+  "tags": {
+    "addr:city": "Udahamulla",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3742258494,
+  "lat": 6.8912156,
+  "lon": 79.8671223,
+  "tags": {
+    "addr:city": "Jawatte",
+    "addr:street": "Greenland Avenue",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3744099168,
+  "lat": 6.9856404,
+  "lon": 80.5307869,
+  "tags": {
+    "addr:city": "Galaboda",
+    "amenity": "post_office",
+    "name": "Galboda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3744161241,
+  "lat": 7.0123498,
+  "lon": 80.5139783,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dekinda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3746056425,
+  "lat": 6.8610491,
+  "lon": 80.8754656,
+  "tags": {
+    "addr:city": "Bogahakumbura",
+    "addr:postcode": "90354",
+    "amenity": "post_office",
+    "name": "Bogahakumbura Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3749250994,
+  "lat": 7.0202488,
+  "lon": 80.5324124,
+  "tags": {
+    "addr:city": "Nawalapitiya",
+    "addr:street": "Mapakanda North Cross Road",
+    "amenity": "post_office",
+    "name": "Mapakanda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3750293425,
+  "lat": 7.1279727,
+  "lon": 80.5302459,
+  "tags": {
+    "addr:city": "Kurunduwatta",
+    "addr:street": "Gampola-Dolosbage Road",
+    "amenity": "post_office",
+    "name": "Kurunduwatta  Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3753190325,
+  "lat": 6.9656974,
+  "lon": 79.8670047,
+  "tags": {
+    "addr:city": "Colombo",
+    "addr:street": "Mutuwella road",
+    "amenity": "post_office",
+    "name": "Post Office Modara"
+  }
+},
+{
+  "type": "node",
+  "id": 3753611573,
+  "lat": 8.7560063,
+  "lon": 80.4984437,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Vavuniya Post Office",
+    "operator": "SLPOST"
+  }
+},
+{
+  "type": "node",
+  "id": 3753926198,
+  "lat": 7.0828006,
+  "lon": 80.4698958,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dolosbage Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3754133603,
+  "lat": 6.8705708,
+  "lon": 80.1199127,
+  "tags": {
+    "addr:city": "Pinnawala",
+    "amenity": "post_office",
+    "name": "Pinnawala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3754409857,
+  "lat": 7.0428708,
+  "lon": 80.5092512,
+  "tags": {
+    "addr:street": "nawalapitiya - Ginigathena Road",
+    "amenity": "post_office",
+    "name": "Rambukpitiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3756803078,
+  "lat": 7.2012244,
+  "lon": 80.5619500,
+  "tags": {
+    "addr:city": "Gamhatha",
+    "addr:street": "Daulagala-Watadeniya Road",
+    "amenity": "post_office",
+    "name": "Gamhatha Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3756803226,
+  "lat": 7.2031602,
+  "lon": 80.5521683,
+  "tags": {
+    "addr:city": "Velamboda",
+    "addr:street": "Daulagala-Watadeniya Road",
+    "amenity": "post_office",
+    "name": "Post Office, Velamboda"
+  }
+},
+{
+  "type": "node",
+  "id": 3756819882,
+  "lat": 7.1898734,
+  "lon": 80.5927912,
+  "tags": {
+    "addr:city": "Weligalla",
+    "addr:street": "Peradeniya-Badulla Road",
+    "amenity": "post_office",
+    "name": "Weligalla Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3756987074,
+  "lat": 7.2156265,
+  "lon": 80.5973481,
+  "tags": {
+    "addr:city": "Gelioya",
+    "amenity": "post_office",
+    "name": "Post Office - Gelioya"
+  }
+},
+{
+  "type": "node",
+  "id": 3769909323,
+  "lat": 7.0285178,
+  "lon": 80.5006543,
+  "tags": {
+    "addr:street": "Nawalapitiya - Ginigathena Road",
+    "amenity": "post_office",
+    "name": "Balanthota Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3769925247,
+  "lat": 7.0431110,
+  "lon": 80.5236863,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Weligampola Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3769938239,
+  "lat": 7.0492054,
+  "lon": 80.5277922,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Karahandungala Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3769940203,
+  "lat": 7.0543389,
+  "lon": 80.5370754,
+  "tags": {
+    "addr:city": "Nawalapitiya",
+    "amenity": "post_office",
+    "name": "Nawalapitiya Court Complex Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3770161850,
+  "lat": 6.4731227,
+  "lon": 79.9835356,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Beruwala"
+  }
+},
+{
+  "type": "node",
+  "id": 3770166374,
+  "lat": 7.0827540,
+  "lon": 80.5477569,
+  "tags": {
+    "addr:street": "gampola - Nawalapitiya Road",
+    "amenity": "post_office",
+    "name": "Pasbage Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3771331248,
+  "lat": 6.0446237,
+  "lon": 80.7332778,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 3771391547,
+  "lat": 6.0281276,
+  "lon": 80.7948785,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Agency Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3776261858,
+  "lat": 7.1115818,
+  "lon": 80.5648655,
+  "tags": {
+    "addr:city": "Ulapane",
+    "addr:street": "gampola-Nawalapitiya Road",
+    "amenity": "post_office",
+    "name": "Ulapane Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3784542836,
+  "lat": 7.1347731,
+  "lon": 80.5979028,
+  "tags": {
+    "addr:city": "Atabage",
+    "addr:street": "Peradeniya - Badulla - Chenkaladi Road",
+    "amenity": "post_office",
+    "name": "Atabage Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3788636773,
+  "lat": 7.1091576,
+  "lon": 80.6344384,
+  "tags": {
+    "addr:city": "Pussellawa CP",
+    "addr:street": "Peradeniya - Badulla - Chenkaladi Road",
+    "amenity": "post_office",
+    "name": "Pussellawa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3789958612,
+  "lat": 7.1974561,
+  "lon": 80.6686788,
+  "tags": {
+    "addr:city": "Galaha",
+    "addr:street": "Kandy - Galaha - Deltota Road",
+    "amenity": "post_office",
+    "name": "Galaha Post Office",
+    "opening_hours": "Mo-Sa 08:00-15:00"
+  }
+},
+{
+  "type": "node",
+  "id": 3790064067,
+  "lat": 7.1464074,
+  "lon": 80.6746331,
+  "tags": {
+    "addr:street": "Galaha - Pupuressa R",
+    "amenity": "post_office",
+    "name": "Mahamulgama Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3790080119,
+  "lat": 7.1558944,
+  "lon": 80.6329765,
+  "tags": {
+    "addr:city": "Panwilatenna",
+    "addr:street": "gampola - Pupuressa Rd",
+    "amenity": "post_office",
+    "name": "Panwilatenna Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3803538397,
+  "lat": 7.1332466,
+  "lon": 80.6377882,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dunukeulla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3804899637,
+  "lat": 7.1805337,
+  "lon": 80.7417735,
+  "tags": {
+    "addr:street": "Marassana - Kolabissa Rd",
+    "amenity": "post_office",
+    "name": "Kolabissa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3804899640,
+  "lat": 7.1955178,
+  "lon": 80.7428943,
+  "tags": {
+    "addr:street": "marassana - Kolabissa Rd",
+    "amenity": "post_office",
+    "name": "Pothgoda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3804899642,
+  "lat": 7.2170329,
+  "lon": 80.7389674,
+  "tags": {
+    "addr:city": "Marassana",
+    "addr:street": "Thalatuoya - Marassana Rd",
+    "amenity": "post_office",
+    "name": "Marassana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3804899909,
+  "lat": 7.2025571,
+  "lon": 80.7422035,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ududeniya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3805044385,
+  "lat": 7.2216576,
+  "lon": 80.7141972,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mahamedagama Sub Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3806188373,
+  "lat": 7.2305534,
+  "lon": 80.7016235,
+  "tags": {
+    "addr:city": "Godamunna",
+    "addr:street": "mudunakade - Bowlana Rd",
+    "amenity": "post_office",
+    "name": "Godamunna Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3808120379,
+  "lat": 7.2257569,
+  "lon": 80.6806444,
+  "tags": {
+    "addr:street": "Moragolla-Galaha Road",
+    "amenity": "post_office",
+    "name": "Nugaliyadda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3808120381,
+  "lat": 7.2371692,
+  "lon": 80.6870811,
+  "tags": {
+    "addr:street": "Kandy-Kirimetiya Rd",
+    "amenity": "post_office",
+    "name": "Ankelipitiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3808122380,
+  "lat": 7.2397584,
+  "lon": 80.6687220,
+  "tags": {
+    "addr:street": "ankelipitiya - Etulgama Rd",
+    "amenity": "post_office",
+    "name": "Etulgama Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3819204468,
+  "lat": 7.0886391,
+  "lon": 81.0466936,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thaldena Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3840345615,
+  "lat": 7.3725165,
+  "lon": 80.5248983,
+  "tags": {
+    "addr:city": "Galagedara CP",
+    "addr:street": "Galagedara-Rambukkana Road",
+    "amenity": "post_office",
+    "name": "Galagedara Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3848579770,
+  "lat": 7.3931773,
+  "lon": 80.5537441,
+  "tags": {
+    "addr:city": "Bokkawala",
+    "addr:street": "Arambekade to Bokkawala",
+    "amenity": "post_office",
+    "name": "Bokkawala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3848642665,
+  "lat": 7.4392497,
+  "lon": 80.5703315,
+  "tags": {
+    "addr:city": "Ankumbura",
+    "addr:street": "Alawathugoda-Ankumbura-Keppetigala Road",
+    "amenity": "post_office",
+    "name": "Ankumbura Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3855878163,
+  "lat": 7.4092957,
+  "lon": 80.6079087,
+  "tags": {
+    "addr:city": "Alawatugoda",
+    "addr:street": "Alawathugoda-Ankumbura-Keppetigala Road",
+    "amenity": "post_office",
+    "name": "Alawathugoda Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3856393381,
+  "lat": 7.3645214,
+  "lon": 80.6189732,
+  "tags": {
+    "addr:city": "Akurana",
+    "addr:street": "Kandy-Jaffna Road",
+    "amenity": "post_office",
+    "name": "Akurana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3870413550,
+  "lat": 7.3503944,
+  "lon": 80.6813152,
+  "tags": {
+    "addr:city": "Wattegama",
+    "addr:street": "Pitiyagedera - Wattegama - Iriyagastenne Road",
+    "amenity": "post_office",
+    "name": "Wattegama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3871282315,
+  "lat": 6.9453541,
+  "lon": 79.8639721,
+  "tags": {
+    "addr:street": "George R. De Silva Mawatha",
+    "amenity": "post_office",
+    "name": "Kortahena Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3916676765,
+  "lat": 6.0415496,
+  "lon": 80.6789551,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Getamaanna"
+  }
+},
+{
+  "type": "node",
+  "id": 3919771480,
+  "lat": 7.0660403,
+  "lon": 79.9440875,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 3926651396,
+  "lat": 6.2378129,
+  "lon": 80.0527964,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Ambalangoda"
+  }
+},
+{
+  "type": "node",
+  "id": 3958960708,
+  "lat": 9.6100903,
+  "lon": 80.3290032,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Palai Post Office",
+    "operator": "SLPost"
+  }
+},
+{
+  "type": "node",
+  "id": 3981766032,
+  "lat": 7.3265057,
+  "lon": 80.5866257,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nugawela Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 3992505862,
+  "lat": 7.2408108,
+  "lon": 81.7147514,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 3998553995,
+  "lat": 7.2057891,
+  "lon": 81.7523140,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4015957422,
+  "lat": 7.3788964,
+  "lon": 80.5511206,
+  "tags": {
+    "addr:street": "Gallella Rd",
+    "amenity": "post_office",
+    "name": "Gallellagama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4016196443,
+  "lat": 7.3290263,
+  "lon": 80.5816563,
+  "tags": {
+    "addr:street": "Katugasthota-Kurunegala-Puttalam Road",
+    "amenity": "post_office",
+    "name": "thiththapajjala maha piriwena"
+  }
+},
+{
+  "type": "node",
+  "id": 4016196447,
+  "lat": 7.3240861,
+  "lon": 80.6018452,
+  "tags": {
+    "addr:street": "Katugasthota-Kurunegala-Puttalam Road",
+    "amenity": "post_office",
+    "name": "Wathuwala Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4025881628,
+  "lat": 7.2780561,
+  "lon": 80.6183276,
+  "tags": {
+    "addr:street": "Heerassagala Road",
+    "amenity": "post_office",
+    "check_date": "2024-08-22",
+    "name": "Mulgampola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4036017801,
+  "lat": 7.2998415,
+  "lon": 80.6323636,
+  "tags": {
+    "addr:city": "Kandy",
+    "addr:street": "Yatinuwara Veediya",
+    "amenity": "post_office",
+    "name": "Kandy Secretariat Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4039544164,
+  "lat": 7.3176598,
+  "lon": 80.6998238,
+  "tags": {
+    "addr:city": "Menikhinna",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4039761686,
+  "lat": 7.3202911,
+  "lon": 80.6922530,
+  "tags": {
+    "addr:city": "Walala",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4039761992,
+  "lat": 7.3269725,
+  "lon": 80.6706721,
+  "tags": {
+    "addr:city": "Madawala",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4039790800,
+  "lat": 7.3245661,
+  "lon": 80.6489027,
+  "tags": {
+    "addr:city": "Polgolla",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4045510671,
+  "lat": 6.5333313,
+  "lon": 80.3982221,
+  "tags": {
+    "addr:city": "Kalawana",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4054795389,
+  "lat": 6.8651593,
+  "lon": 80.0232449,
+  "tags": {
+    "addr:city": "Panagoda",
+    "addr:postcode": "10200",
+    "amenity": "post_office",
+    "name": "Panagoda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4059277182,
+  "lat": 6.7343911,
+  "lon": 79.9353042,
+  "tags": {
+    "addr:city": "Hirana",
+    "addr:street": "Hirana Road",
+    "amenity": "post_office",
+    "name": "Hirana post office",
+    "opening_hours": "08:30-16:30"
+  }
+},
+{
+  "type": "node",
+  "id": 4068041902,
+  "lat": 7.2818583,
+  "lon": 80.5323296,
+  "tags": {
+    "addr:city": "Danture",
+    "addr:street": "Pilimatalawa-Pottapitiya Road",
+    "amenity": "post_office",
+    "name": "Dantuer Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4068041904,
+  "lat": 7.3001850,
+  "lon": 80.5280247,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Udawela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4068054465,
+  "lat": 7.3027534,
+  "lon": 80.5017932,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thismada Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4068056599,
+  "lat": 7.2901210,
+  "lon": 80.5006844,
+  "tags": {
+    "addr:street": "Yatigammana-Thismada Rd",
+    "amenity": "post_office",
+    "name": "Menikdiwela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4071279188,
+  "lat": 7.2696313,
+  "lon": 80.5761911,
+  "tags": {
+    "addr:street": "Wathurakumbura Rd",
+    "amenity": "post_office",
+    "name": "Kiribathkumbura Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4089567149,
+  "lat": 8.1518879,
+  "lon": 80.2953462,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4093171846,
+  "lat": 7.1933242,
+  "lon": 80.6376207,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nilambe Sub Post Office",
+    "postal_code": "20418"
+  }
+},
+{
+  "type": "node",
+  "id": 4099002424,
+  "lat": 6.8248079,
+  "lon": 80.0294777,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pitipana Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4142251990,
+  "lat": 7.1613241,
+  "lon": 80.6010359,
+  "tags": {
+    "addr:street": "Lagoondeniya Rd",
+    "amenity": "post_office",
+    "name": "Thundeniya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4142454143,
+  "lat": 7.1609133,
+  "lon": 80.5597227,
+  "tags": {
+    "addr:city": "Sinhapitiya",
+    "addr:street": "Mawanella-Hemmathagama-Singhapitiya Road",
+    "amenity": "post_office",
+    "name": "Sinhapitiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4214881756,
+  "lat": 8.9142329,
+  "lon": 80.5400714,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Maraiyadithakulam Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4234078500,
+  "lat": 6.2622508,
+  "lon": 80.6099170,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Bengamuwa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4235089272,
+  "lat": 7.1316895,
+  "lon": 79.8889987,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4235167497,
+  "lat": 6.2440874,
+  "lon": 80.2708448,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thalgaswala Post Office",
+    "name:si": "තල්ගස්වල තැපැල් කාර්යාලය"
+  }
+},
+{
+  "type": "node",
+  "id": 4261902638,
+  "lat": 7.2475406,
+  "lon": 80.4686227,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hingula Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4267569148,
+  "lat": 6.3397745,
+  "lon": 80.5581473,
+  "tags": {
+    "addr:city": "Deniyaya",
+    "addr:street": "Deniyaya-Wiharahena Road",
+    "amenity": "post_office",
+    "name": "Deniyaya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4283855643,
+  "lat": 7.3237844,
+  "lon": 80.3976583,
+  "tags": {
+    "addr:city": "Rambukkana",
+    "addr:street": "Rambukkana-Katupitiya Road",
+    "amenity": "post_office",
+    "name": "Post Office - Rambukkana"
+  }
+},
+{
+  "type": "node",
+  "id": 4349285790,
+  "lat": 8.0028582,
+  "lon": 81.0497375,
+  "tags": {
+    "amenity": "post_office",
+    "name": "27 BOP 317 Dalpalama"
+  }
+},
+{
+  "type": "node",
+  "id": 4349295391,
+  "lat": 8.0046253,
+  "lon": 81.0622437,
+  "tags": {
+    "addr:street": "Somawathiya Road",
+    "amenity": "post_office",
+    "name": "25 Karathakada junction"
+  }
+},
+{
+  "type": "node",
+  "id": 4349295392,
+  "lat": 8.0267902,
+  "lon": 81.0319044,
+  "tags": {
+    "amenity": "post_office",
+    "name": "29 BOP 316 Karuwelagas hunc"
+  }
+},
+{
+  "type": "node",
+  "id": 4349295393,
+  "lat": 8.0085054,
+  "lon": 80.9126443,
+  "tags": {
+    "amenity": "post_office",
+    "name": "PO RE Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4349295890,
+  "lat": 7.8804828,
+  "lon": 81.1922204,
+  "tags": {
+    "amenity": "post_office",
+    "name": "59 Gnithamana-Nilumwewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4349305289,
+  "lat": 8.0424721,
+  "lon": 81.0633747,
+  "tags": {
+    "amenity": "post_office",
+    "name": "29 Patungama Junct"
+  }
+},
+{
+  "type": "node",
+  "id": 4349305290,
+  "lat": 8.0357067,
+  "lon": 81.0318223,
+  "tags": {
+    "amenity": "post_office",
+    "name": "72 Deberella Sudupalama"
+  }
+},
+{
+  "type": "node",
+  "id": 4349305291,
+  "lat": 7.9757058,
+  "lon": 81.2003446,
+  "tags": {
+    "amenity": "post_office",
+    "name": "58 Athulgala -Katuwavila"
+  }
+},
+{
+  "type": "node",
+  "id": 4349770186,
+  "lat": 7.9785727,
+  "lon": 80.9959973,
+  "tags": {
+    "amenity": "post_office",
+    "name": "11 AthumalpitiyaJunction - LaxauyanaSiyambalagasJunction"
+  }
+},
+{
+  "type": "node",
+  "id": 4349796877,
+  "lat": 7.9627778,
+  "lon": 80.9812708,
+  "tags": {
+    "amenity": "post_office",
+    "name": "14 Kadawela Wewa Road Stage - 01"
+  }
+},
+{
+  "type": "node",
+  "id": 4349799491,
+  "lat": 7.9638557,
+  "lon": 80.8557457,
+  "tags": {
+    "amenity": "post_office",
+    "name": "01 Ihekuluwewa Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4350759495,
+  "lat": 7.1120490,
+  "lon": 80.1357960,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Attanagalla Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4350766892,
+  "lat": 7.0977538,
+  "lon": 80.1448796,
+  "tags": {
+    "addr:street": "Veyangoda-Ruwanwella Road",
+    "amenity": "post_office",
+    "name": "Urapola Post Office",
+    "opening_hours": "Su-Fr 07:30-15:30"
+  }
+},
+{
+  "type": "node",
+  "id": 4350776193,
+  "lat": 7.0783120,
+  "lon": 80.1212060,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Walgammulla post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4350790004,
+  "lat": 7.0857030,
+  "lon": 80.0791590,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Udathuttiripitiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4350839690,
+  "lat": 7.0815510,
+  "lon": 80.0613310,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ambagaspitiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4352140091,
+  "lat": 7.0460410,
+  "lon": 80.1324830,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kirindiwela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4352156889,
+  "lat": 7.0333560,
+  "lon": 80.0915050,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Radawana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4352542499,
+  "lat": 8.2300934,
+  "lon": 80.1304242,
+  "tags": {
+    "amenity": "post_office",
+    "name": "12 Pahalamaragahawewa-Katupathwewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4352558294,
+  "lat": 8.2096967,
+  "lon": 80.1071910,
+  "tags": {
+    "amenity": "post_office",
+    "name": "47 Thambuththegama-Rajanganaya Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352558295,
+  "lat": 8.1621155,
+  "lon": 80.2253564,
+  "tags": {
+    "amenity": "post_office",
+    "name": "47 Thambuththegama-Rajanganaya Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352558299,
+  "lat": 8.2784591,
+  "lon": 80.2461415,
+  "tags": {
+    "amenity": "post_office",
+    "name": "10 MahawelithennaRalapana JanapadayaRoad"
+  }
+},
+{
+  "type": "node",
+  "id": 4352620290,
+  "lat": 8.2029361,
+  "lon": 80.3338044,
+  "tags": {
+    "amenity": "post_office",
+    "name": "49 EriyagamaPaindakulama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352620291,
+  "lat": 7.7691272,
+  "lon": 81.0610324,
+  "tags": {
+    "amenity": "post_office",
+    "name": "71 Bandanagalabandanagala village"
+  }
+},
+{
+  "type": "node",
+  "id": 4352620292,
+  "lat": 7.7721206,
+  "lon": 81.1266678,
+  "tags": {
+    "amenity": "post_office",
+    "name": "61, Mahadamanawewa - Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352620293,
+  "lat": 7.8586919,
+  "lon": 81.1123294,
+  "tags": {
+    "amenity": "post_office",
+    "name": "62 Dimbulagala Junction - Bogaswewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4352643791,
+  "lat": 8.4188889,
+  "lon": 80.2071738,
+  "tags": {
+    "amenity": "post_office",
+    "name": "36, yaya 4 junction BogasHandiyaKiralapetiyawaHalambewewa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352643792,
+  "lat": 8.4194151,
+  "lon": 80.2841867,
+  "tags": {
+    "amenity": "post_office",
+    "name": "37 Maningamuwa Junction IhalaOyamaduwa Nawodagama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352652791,
+  "lat": 8.1473287,
+  "lon": 80.2927415,
+  "tags": {
+    "amenity": "post_office",
+    "name": "48 Ayuruwedic HospitalNawagattegama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352652792,
+  "lat": 7.7284099,
+  "lon": 81.0171937,
+  "tags": {
+    "amenity": "post_office",
+    "name": "66 Mahadamanawewa - Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352661090,
+  "lat": 7.7607170,
+  "lon": 81.1660147,
+  "tags": {
+    "amenity": "post_office",
+    "name": "67 Aluthoya Junction -Vilage End"
+  }
+},
+{
+  "type": "node",
+  "id": 4352663990,
+  "lat": 8.2247408,
+  "lon": 80.3440396,
+  "tags": {
+    "amenity": "post_office",
+    "name": "01 Thalawa - Jayagaga149Hagurankethagama"
+  }
+},
+{
+  "type": "node",
+  "id": 4352674589,
+  "lat": 7.8588021,
+  "lon": 81.1068892,
+  "tags": {
+    "amenity": "post_office",
+    "name": "68 Dimbulagala Junction - Soruwila"
+  }
+},
+{
+  "type": "node",
+  "id": 4352675089,
+  "lat": 7.9088267,
+  "lon": 81.1120615,
+  "tags": {
+    "amenity": "post_office",
+    "name": "64 MannempityiyaHospital Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352675189,
+  "lat": 7.8870757,
+  "lon": 81.1348413,
+  "tags": {
+    "amenity": "post_office",
+    "name": "65Sripura NuwaragalaVillage Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724520,
+  "lat": 8.3553562,
+  "lon": 80.4787906,
+  "tags": {
+    "amenity": "post_office",
+    "name": "8 Kannattiya Ashokapura Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724521,
+  "lat": 8.3219663,
+  "lon": 80.6251578,
+  "tags": {
+    "amenity": "post_office",
+    "name": "70 Katukeliyawa IhalaHalmillewa Sivalakulama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724522,
+  "lat": 8.8910374,
+  "lon": 80.7688390,
+  "tags": {
+    "amenity": "post_office",
+    "name": "56 4th Post Thonigala Bridge Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724523,
+  "lat": 8.8411964,
+  "lon": 80.8282361,
+  "tags": {
+    "amenity": "post_office",
+    "name": "51 Thelmola JunctionMilankulama ABGammanayaPuhulagewewa BalayaJunction Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724713,
+  "lat": 8.1916354,
+  "lon": 80.5265988,
+  "tags": {
+    "amenity": "post_office",
+    "name": "60 A-9 Road Labunoruwa Muriyakadawala Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724898,
+  "lat": 8.9079869,
+  "lon": 80.7755420,
+  "tags": {
+    "amenity": "post_office",
+    "name": "55 4th Post ThonigalaBridge Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352724899,
+  "lat": 7.9969323,
+  "lon": 80.6088721,
+  "tags": {
+    "amenity": "post_office",
+    "name": "19 Elagamuwa Junction Canal Road HorapolaNew Mosque Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725001,
+  "lat": 8.8781105,
+  "lon": 80.7689729,
+  "tags": {
+    "amenity": "post_office",
+    "name": "50 40 Kolaniya Bus Halt Nawagammanaya Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725002,
+  "lat": 8.8818734,
+  "lon": 80.8673627,
+  "tags": {
+    "amenity": "post_office",
+    "name": "52 Mailagashandiya Daluggala Jayanthi Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725143,
+  "lat": 8.3628867,
+  "lon": 80.4285674,
+  "tags": {
+    "amenity": "post_office",
+    "name": "40 Saliya MawathaThannayakulamaRoad"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725144,
+  "lat": 8.8394609,
+  "lon": 80.8265987,
+  "tags": {
+    "amenity": "post_office",
+    "name": "53 Ruwanpura School Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725145,
+  "lat": 7.9207178,
+  "lon": 80.5807717,
+  "tags": {
+    "amenity": "post_office",
+    "name": "27 KudawatagalaDambuluhalmillewaRoad"
+  }
+},
+{
+  "type": "node",
+  "id": 4352725146,
+  "lat": 7.9121415,
+  "lon": 80.5643633,
+  "tags": {
+    "amenity": "post_office",
+    "name": "28 Ulpothagama JunctionMorotthegama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352729493,
+  "lat": 8.3548067,
+  "lon": 80.4638578,
+  "tags": {
+    "amenity": "post_office",
+    "name": "6 KurundankaulamaSchool ViaKalaththewa MataleJunction Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352729494,
+  "lat": 8.4272101,
+  "lon": 80.5032967,
+  "tags": {
+    "amenity": "post_office",
+    "name": "7 Mahakanadarawa left bank Elakanda Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352729495,
+  "lat": 7.9806354,
+  "lon": 80.5289641,
+  "tags": {
+    "amenity": "post_office",
+    "name": "26 BalaluwewaKarawilagala Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352730893,
+  "lat": 8.3649497,
+  "lon": 80.5322017,
+  "tags": {
+    "amenity": "post_office",
+    "name": "9, Welankulama Junction- Alappamkulama Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4352782389,
+  "lat": 7.9591356,
+  "lon": 80.5730069,
+  "tags": {
+    "amenity": "post_office",
+    "name": "23 Dabawatana Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4361019370,
+  "lat": 7.8804693,
+  "lon": 80.0084675,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Anamaduwa post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4362218089,
+  "lat": 6.9105440,
+  "lon": 79.8503548,
+  "tags": {
+    "amenity": "post_office",
+    "name:nl": "Postkantoor"
+  }
+},
+{
+  "type": "node",
+  "id": 4367174196,
+  "lat": 8.2969734,
+  "lon": 80.4310486,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "45 Abeypura housing Scheme toThammennapura"
+  }
+},
+{
+  "type": "node",
+  "id": 4367178496,
+  "lat": 8.0660083,
+  "lon": 80.7045578,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "71 Palugaswewa -Udakadawala"
+  }
+},
+{
+  "type": "node",
+  "id": 4367205391,
+  "lat": 8.0638011,
+  "lon": 80.7090850,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "24 Palugaswewa Mahakekirawa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4367206689,
+  "lat": 8.3084375,
+  "lon": 80.4130328,
+  "tags": {
+    "amenity": "post_office",
+    "name": "i Road NCP Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4367206791,
+  "lat": 8.0435265,
+  "lon": 80.7442146,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "25 Laksirigama Puwakpitiya Kudarambewa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4367206892,
+  "lat": 8.3033872,
+  "lon": 80.4454403,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "43 CEB Depot PahalaKeerikkulama -KeerikkulamaNachchaduwa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4367206893,
+  "lat": 8.3138282,
+  "lon": 80.4157555,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "46 Nagasena Mawatha"
+  }
+},
+{
+  "type": "node",
+  "id": 4367207090,
+  "lat": 8.1155506,
+  "lon": 80.4720883,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "69 MahailuppallamaFarm Akkara 100 to Senapura KatiyawaRoad"
+  }
+},
+{
+  "type": "node",
+  "id": 4367210497,
+  "lat": 8.2864710,
+  "lon": 80.4579458,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "41 SucharithagamaYahalegama Temple Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4367226890,
+  "lat": 7.9973090,
+  "lon": 80.4542271,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "66 Thammennawa Junction Kumbukwewa SiyanbalawewaHunupalagama Rd"
+  }
+},
+{
+  "type": "node",
+  "id": 4367241889,
+  "lat": 8.0796805,
+  "lon": 80.4704883,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "68 6 Ela Walpaluwa to Kagama 2 Ela Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4367242989,
+  "lat": 8.1489291,
+  "lon": 80.4089163,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "2 Eppawala Police Junction Jaya GangaRotawewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4367244789,
+  "lat": 8.1573654,
+  "lon": 80.4268996,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "3 15 kanuwa -Kiriamunukole -Mawathawewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4373247193,
+  "lat": 7.7583151,
+  "lon": 80.8021767,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "8 Orubendisiyambalawa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4373256190,
+  "lat": 7.7800547,
+  "lon": 80.8169568,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "6 Bakamuna -Damanayaya Housingsceam Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4373278593,
+  "lat": 7.7314299,
+  "lon": 80.7905169,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "4 Velank Kattuwa Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4373292789,
+  "lat": 7.7830153,
+  "lon": 80.8427412,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "7 Srikanduyaya Main Road - Track 18"
+  }
+},
+{
+  "type": "node",
+  "id": 4375182100,
+  "lat": 7.9123820,
+  "lon": 80.8590537,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "10 Yaya 32 Temple - 33Bisokotuwa Junction"
+  }
+},
+{
+  "type": "node",
+  "id": 4375182108,
+  "lat": 8.0844592,
+  "lon": 81.0514291,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "29 Pimpara PansalgodaMain Road -Sansungama 21 Division"
+  }
+},
+{
+  "type": "node",
+  "id": 4375182110,
+  "lat": 8.0597018,
+  "lon": 81.0348236,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "72 DeberellaSudupalama -Gallamuna"
+  }
+},
+{
+  "type": "node",
+  "id": 4375184695,
+  "lat": 7.8291537,
+  "lon": 80.8480209,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "5 Sarubima - Segala"
+  }
+},
+{
+  "type": "node",
+  "id": 4375184703,
+  "lat": 8.0825946,
+  "lon": 81.0197116,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "36 Pimpara PansalgodaMain Road -Sansungama 21 Division"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188100,
+  "lat": 7.8191785,
+  "lon": 80.8358374,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "2 Gange yaya Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188104,
+  "lat": 7.9345844,
+  "lon": 80.8665125,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "1 Ihekuluwewa Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188105,
+  "lat": 8.0979117,
+  "lon": 80.9497468,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "34 Uthaganawa Irrigation Junction - DinisuruJunction"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188107,
+  "lat": 8.0429087,
+  "lon": 80.9846598,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "55 Hinguraka 4th Post-48 Village Chandanapokuna Aliwankuwa"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188198,
+  "lat": 7.9156912,
+  "lon": 80.8621207,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "9 Bisokotuwa -Koonthuruwawa"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188199,
+  "lat": 7.8901857,
+  "lon": 80.9773318,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "21 ParakiramaSamuthraya -Ambanganga Temple"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188200,
+  "lat": 8.1119900,
+  "lon": 80.9736975,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "35 Kusumpokuna -Pimpara Junction"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188202,
+  "lat": 8.0775962,
+  "lon": 80.9513626,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "51 Batukotuwa Middle Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188299,
+  "lat": 8.0395996,
+  "lon": 80.9057142,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "52 Minneriya -Samagipura"
+  }
+},
+{
+  "type": "node",
+  "id": 4375188307,
+  "lat": 7.9707673,
+  "lon": 81.0192941,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "18 Parakum Uyana D1Uthuru Ela"
+  }
+},
+{
+  "type": "node",
+  "id": 4375192396,
+  "lat": 7.9014241,
+  "lon": 80.9971102,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "13 Kalagala -Angammedilla Village Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375192406,
+  "lat": 8.0282567,
+  "lon": 81.0148197,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "28 BOP 316 -Karuwelagas Junction - Chandanapokuna"
+  }
+},
+{
+  "type": "node",
+  "id": 4375192794,
+  "lat": 8.2014318,
+  "lon": 81.0848096,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "37 Meegaswewa -Wadigawewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193101,
+  "lat": 7.8777954,
+  "lon": 80.9690452,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "22 ParakramaSamuthraya Bodhiya - Right Chanel Temple"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193106,
+  "lat": 8.1415540,
+  "lon": 80.9679709,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "42 Medrigriya Water tank - Mr. Vijeyadasa\"sHouse"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193107,
+  "lat": 8.1402443,
+  "lon": 80.9641916,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "44 Kalagedi Palama -VisobadaragamaSchool"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193108,
+  "lat": 8.0380074,
+  "lon": 80.9415908,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "45 Minnerya CetralColledge Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193109,
+  "lat": 8.0675446,
+  "lon": 81.0307717,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "24 Hinguragoda 7th Mile Post - Gallamuna -Hinguradamana"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193192,
+  "lat": 7.9569812,
+  "lon": 81.0264168,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "12 Palugasdaman Senanayaka Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193591,
+  "lat": 7.8751749,
+  "lon": 80.8559977,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "3 Athanakadawela -Pokunugala"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193593,
+  "lat": 8.0535960,
+  "lon": 80.9444229,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "47 Dora theka Junction -Paluwewa"
+  }
+},
+{
+  "type": "node",
+  "id": 4375193595,
+  "lat": 8.0545108,
+  "lon": 80.9736050,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "49 Hinguragoda Airport -Viddiyaloga School Road"
+  }
+},
+{
+  "type": "node",
+  "id": 4405515426,
+  "lat": 7.3840587,
+  "lon": 80.9632502,
+  "tags": {
+    "addr:street": "Wasgamuwa Hasalaka Road",
+    "amenity": "post_office",
+    "name": "Pilhatha Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4408139729,
+  "lat": 7.4374128,
+  "lon": 80.9501572,
+  "tags": {
+    "addr:city": "Udawela",
+    "addr:street": "Kaaniyagala Rd",
+    "amenity": "post_office",
+    "name": "Barawardanaoya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4408140061,
+  "lat": 7.4607053,
+  "lon": 80.9409411,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dehemigama Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4411697689,
+  "lat": 8.6055293,
+  "lon": 80.3303600,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sinnasippikulam Post Office",
+    "name:ta": "சின்னசிப்பிக்குளம் அஞ்சல் அலுவலகம்"
+  }
+},
+{
+  "type": "node",
+  "id": 4424651591,
+  "lat": 7.7780340,
+  "lon": 81.6020386,
+  "tags": {
+    "addr:street": "Trincomalee Batticaloa Road",
+    "amenity": "post_office",
+    "name:en": "Market"
+  }
+},
+{
+  "type": "node",
+  "id": 4424860289,
+  "lat": 7.9270792,
+  "lon": 81.5314575,
+  "tags": {
+    "addr:street": "Valaichenai - Kalkudah Road",
+    "amenity": "post_office",
+    "name:en": "Valaichenai Harbour"
+  }
+},
+{
+  "type": "node",
+  "id": 4426036794,
+  "lat": 7.7931653,
+  "lon": 81.5816819,
+  "tags": {
+    "addr:street": "Trincomalee Batticaloa Road",
+    "amenity": "post_office",
+    "name:en": "Kommathurai"
+  }
+},
+{
+  "type": "node",
+  "id": 4427454902,
+  "lat": 7.5633850,
+  "lon": 81.7856067,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Thetrativu"
+  }
+},
+{
+  "type": "node",
+  "id": 4427469294,
+  "lat": 7.6201721,
+  "lon": 81.7606231,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Puthukudiyiruppu"
+  }
+},
+{
+  "type": "node",
+  "id": 4427470492,
+  "lat": 7.5689366,
+  "lon": 81.7856509,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Maangaadu"
+  }
+},
+{
+  "type": "node",
+  "id": 4427493790,
+  "lat": 7.5868566,
+  "lon": 81.7828364,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Kurukkamadam"
+  }
+},
+{
+  "type": "node",
+  "id": 4427494190,
+  "lat": 7.5503218,
+  "lon": 81.7870409,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Kaluthavalai"
+  }
+},
+{
+  "type": "node",
+  "id": 4428950598,
+  "lat": 7.3086356,
+  "lon": 80.8093992,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Retiyagama Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4428950610,
+  "lat": 7.3562066,
+  "lon": 80.7898620,
+  "tags": {
+    "addr:city": "Rangala",
+    "addr:street": "Rangala Rd",
+    "amenity": "post_office",
+    "name": "Rangala Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4428950615,
+  "lat": 7.3609642,
+  "lon": 80.7558810,
+  "tags": {
+    "addr:street": "Putuhapuwa - Werapitiya Rd",
+    "amenity": "post_office",
+    "name": "Werapitiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4430243989,
+  "lat": 7.3368636,
+  "lon": 80.7739952,
+  "tags": {
+    "addr:city": "Makuldeniya",
+    "addr:street": "Rangala Rd",
+    "amenity": "post_office",
+    "name": "Makuldeniya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4437179772,
+  "lat": 5.9653032,
+  "lon": 80.3863479,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Denuwala Sub Post Office",
+    "phone": "091 2 283315"
+  }
+},
+{
+  "type": "node",
+  "id": 4437618380,
+  "lat": 7.0642629,
+  "lon": 80.6840906,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kotmale Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4440052299,
+  "lat": 6.7385392,
+  "lon": 81.0163467,
+  "tags": {
+    "addr:city": "Koslanda",
+    "addr:street": "Colombo - Ratnapura - Wellawaya - Batticaloa Road",
+    "amenity": "post_office",
+    "name": "Koslanda Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4440238041,
+  "lat": 9.3105966,
+  "lon": 80.3163292,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Akkarayankulam"
+  }
+},
+{
+  "type": "node",
+  "id": 4442126063,
+  "lat": 6.8261776,
+  "lon": 80.5229944,
+  "tags": {
+    "addr:city": "Nallathanniya",
+    "addr:street": "Hatton - Maskeliya - Dalhousie Road",
+    "amenity": "post_office",
+    "name": "Seethagangulagama Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4443924906,
+  "lat": 6.8636700,
+  "lon": 80.7079920,
+  "tags": {
+    "addr:city": "Agarapathana",
+    "amenity": "post_office",
+    "name": "Agarapathana"
+  }
+},
+{
+  "type": "node",
+  "id": 4447532687,
+  "lat": 6.9288599,
+  "lon": 80.7882408,
+  "tags": {
+    "addr:city": "Meepilimana",
+    "addr:street": "Ambewela Road",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4447657693,
+  "lat": 7.4756089,
+  "lon": 80.0465237,
+  "tags": {
+    "addr:street": "Kuliyapitiya-Hettipola Road",
+    "amenity": "post_office",
+    "name:en": "Kuliyapiitiya General Cemetry & Crematorium"
+  }
+},
+{
+  "type": "node",
+  "id": 4451072609,
+  "lat": 7.1167610,
+  "lon": 80.1219790,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Post Office - Welagedara Walpola Junction"
+  }
+},
+{
+  "type": "node",
+  "id": 4451079697,
+  "lat": 7.1311880,
+  "lon": 80.1060500,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Ranpokungama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4451430389,
+  "lat": 7.5408067,
+  "lon": 81.7885067,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Methodist Church, Kaluthavalai"
+  }
+},
+{
+  "type": "node",
+  "id": 4454599111,
+  "lat": 6.7195692,
+  "lon": 80.7719101,
+  "tags": {
+    "addr:city": "Belihuloya",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4464475430,
+  "lat": 7.2273400,
+  "lon": 80.7494836,
+  "tags": {
+    "addr:city": "Mailapitiya",
+    "addr:street": "Thennekumbura-Rikillagaskada-Ragala Road",
+    "amenity": "post_office",
+    "name": "Mailapitiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4464475460,
+  "lat": 7.1977179,
+  "lon": 80.7602768,
+  "tags": {
+    "addr:city": "Unuwinna",
+    "addr:street": "Tennakubura Rikillagaskada Ragala Road",
+    "amenity": "post_office",
+    "name": "Sub Post Office - Unuwinna"
+  }
+},
+{
+  "type": "node",
+  "id": 4464475461,
+  "lat": 7.1914324,
+  "lon": 80.7648956,
+  "tags": {
+    "addr:street": "Tennekumbura - Rikillagaskada - Ragala Road",
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4465717472,
+  "lat": 6.8844739,
+  "lon": 79.9742084,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Hokandara"
+  }
+},
+{
+  "type": "node",
+  "id": 4465930991,
+  "lat": 7.0556733,
+  "lon": 80.6998817,
+  "tags": {
+    "addr:city": "Ramboda",
+    "addr:street": "Peradeniya-Nuwara Eliya-Badulla Road",
+    "amenity": "post_office",
+    "name": "Ramboda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4472146832,
+  "lat": 7.0507995,
+  "lon": 79.8960881,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Kandana"
+  }
+},
+{
+  "type": "node",
+  "id": 4477469290,
+  "lat": 8.3890208,
+  "lon": 80.4443075,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Swimming pool"
+  }
+},
+{
+  "type": "node",
+  "id": 4490139937,
+  "lat": 6.4753340,
+  "lon": 80.6102568,
+  "tags": {
+    "addr:city": "Rakwana",
+    "addr:street": "Masimbula Road",
+    "amenity": "post_office",
+    "name": "Rakawana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4491680367,
+  "lat": 6.7586685,
+  "lon": 79.8983437,
+  "tags": {
+    "addr:city": "Gorakana",
+    "addr:street": "Old Galle Road",
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4501784275,
+  "lat": 6.9265449,
+  "lon": 80.8249842,
+  "tags": {
+    "addr:city": "Hakgala",
+    "addr:street": "Peradeniya-Badulla-Chenkaladi Road",
+    "amenity": "post_office",
+    "name": "Hakgala Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4503569727,
+  "lat": 7.0196565,
+  "lon": 79.9369502,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4522822691,
+  "lat": 6.9024149,
+  "lon": 79.8608089,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Department of Physics"
+  }
+},
+{
+  "type": "node",
+  "id": 4526140277,
+  "lat": 6.1899478,
+  "lon": 80.0969396,
+  "tags": {
+    "addr:city": "Meetiyagoda",
+    "addr:street": "Kahawa-Batapola Road",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4555033279,
+  "lat": 6.8955130,
+  "lon": 79.9244493,
+  "tags": {
+    "addr:city": "Battaramulla",
+    "addr:street": "Denzil Kobbekaduwa Mawatha",
+    "amenity": "post_office",
+    "name": "Ranaviru Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4578984109,
+  "lat": 6.1405540,
+  "lon": 80.5576236,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office - Makandura"
+  }
+},
+{
+  "type": "node",
+  "id": 4628054238,
+  "lat": 8.9626072,
+  "lon": 80.5252685,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Puliyankulam Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4670297144,
+  "lat": 6.9176749,
+  "lon": 79.9069695,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Madinnagoda"
+  }
+},
+{
+  "type": "node",
+  "id": 4704787989,
+  "lat": 7.4692760,
+  "lon": 80.0424308,
+  "tags": {
+    "addr:street": "Kurunegala-Narammala-Madampe Road",
+    "amenity": "post_office",
+    "name:en": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4714755395,
+  "lat": 6.9619811,
+  "lon": 80.5057577,
+  "tags": {
+    "addr:housenumber": "No 12",
+    "addr:postcode": "20686",
+    "addr:street": "Ella Uda Theniyagala Road",
+    "amenity": "post_office",
+    "name:en": "Ambathalawa",
+    "opening_hours": "Mo-Sa 08:00-17:00",
+    "phone": "0525674722"
+  }
+},
+{
+  "type": "node",
+  "id": 4746425643,
+  "lat": 6.9016778,
+  "lon": 80.1265622,
+  "tags": {
+    "addr:city": "Waga",
+    "addr:street": "Kaluaggala-Labugama-Kalatuwawa Road",
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4757401249,
+  "lat": 6.0012301,
+  "lon": 80.2619638,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4775007815,
+  "lat": 6.7947194,
+  "lon": 80.1113560,
+  "tags": {
+    "addr:city": "Padukka",
+    "addr:postcode": "10500",
+    "addr:street": "Malagala Road",
+    "amenity": "post_office",
+    "name": "Sub Post Office - Malagala"
+  }
+},
+{
+  "type": "node",
+  "id": 4776709158,
+  "lat": 6.7776134,
+  "lon": 80.1084455,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Kahawala"
+  }
+},
+{
+  "type": "node",
+  "id": 4791168431,
+  "lat": 6.9432290,
+  "lon": 80.7778031,
+  "tags": {
+    "addr:city": "Ruwan Eliya",
+    "addr:street": "Blackpool - Ambewela Road",
+    "amenity": "post_office",
+    "name": "Ruwan Eliya Sub Post Office",
+    "post_office:type": "sub_post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4803619523,
+  "lat": 7.2344432,
+  "lon": 79.9425198,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 4815639153,
+  "lat": 7.0934628,
+  "lon": 80.7989351,
+  "tags": {
+    "addr:city": "Padiyapelella",
+    "addr:street": "Ragala - Rikillagaskada - Thennekumbura Road",
+    "amenity": "post_office",
+    "name": "Padiyapelella Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4833924603,
+  "lat": 7.2349713,
+  "lon": 80.2629660,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4833927143,
+  "lat": 6.9888354,
+  "lon": 80.4941504,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ginigathhena Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4838108277,
+  "lat": 7.2849149,
+  "lon": 80.3218112,
+  "tags": {
+    "addr:city": "Dewalegama",
+    "addr:street": "Polgahawela-Kegalle Road",
+    "amenity": "post_office",
+    "name": "Dewalegama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4885453250,
+  "lat": 6.8948763,
+  "lon": 80.8711955,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Keppetipola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4891890173,
+  "lat": 6.6486215,
+  "lon": 80.7015149,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Balangoda Main Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4894994057,
+  "lat": 6.7311558,
+  "lon": 81.1004660,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Wellawaya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4920389406,
+  "lat": 6.7506712,
+  "lon": 81.3080227,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Okkampitiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4921735460,
+  "lat": 7.0382974,
+  "lon": 81.2008551,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Lunugala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4926790450,
+  "lat": 7.7620983,
+  "lon": 80.5702174,
+  "tags": {
+    "addr:city": "Galewela",
+    "addr:street": "Tonigala - Kalawewa - Galewela Road",
+    "amenity": "post_office",
+    "name": "Galewela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4933930181,
+  "lat": 7.7920669,
+  "lon": 80.5312337,
+  "tags": {
+    "addr:street": "Moragolla - Dambagahamula Rd.",
+    "amenity": "post_office",
+    "name": "bambaragaswewa sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4936849272,
+  "lat": 7.6853430,
+  "lon": 80.5802897,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Maadipola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4943979718,
+  "lat": 7.6219204,
+  "lon": 80.6065650,
+  "tags": {
+    "addr:city": "Pallepola",
+    "addr:street": "Palapathwela - Galewela Rd",
+    "amenity": "post_office",
+    "name": "Pallepola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4945291977,
+  "lat": 7.6113742,
+  "lon": 80.6373881,
+  "tags": {
+    "addr:city": "madawala ulpatha",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "name": "Post Office - Madawala ulpatha"
+  }
+},
+{
+  "type": "node",
+  "id": 4945471067,
+  "lat": 7.6658803,
+  "lon": 80.6369265,
+  "tags": {
+    "addr:city": "Nalanda",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "name": "Nalada sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 4948776427,
+  "lat": 7.7063720,
+  "lon": 80.6538263,
+  "tags": {
+    "addr:city": "Naula",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "name": "Post Office - Naula"
+  }
+},
+{
+  "type": "node",
+  "id": 4961881688,
+  "lat": 7.7529461,
+  "lon": 80.6614986,
+  "tags": {
+    "addr:city": "Lenadora",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "name": "Lenadora-Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4975257534,
+  "lat": 6.9790320,
+  "lon": 79.8898124,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office (Market Junction)"
+  }
+},
+{
+  "type": "node",
+  "id": 4979491080,
+  "lat": 7.6143747,
+  "lon": 80.6502055,
+  "tags": {
+    "addr:street": "Hathamunagala Rd",
+    "amenity": "post_office",
+    "name": "Ketawala Junction Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4984843079,
+  "lat": 6.0780488,
+  "lon": 80.5647324,
+  "tags": {
+    "addr:city": "Kamburupitiya",
+    "addr:street": "Matara - Kamburupitiya Road",
+    "amenity": "post_office",
+    "name": "Kamburupitiya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4984933687,
+  "lat": 7.5800910,
+  "lon": 80.6114351,
+  "tags": {
+    "addr:street": "Palapathwela - Galewela Rd",
+    "amenity": "post_office",
+    "name": "Mahawela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 4994868464,
+  "lat": 7.5399294,
+  "lon": 80.9166640,
+  "tags": {
+    "addr:street": "Hettipola New Town Road",
+    "amenity": "post_office",
+    "name": "Post office- Wilgamuwa"
+  }
+},
+{
+  "type": "node",
+  "id": 5030096478,
+  "lat": 7.4966116,
+  "lon": 80.9270366,
+  "tags": {
+    "addr:city": "Nugagolla",
+    "addr:street": "Hettipola - Hasalaka Road",
+    "amenity": "post_office",
+    "name": "Nugagolla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5032458321,
+  "lat": 7.4214637,
+  "lon": 80.6334706,
+  "tags": {
+    "addr:street": "Ukuwela",
+    "amenity": "post_office",
+    "name:en": "Ukuwela Post Office",
+    "opening_hours": "Mo-Sa 08:00-17:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5048968039,
+  "lat": 6.9254150,
+  "lon": 80.6090941,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kotagala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5057641928,
+  "lat": 6.9294937,
+  "lon": 79.9058870,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Gothatuwa"
+  }
+},
+{
+  "type": "node",
+  "id": 5124025379,
+  "lat": 7.5209708,
+  "lon": 80.6788390,
+  "tags": {
+    "addr:city": "Rattota",
+    "addr:street": "Matale - Rattota - Pallegama Road",
+    "amenity": "post_office",
+    "name": "Rattota Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5130411097,
+  "lat": 6.9535477,
+  "lon": 79.8910868,
+  "tags": {
+    "addr:city": "Kotuwila",
+    "addr:street": "Ambatale Road",
+    "amenity": "post_office",
+    "name": "Sub Post Office - Kotuwila",
+    "name:si": "කොටුවිල උප තැපැල් කාර්‍යාලය",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 5135188078,
+  "lat": 6.8757436,
+  "lon": 81.1130530,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Namunukula Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5176061434,
+  "lat": 7.4459612,
+  "lon": 80.5668188,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ihalamulla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5188184923,
+  "lat": 6.9166112,
+  "lon": 79.8632833,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2022-12-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5196573318,
+  "lat": 6.9115571,
+  "lon": 81.0099891,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Uva Neluwa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5197757821,
+  "lat": 7.4196225,
+  "lon": 80.5654251,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Banilagolla Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5207508476,
+  "lat": 7.5794472,
+  "lon": 79.7949021,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Halawatha"
+  }
+},
+{
+  "type": "node",
+  "id": 5207949321,
+  "lat": 6.1389173,
+  "lon": 80.6900236,
+  "tags": {
+    "addr:housenumber": "No: 13",
+    "addr:street": "Walasmulla-Hakmana Road",
+    "amenity": "post_office",
+    "name:en": "Sub-Post Office, Nathuwala",
+    "opening_hours": "Mo-Sa 08:00-12:00, 13:00-17:00",
+    "phone": "+94 (0) 47 2245354"
+  }
+},
+{
+  "type": "node",
+  "id": 5219912989,
+  "lat": 6.0220156,
+  "lon": 80.2474116,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 5220190806,
+  "lat": 7.0120187,
+  "lon": 80.8572547,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ragala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5257094650,
+  "lat": 7.1980258,
+  "lon": 80.0920349,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pallewela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5261496322,
+  "lat": 6.8992572,
+  "lon": 79.9058323,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Jana Home"
+  }
+},
+{
+  "type": "node",
+  "id": 5279228321,
+  "lat": 6.9352820,
+  "lon": 79.8455950,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "General Post Office",
+    "wikidata": "Q4139229",
+    "wikipedia": "en:Former General Post Office, Colombo"
+  }
+},
+{
+  "type": "node",
+  "id": 5301743366,
+  "lat": 6.9716231,
+  "lon": 80.2651132,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dehiovita Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5304198570,
+  "lat": 6.9578074,
+  "lon": 79.8823344,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Peliyagoda"
+  }
+},
+{
+  "type": "node",
+  "id": 5304247525,
+  "lat": 6.9094256,
+  "lon": 80.9836377,
+  "tags": {
+    "amenity": "post_office",
+    "name": "weppasawela post office"
+  }
+},
+{
+  "type": "node",
+  "id": 5342293957,
+  "lat": 6.8152121,
+  "lon": 79.9721294,
+  "tags": {
+    "addr:postcode": "1280",
+    "amenity": "post_office",
+    "name": "Mattegoda post office",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 5385078237,
+  "lat": 7.2854824,
+  "lon": 81.0221153,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mapakadawewa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5389654423,
+  "lat": 7.2234715,
+  "lon": 79.8679973,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Namasha foods"
+  }
+},
+{
+  "type": "node",
+  "id": 5400935350,
+  "lat": 7.2259592,
+  "lon": 81.1005700,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ritigaha Arawa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5412934823,
+  "lat": 7.9502283,
+  "lon": 80.7508586,
+  "tags": {
+    "amenity": "post_office",
+    "description:zh": "郵局"
+  }
+},
+{
+  "type": "node",
+  "id": 5428969353,
+  "lat": 7.2165182,
+  "lon": 80.1125112,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Indiparape Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5430898668,
+  "lat": 7.5489253,
+  "lon": 80.4928149,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Rideegama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5509960622,
+  "lat": 6.7703087,
+  "lon": 80.9617704,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Haputale Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5675646864,
+  "lat": 5.9537940,
+  "lon": 80.5957609,
+  "tags": {
+    "addr:street": "Matara-Kekanadura-Yatiyana Road",
+    "amenity": "post_office",
+    "name": "Thalpawila Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5686475859,
+  "lat": 5.9524928,
+  "lon": 80.5754664,
+  "tags": {
+    "addr:street": "Weherahena Road",
+    "amenity": "post_office",
+    "name": "Weherahena Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 5729808360,
+  "lat": 6.6484193,
+  "lon": 80.7011685,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office - Balangoda"
+  }
+},
+{
+  "type": "node",
+  "id": 5783180756,
+  "lat": 7.5342571,
+  "lon": 80.6270181,
+  "tags": {
+    "addr:city": "Palapathwala",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "name": "Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 5907582566,
+  "lat": 7.3043778,
+  "lon": 80.3076656,
+  "tags": {
+    "addr:city": "Batuwatta",
+    "addr:street": "Nelumdeniya-Kongashandiya Road",
+    "amenity": "post_office",
+    "name": "Batuwaththa sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 5919822187,
+  "lat": 8.6003998,
+  "lon": 81.2178170,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 5965588685,
+  "lat": 7.3418017,
+  "lon": 80.3979786,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Ishan home.miditha friend"
+  }
+},
+{
+  "type": "node",
+  "id": 6000941287,
+  "lat": 7.4018444,
+  "lon": 80.4752021,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Meegahahena"
+  }
+},
+{
+  "type": "node",
+  "id": 6000955185,
+  "lat": 7.3702729,
+  "lon": 80.4909723,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Adhikarampura junction"
+  }
+},
+{
+  "type": "node",
+  "id": 6011491580,
+  "lat": 6.9812084,
+  "lon": 79.9877289,
+  "tags": {
+    "addr:postcode": "11607",
+    "amenity": "post_office",
+    "name": "Siyambalape Post Office",
+    "operator": "Department of Posts of Sri Lanka"
+  }
+},
+{
+  "type": "node",
+  "id": 6109136485,
+  "lat": 6.9151640,
+  "lon": 79.8560191,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sri Jinaratana Agency Post Office",
+    "name:es": "Oficina de Correos"
+  }
+},
+{
+  "type": "node",
+  "id": 6124675388,
+  "lat": 7.9395681,
+  "lon": 80.7266000,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 6147925778,
+  "lat": 7.3708398,
+  "lon": 81.7970126,
+  "tags": {
+    "addr:city": "Sammanthurai",
+    "addr:postcode": "32200",
+    "amenity": "post_office",
+    "name": "veeramunai Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6156979285,
+  "lat": 8.3853811,
+  "lon": 80.4338835,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Shantha mama home"
+  }
+},
+{
+  "type": "node",
+  "id": 6183174001,
+  "lat": 7.3622675,
+  "lon": 80.4863225,
+  "tags": {
+    "addr:street": "Galagedara-Rambukkana Road",
+    "amenity": "post_office",
+    "name": "Sub Post office-Uduwa"
+  }
+},
+{
+  "type": "node",
+  "id": 6200434093,
+  "lat": 6.5539238,
+  "lon": 80.0233385,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6222816814,
+  "lat": 8.0558422,
+  "lon": 80.3545712,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Meegalewa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6229124386,
+  "lat": 7.6204832,
+  "lon": 80.5042716,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Deepani husband home"
+  }
+},
+{
+  "type": "node",
+  "id": 6242208559,
+  "lat": 6.9457971,
+  "lon": 80.5379149,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Watawala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6257124799,
+  "lat": 5.9939006,
+  "lon": 80.7278506,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Nakulugamuwa"
+  }
+},
+{
+  "type": "node",
+  "id": 6267498472,
+  "lat": 7.1198272,
+  "lon": 81.8518524,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 6274064253,
+  "lat": 6.0283764,
+  "lon": 80.2183919,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2024-12-23",
+    "name": "Post Office - Galle Fort"
+  }
+},
+{
+  "type": "node",
+  "id": 6352132926,
+  "lat": 6.7617237,
+  "lon": 81.2494031,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Buttala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6356491052,
+  "lat": 6.9520766,
+  "lon": 80.7869976,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Magasthota Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6365304383,
+  "lat": 6.9555898,
+  "lon": 80.9267400,
+  "tags": {
+    "addr:city": "Loonuwaththa",
+    "addr:street": "Udupussellawa - Welimada Road",
+    "amenity": "post_office",
+    "name": "Loonuwaththa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6365304596,
+  "lat": 6.9279445,
+  "lon": 80.8979425,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ambagasdowa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6385419085,
+  "lat": 6.3540837,
+  "lon": 80.6242485,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ullinduwawa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6386281422,
+  "lat": 7.2114304,
+  "lon": 80.3614363,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hettimulla Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6386281464,
+  "lat": 7.1749747,
+  "lon": 80.3617568,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Moronthota Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6510800916,
+  "lat": 7.0143707,
+  "lon": 80.3548340,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ganepalla Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6550863827,
+  "lat": 8.0912723,
+  "lon": 80.5180424,
+  "tags": {
+    "addr:street": "Thalawa Eppawala Road",
+    "amenity": "post_office",
+    "name": "Ipalogama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6579953158,
+  "lat": 7.1317875,
+  "lon": 80.4002991,
+  "tags": {
+    "addr:city": "Ganthuna",
+    "addr:postcode": "71222",
+    "addr:street": "Pallegama",
+    "amenity": "post_office",
+    "name": "Post office Ganthuna",
+    "opening_hours": "Mo-Fr 08:00-17:00",
+    "operator": "Department of Postal,  Sri lanka",
+    "phone": "+94 352 278 602"
+  }
+},
+{
+  "type": "node",
+  "id": 6611417530,
+  "lat": 7.2909398,
+  "lon": 80.6467596,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 6615733795,
+  "lat": 6.7564233,
+  "lon": 79.9080221,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Parattha",
+    "operator": "dilshan"
+  }
+},
+{
+  "type": "node",
+  "id": 6652132515,
+  "lat": 7.1049354,
+  "lon": 80.9825805,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mudagamuwa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6712782686,
+  "lat": 7.2578996,
+  "lon": 80.9111094,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dewahandiya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 6762841540,
+  "lat": 6.9783004,
+  "lon": 79.9480292,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 6819450379,
+  "lat": 6.8255305,
+  "lon": 80.2099631,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub-Post Office Kalatuwawa"
+  }
+},
+{
+  "type": "node",
+  "id": 6855033474,
+  "lat": 8.0413318,
+  "lon": 80.7561538,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Habarana Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7081952485,
+  "lat": 6.7661892,
+  "lon": 80.8506801,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7092908904,
+  "lat": 6.8746811,
+  "lon": 81.0473503,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ella Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7099270166,
+  "lat": 6.2840140,
+  "lon": 81.2669714,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 7183582848,
+  "lat": 7.2265562,
+  "lon": 80.5780143,
+  "tags": {
+    "addr:hamlet": "Daulagala",
+    "addr:street": "Peradeniya - Daulagala Road",
+    "amenity": "post_office",
+    "name": "Daulagala Post Office",
+    "note": "Unresolved note #1944843"
+  }
+},
+{
+  "type": "node",
+  "id": 7194664885,
+  "lat": 7.2367124,
+  "lon": 79.8450629,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7196565863,
+  "lat": 6.8632329,
+  "lon": 80.1684158,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Tummodara"
+  }
+},
+{
+  "type": "node",
+  "id": 7205330799,
+  "lat": 7.3987779,
+  "lon": 80.7337721,
+  "tags": {
+    "addr:street": "Madulkelle - Kabaragala - Kandenuwara Road",
+    "amenity": "post_office",
+    "name": "Madulkelle Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7239178151,
+  "lat": 6.9498873,
+  "lon": 80.8632346,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Uduhawara Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7252844997,
+  "lat": 8.4041641,
+  "lon": 81.3131210,
+  "tags": {
+    "addr:city": "Toppur",
+    "addr:postcode": "31250",
+    "addr:street": "Palatoppu-Seruwawila Road",
+    "amenity": "post_office",
+    "name": "Toppur",
+    "opening_hours": "Mo-Fr 08:00-17:00"
+  }
+},
+{
+  "type": "node",
+  "id": 7371025407,
+  "lat": 6.5162956,
+  "lon": 80.2314346,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Baduraliya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7414125787,
+  "lat": 7.0005035,
+  "lon": 80.6198564,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Wijayabahukanda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7414126965,
+  "lat": 7.0086711,
+  "lon": 80.6422931,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Dunukedeniya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7629946632,
+  "lat": 7.4196632,
+  "lon": 80.7243392,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Maussawa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7653421031,
+  "lat": 7.0959109,
+  "lon": 80.5227725,
+  "tags": {
+    "addr:street": "Gampola - Dolosbage Road",
+    "amenity": "post_office",
+    "name": "Udahentenna Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7690849124,
+  "lat": 8.5505396,
+  "lon": 81.1923299,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office China Bay"
+  }
+},
+{
+  "type": "node",
+  "id": 7690900971,
+  "lat": 8.5824530,
+  "lon": 81.1895946,
+  "tags": {
+    "addr:city": "Trincomalee",
+    "addr:housenumber": "4th Mile Post",
+    "addr:postcode": "31003",
+    "addr:street": "Kandy Road",
+    "amenity": "post_office",
+    "name": "Post Office-Trincomalee Kachcheri",
+    "operator": "Sri Lanka Postal Service"
+  }
+},
+{
+  "type": "node",
+  "id": 7693510992,
+  "lat": 8.8166902,
+  "lon": 81.1007115,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 7775648617,
+  "lat": 6.3013749,
+  "lon": 80.3174266,
+  "tags": {
+    "amenity": "post_office",
+    "government": "administrative",
+    "name": "Post Office Hiniduma"
+  }
+},
+{
+  "type": "node",
+  "id": 7777240587,
+  "lat": 6.2580140,
+  "lon": 80.3253695,
+  "tags": {
+    "amenity": "post_office",
+    "government": "administrative",
+    "name": "Sub Post Office Panangala",
+    "office": "government"
+  }
+},
+{
+  "type": "node",
+  "id": 7777240621,
+  "lat": 6.2375315,
+  "lon": 80.3312353,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Koralegama-Gallandala"
+  }
+},
+{
+  "type": "node",
+  "id": 7778757772,
+  "lat": 6.3374972,
+  "lon": 80.3391452,
+  "tags": {
+    "amenity": "post_office",
+    "government": "administrative",
+    "name": "Thawalama Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 7780308895,
+  "lat": 6.3593519,
+  "lon": 80.3196589,
+  "tags": {
+    "amenity": "post_office",
+    "government": "administrative",
+    "name": "Habarakada West Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7781700237,
+  "lat": 6.2262388,
+  "lon": 80.2514644,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Subpost Office"
+  }
+},
+{
+  "type": "node",
+  "id": 7905101878,
+  "lat": 7.1616570,
+  "lon": 81.2256450,
+  "tags": {
+    "addr:city": "Bibile",
+    "addr:district": "Monaragala District",
+    "addr:street": "Peradeniya-Badulla-Chenkaladi Hwy",
+    "amenity": "post_office",
+    "name": "Post Office - Bibile"
+  }
+},
+{
+  "type": "node",
+  "id": 7905128487,
+  "lat": 7.0911880,
+  "lon": 79.8910980,
+  "tags": {
+    "District": "Gampaha District",
+    "addr:city": "Ja-Ela",
+    "addr:street": "Christ King Rd",
+    "amenity": "post_office",
+    "name": "Tudella Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 8003562948,
+  "lat": 7.3104622,
+  "lon": 80.6466901,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Aruppola Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 8269371847,
+  "lat": 6.2565974,
+  "lon": 80.0389505,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 8366823217,
+  "lat": 7.2062477,
+  "lon": 80.5868097,
+  "tags": {
+    "addr:city": "Muruthagahamula",
+    "addr:postcode": "20526",
+    "amenity": "post_office",
+    "name": "Post Office, Muruthagahamula",
+    "opening_hours": "Mo-Sa 09:00-15:00"
+  }
+},
+{
+  "type": "node",
+  "id": 8582203986,
+  "lat": 7.2654601,
+  "lon": 80.5960924,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2024-08-22",
+    "name": "Post office Peradeniya"
+  }
+},
+{
+  "type": "node",
+  "id": 9125515267,
+  "lat": 6.3021344,
+  "lon": 80.2180132,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Amaragama Sub Post Office",
+    "name:si": "අමරගම තැපැල් කාර්යාලය",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9132886103,
+  "lat": 6.7874843,
+  "lon": 79.9647778,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Polgasowita Post Office",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 9138296744,
+  "lat": 6.2577228,
+  "lon": 80.4932900,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Morawaka Post Office",
+    "phone": "+94412282250"
+  }
+},
+{
+  "type": "node",
+  "id": 9139601857,
+  "lat": 6.2715298,
+  "lon": 80.0938636,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Karandeniya Post Office",
+    "phone": "+94912291116"
+  }
+},
+{
+  "type": "node",
+  "id": 9139642563,
+  "lat": 6.2672397,
+  "lon": 80.0795862,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Dangahawila"
+  }
+},
+{
+  "type": "node",
+  "id": 9139654206,
+  "lat": 6.3187963,
+  "lon": 80.1600315,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ketapala post office"
+  }
+},
+{
+  "type": "node",
+  "id": 9139684704,
+  "lat": 6.3539028,
+  "lon": 80.1530322,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 9147380666,
+  "lat": 6.3219847,
+  "lon": 80.2183857,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Amugoda Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9150595962,
+  "lat": 6.3447474,
+  "lon": 80.2218736,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pitigala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9213989911,
+  "lat": 6.8172339,
+  "lon": 80.1731058,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Ugadagamkanda"
+  }
+},
+{
+  "type": "node",
+  "id": 9288146353,
+  "lat": 6.9383503,
+  "lon": 80.6624823,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 9399149903,
+  "lat": 7.9963960,
+  "lon": 80.2712278,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Galgamuwa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9399745795,
+  "lat": 8.0603509,
+  "lon": 80.2814341,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Mahagalkadawala"
+  }
+},
+{
+  "type": "node",
+  "id": 9399892403,
+  "lat": 7.9964558,
+  "lon": 80.1850686,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mahananneriya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9400321941,
+  "lat": 8.0052025,
+  "lon": 80.1058593,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Nawagattegama"
+  }
+},
+{
+  "type": "node",
+  "id": 9400611599,
+  "lat": 7.9619306,
+  "lon": 80.3305157,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Gallewa"
+  }
+},
+{
+  "type": "node",
+  "id": 9400756988,
+  "lat": 7.9398236,
+  "lon": 80.3446905,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Ehetuwewa"
+  }
+},
+{
+  "type": "node",
+  "id": 9400843398,
+  "lat": 7.9201232,
+  "lon": 80.2391982,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ambanpola Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9410509179,
+  "lat": 7.9199110,
+  "lon": 80.3606519,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Embogama Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9444227221,
+  "lat": 8.0855148,
+  "lon": 80.3560310,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Hureegaswewa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9447949652,
+  "lat": 7.3087084,
+  "lon": 80.7646608,
+  "tags": {
+    "addr:city": "Teldeniya",
+    "amenity": "post_office",
+    "name": "Teldeniya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9547317961,
+  "lat": 6.8434339,
+  "lon": 81.0239225,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 9767295825,
+  "lat": 8.3498205,
+  "lon": 81.2857885,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office,Kiliveddy"
+  }
+},
+{
+  "type": "node",
+  "id": 9770266335,
+  "lat": 6.9038803,
+  "lon": 80.9128447,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Welimada Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9771191671,
+  "lat": 7.2889676,
+  "lon": 80.8156777,
+  "tags": {
+    "amenity": "post_office",
+    "name": "post office"
+  }
+},
+{
+  "type": "node",
+  "id": 9771887407,
+  "lat": 7.0146558,
+  "lon": 80.6655554,
+  "tags": {
+    "addr:city": "Punduloya",
+    "addr:postcode": "22120",
+    "amenity": "post_office",
+    "name": "punduloya post office"
+  }
+},
+{
+  "type": "node",
+  "id": 9772345367,
+  "lat": 6.8467094,
+  "lon": 80.9030617,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Guruthalawa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 9774967985,
+  "lat": 6.7940917,
+  "lon": 80.6800144,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 9790638361,
+  "lat": 6.9270077,
+  "lon": 80.9311781,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - kahatathalawa"
+  }
+},
+{
+  "type": "node",
+  "id": 9794292240,
+  "lat": 6.9020309,
+  "lon": 80.8875300,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nugatalawa Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 10246967643,
+  "lat": 8.0300130,
+  "lon": 79.8317048,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2022-12-08"
+  }
+},
+{
+  "type": "node",
+  "id": 10266557538,
+  "lat": 7.3482997,
+  "lon": 80.6165229,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 10287255709,
+  "lat": 8.7178799,
+  "lon": 80.3637978,
+  "tags": {
+    "addr:housenumber": "0001",
+    "addr:street": "rangeth Gama to palayayooruwa",
+    "amenity": "post_office",
+    "name": "SUB POST OFFICE VARIKKUTTYOOR..",
+    "name:en": "உப தபாலகம் வாரிக்குட்டியூர்"
+  }
+},
+{
+  "type": "node",
+  "id": 10287655710,
+  "lat": 8.7176359,
+  "lon": 80.3637537,
+  "tags": {
+    "addr:housenumber": "45008",
+    "amenity": "post_office",
+    "name:en": "45008 post office"
+  }
+},
+{
+  "type": "node",
+  "id": 10614985209,
+  "lat": 8.3237699,
+  "lon": 81.2998393,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 10673366451,
+  "lat": 6.9832600,
+  "lon": 81.8633018,
+  "tags": {
+    "addr:city": "Komari",
+    "addr:postcode": "32418",
+    "amenity": "post_office",
+    "name": "Komari Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 10679745022,
+  "lat": 6.4133579,
+  "lon": 80.0813043,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ittapana Post Office",
+    "operator": "SL Post"
+  }
+},
+{
+  "type": "node",
+  "id": 10701820833,
+  "lat": 7.2092981,
+  "lon": 80.6259023,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Haloya Sub Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 10718003504,
+  "lat": 6.4692043,
+  "lon": 80.1101719,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 10743542263,
+  "lat": 9.7171430,
+  "lon": 80.0214783,
+  "tags": {
+    "addr:street": "Kanthasamy Kovil Road",
+    "amenity": "post_office",
+    "name": "Invil Subpost Office",
+    "name:ta": "இணுவில் உபதபால் அலுவலகம்"
+  }
+},
+{
+  "type": "node",
+  "id": 10771329731,
+  "lat": 9.7979894,
+  "lon": 80.1167121,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Idaikkadu Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 10839918584,
+  "lat": 7.4145416,
+  "lon": 81.7346226,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Central Camp Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 11068250161,
+  "lat": 6.1153993,
+  "lon": 80.8342115,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Thalunna Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 11068260611,
+  "lat": 6.1472836,
+  "lon": 80.8251288,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 11140103447,
+  "lat": 7.2905432,
+  "lon": 81.8587743,
+  "tags": {
+    "addr:city": "Oluvil",
+    "addr:postcode": "32360",
+    "addr:street": "Light house street",
+    "amenity": "post_office",
+    "name": "OLUVIL POST OFFICE"
+  }
+},
+{
+  "type": "node",
+  "id": 11210789540,
+  "lat": 6.7566246,
+  "lon": 81.8044083,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Panama",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "node",
+  "id": 11300389581,
+  "lat": 7.3947107,
+  "lon": 81.8435416,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 11393710275,
+  "lat": 8.0241906,
+  "lon": 80.5355860,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 11399755216,
+  "lat": 7.2977181,
+  "lon": 81.8510778,
+  "tags": {
+    "amenity": "post_office",
+    "name": "SEUSL post office"
+  }
+},
+{
+  "type": "node",
+  "id": 11402700943,
+  "lat": 7.3548626,
+  "lon": 81.8451679,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Nintavur 32340"
+  }
+},
+{
+  "type": "node",
+  "id": 11407370224,
+  "lat": 6.9275278,
+  "lon": 81.0933386,
+  "tags": {
+    "addr:city": "Springvalley",
+    "addr:street": "Demodara Road",
+    "amenity": "post_office",
+    "name": "Springvalley Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 11449803868,
+  "lat": 7.1734543,
+  "lon": 80.5767782,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub post Office Kahatapitiya"
+  }
+},
+{
+  "type": "node",
+  "id": 11601308969,
+  "lat": 6.9561142,
+  "lon": 81.0315119,
+  "tags": {
+    "addr:city": "Hali-Ela",
+    "addr:street": "Ketawala Road",
+    "amenity": "post_office",
+    "name": "Hali-Ela Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 11842763175,
+  "lat": 6.8512483,
+  "lon": 79.8642340,
+  "tags": {
+    "addr:street": "Railway Station Road",
+    "amenity": "post_office",
+    "name:en": "post office Dehiwala"
+  }
+},
+{
+  "type": "node",
+  "id": 11842859891,
+  "lat": 6.8477748,
+  "lon": 79.8668470,
+  "tags": {
+    "addr:postcode": "10350",
+    "addr:street": "station road dehiwala",
+    "amenity": "post_office",
+    "name:en": "post offcie dehiwala",
+    "opening_hours": "Su-Fr 09:00-04:00"
+  }
+},
+{
+  "type": "node",
+  "id": 11939687600,
+  "lat": 7.3027145,
+  "lon": 80.7414436,
+  "tags": {
+    "amenity": "post_office",
+    "name": "kumbukkandura sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 12101739252,
+  "lat": 6.9204930,
+  "lon": 79.8578015,
+  "tags": {
+    "amenity": "post_office",
+    "brand": "DHL",
+    "brand:wikidata": "Q489815",
+    "name": "DHL",
+    "survey:date": "2024-08-10"
+  }
+},
+{
+  "type": "node",
+  "id": 12115439895,
+  "lat": 6.8597517,
+  "lon": 81.8322679,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 12343239222,
+  "lat": 7.1276450,
+  "lon": 79.9036505,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 12343239236,
+  "lat": 7.1316732,
+  "lon": 79.9035021,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 12388143470,
+  "lat": 7.2657618,
+  "lon": 80.5535940,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pilimatalawa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 12456315202,
+  "lat": 5.9423309,
+  "lon": 80.5260524,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office - Polhena"
+  }
+},
+{
+  "type": "node",
+  "id": 12496003106,
+  "lat": 7.0011571,
+  "lon": 80.0949509,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mandawala Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 12565140101,
+  "lat": 7.2922828,
+  "lon": 80.6345868,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 12880769112,
+  "lat": 7.4550960,
+  "lon": 80.5827212,
+  "tags": {
+    "amenity": "post_office",
+    "name": "owiliknda post office"
+  }
+},
+{
+  "type": "node",
+  "id": 12880801281,
+  "lat": 7.4668936,
+  "lon": 80.6234462,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Matale Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 12880973926,
+  "lat": 7.3143220,
+  "lon": 80.7857363,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Udispattuwa Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 12881013787,
+  "lat": 7.2912224,
+  "lon": 81.6765657,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ampara post office"
+  }
+},
+{
+  "type": "node",
+  "id": 12881050776,
+  "lat": 7.9227656,
+  "lon": 80.6829028,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "Sub Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 13042509601,
+  "lat": 9.5267458,
+  "lon": 79.7024842,
+  "tags": {
+    "amenity": "post_office",
+    "name:en": "post office"
+  }
+},
+{
+  "type": "node",
+  "id": 13067946342,
+  "lat": 7.1743882,
+  "lon": 79.8879996,
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "node",
+  "id": 13222281094,
+  "lat": 7.6895209,
+  "lon": 79.8303177,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Nalladarankattuwa",
+    "opening_hours": "Mo-Fr 09:00-17:00"
+  }
+},
+{
+  "type": "node",
+  "id": 13380401276,
+  "lat": 6.0029004,
+  "lon": 80.6698094,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office  -  Radampala"
+  }
+},
+{
+  "type": "node",
+  "id": 13392179171,
+  "lat": 6.8781800,
+  "lon": 79.9903183,
+  "tags": {
+    "addr:street": "474 Kaduwela - Athurugiriya Road",
+    "amenity": "post_office",
+    "name": "Athurugiriya Post Office"
+  }
+},
+{
+  "type": "node",
+  "id": 13420540076,
+  "lat": 6.8983150,
+  "lon": 81.0586855,
+  "tags": {
+    "amenity": "post_office",
+    "check_date": "2025-12-31"
+  }
+},
+{
+  "type": "node",
+  "id": 13423818243,
+  "lat": 6.0803010,
+  "lon": 80.6563559,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office - Kebiliyapola"
+  }
+},
+{
+  "type": "node",
+  "id": 14052475234,
+  "lat": 7.1226442,
+  "lon": 80.0221512,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office - Bemmulla"
+  }
+},
+{
+  "type": "node",
+  "id": 14060780411,
+  "lat": 7.1366545,
+  "lon": 80.0360844,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Magalegoda Sub Post office"
+  }
+},
+{
+  "type": "node",
+  "id": 14086732401,
+  "lat": 8.0054258,
+  "lon": 81.0098244,
+  "tags": {
+    "addr:postcode": "51000",
+    "addr:street": "Laksha Uyana-Chandana Pokuna Road",
+    "amenity": "post_office",
+    "name": "Wijayabapura sub post office"
+  }
+},
+{
+  "type": "node",
+  "id": 14087932959,
+  "lat": 7.3751800,
+  "lon": 79.8756084,
+  "tags": {
+    "amenity": "post_office",
+    "name": "sub post office kottaramulla(61154)"
+  }
+},
+{
+  "type": "node",
+  "id": 14096688615,
+  "lat": 9.8107535,
+  "lon": 80.0413083,
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 136712021,
+  "center": {
+    "lat": 6.0334670,
+    "lon": 80.2176145
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Galle Main Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 136845339,
+  "center": {
+    "lat": 6.0277966,
+    "lon": 80.2174171
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office",
+    "office": "government",
+    "opening_hours": "Mo-Su 08:00-16:00"
+  }
+},
+{
+  "type": "way",
+  "id": 148977472,
+  "center": {
+    "lat": 6.4309454,
+    "lon": 79.9998059
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Aluthgama Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 149137207,
+  "center": {
+    "lat": 6.4226702,
+    "lon": 79.9971403
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 153514831,
+  "center": {
+    "lat": 6.4310688,
+    "lon": 80.0000352
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Aluthgama post office"
+  }
+},
+{
+  "type": "way",
+  "id": 155095184,
+  "center": {
+    "lat": 6.4185052,
+    "lon": 80.0028253
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 220696969,
+  "center": {
+    "lat": 7.6886438,
+    "lon": 81.7180091
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "roof",
+    "building:foundation_height": "1",
+    "building:levels": "1",
+    "building:use": "residential",
+    "post_office:type": "sub",
+    "roof:material": "tin",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 223260587,
+  "center": {
+    "lat": 7.7240419,
+    "lon": 81.6945228
+  },
+  "tags": {
+    "addr:city": "Batticaloa",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:foundation_height": "1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "building:use": "government",
+    "name": "Post Office",
+    "roof:material": "tile",
+    "roof:shape": "hipped"
+  }
+},
+{
+  "type": "way",
+  "id": 223490457,
+  "center": {
+    "lat": 7.7316575,
+    "lon": 81.6898539
+  },
+  "tags": {
+    "addr:city": "Batticaloa",
+    "addr:street": "Cemetery Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:foundation_height": "1",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "building:use": "residential",
+    "name": "Sub Post Office Jayanthipuram",
+    "roof:material": "tile",
+    "roof:shape": "hipped"
+  }
+},
+{
+  "type": "way",
+  "id": 223716509,
+  "center": {
+    "lat": 7.7212825,
+    "lon": 81.7027395
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "roof",
+    "building:foundation_height": "1",
+    "building:levels": "1",
+    "name": "Certis Lanka Courier Service",
+    "roof:material": "tin",
+    "roof:shape": "lean_to",
+    "service": "parking"
+  }
+},
+{
+  "type": "way",
+  "id": 224060484,
+  "center": {
+    "lat": 6.9279463,
+    "lon": 79.8579205
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "public",
+    "building:colour": "#b04040",
+    "building:levels": "12",
+    "image": "https://photos.app.goo.gl/BMagyLqQfSZxeAeZ6",
+    "name": "Postal Headquarters"
+  }
+},
+{
+  "type": "way",
+  "id": 224219838,
+  "center": {
+    "lat": 7.7519465,
+    "lon": 81.6402070
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 229252126,
+  "center": {
+    "lat": 7.2652570,
+    "lon": 80.5960954
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "check_date": "2024-08-30",
+    "name": "Peradeniya Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 233333852,
+  "center": {
+    "lat": 6.9026296,
+    "lon": 79.9164272
+  },
+  "tags": {
+    "addr:city": "Battaramulla",
+    "addr:street": "Sri Subuthipura Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office Battaramulla",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "way",
+  "id": 233425176,
+  "center": {
+    "lat": 6.1108513,
+    "lon": 80.9320695
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "school",
+    "name": "Hungana postoffice",
+    "operator": "Mr Wasantha"
+  }
+},
+{
+  "type": "way",
+  "id": 233492101,
+  "center": {
+    "lat": 7.7116241,
+    "lon": 81.6982448
+  },
+  "tags": {
+    "amenity": "post_office",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "way",
+  "id": 233592975,
+  "center": {
+    "lat": 7.7083980,
+    "lon": 81.6913849
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "building:foundation_height": "1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "building:use": "government",
+    "name": "Sub Post Office",
+    "roof:material": "tile",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 236941418,
+  "center": {
+    "lat": 9.6651137,
+    "lon": 80.0099843
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Jaffna Main Post Office",
+    "name:ta": "பிரதான அஞ்சல் அலுவலகம் யாழ்ப்பாணம்",
+    "operator": "SL Post"
+  }
+},
+{
+  "type": "way",
+  "id": 238423276,
+  "center": {
+    "lat": 7.7104829,
+    "lon": 81.6986625
+  },
+  "tags": {
+    "addr:city": "Batticaloa",
+    "addr:street": "Chapel Street",
+    "amenity": "post_office",
+    "name": "Batticaloa Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 240090841,
+  "center": {
+    "lat": 6.6636279,
+    "lon": 79.9702090
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Morontuduwa"
+  }
+},
+{
+  "type": "way",
+  "id": 240242783,
+  "center": {
+    "lat": 6.6667966,
+    "lon": 79.9949162
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "POst Office-Paragastota"
+  }
+},
+{
+  "type": "way",
+  "id": 247323097,
+  "center": {
+    "lat": 7.6964448,
+    "lon": 81.6544632
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Vavunathivu Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 254604671,
+  "center": {
+    "lat": 6.9875185,
+    "lon": 81.0580397
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Badulla Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 260108745,
+  "center": {
+    "lat": 7.9963718,
+    "lon": 80.2712702
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 286372830,
+  "center": {
+    "lat": 5.9450701,
+    "lon": 80.5498606
+  },
+  "tags": {
+    "addr:city": "Matara",
+    "addr:postcode": "81000",
+    "addr:street": "Anagarika Dharmapala Mawatha",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "3",
+    "name": "Central Post Office Matara"
+  }
+},
+{
+  "type": "way",
+  "id": 286531866,
+  "center": {
+    "lat": 7.2903702,
+    "lon": 80.6320954
+  },
+  "tags": {
+    "addr:city": "Kandy",
+    "addr:postcode": "20000",
+    "addr:street": "SWRD Bandaranaike Mawatha",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "3",
+    "name": "Postal Complex",
+    "smoking": "no",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 286548000,
+  "center": {
+    "lat": 6.0238566,
+    "lon": 80.4951782
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 286567624,
+  "center": {
+    "lat": 5.9834478,
+    "lon": 80.5200886
+  },
+  "tags": {
+    "addr:postcode": "81050",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Palatuwa Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 286616116,
+  "center": {
+    "lat": 6.9715762,
+    "lon": 80.7662739
+  },
+  "tags": {
+    "addr:city": "Nuwara Eliya",
+    "addr:street": "Queen Elizabeth Drive",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Nuwara Eliya Post Office",
+    "ref": "Nuwara Eliya,Post Office."
+  }
+},
+{
+  "type": "way",
+  "id": 286929137,
+  "center": {
+    "lat": 7.0445675,
+    "lon": 80.2538080
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Ruwanwella Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 287026403,
+  "center": {
+    "lat": 6.7651128,
+    "lon": 80.0115001
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Gonapola Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 287219107,
+  "center": {
+    "lat": 6.1232195,
+    "lon": 81.1262408
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office of Hambantota"
+  }
+},
+{
+  "type": "way",
+  "id": 287440483,
+  "center": {
+    "lat": 6.2900822,
+    "lon": 80.1633445
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Elpitiya Post Office",
+    "phone": "+94912291250"
+  }
+},
+{
+  "type": "way",
+  "id": 288275785,
+  "center": {
+    "lat": 6.5271187,
+    "lon": 79.9867981
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Palayangoda sub post office"
+  }
+},
+{
+  "type": "way",
+  "id": 288514742,
+  "center": {
+    "lat": 6.6803605,
+    "lon": 80.4018139
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 313434369,
+  "center": {
+    "lat": 6.2260789,
+    "lon": 80.2176617
+  },
+  "tags": {
+    "addr:postcode": "80460",
+    "addr:street": "Yakkatuwa-Kahaduwa Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kahaduwa Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 319461478,
+  "center": {
+    "lat": 6.0230941,
+    "lon": 80.7963242
+  },
+  "tags": {
+    "addr:city": "Tangalle",
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 327553050,
+  "center": {
+    "lat": 6.8994068,
+    "lon": 79.8601111
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "check_date": "2024-10-01",
+    "name": "Colombo University Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 329670832,
+  "center": {
+    "lat": 5.9408570,
+    "lon": 80.4940516
+  },
+  "tags": {
+    "addr:city": "Kamburugamuwa",
+    "addr:postcode": "81750",
+    "addr:street": "Gall Matar road",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Kamburugamuwa",
+    "operator": "Sri lanka post"
+  }
+},
+{
+  "type": "way",
+  "id": 330063739,
+  "center": {
+    "lat": 5.9646819,
+    "lon": 80.4845011
+  },
+  "tags": {
+    "addr:city": "Kotawila",
+    "addr:street": "Kamburugamuwa-Labima Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Kotawila"
+  }
+},
+{
+  "type": "way",
+  "id": 330316918,
+  "center": {
+    "lat": 6.8881401,
+    "lon": 80.5990077
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Hatton Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 332508611,
+  "center": {
+    "lat": 7.0919443,
+    "lon": 79.9696333
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "roof:material": "tile",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 351116383,
+  "center": {
+    "lat": 7.0663276,
+    "lon": 79.9604720
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:age": "10_to_30",
+    "building:foundation_height": "less_than_1",
+    "building:levels": "2",
+    "building:material": "plaster",
+    "name": "Post Office Ganemulla",
+    "roof:material": "asbestos",
+    "roof:shape": "hipped"
+  }
+},
+{
+  "type": "way",
+  "id": 354325483,
+  "center": {
+    "lat": 7.3100424,
+    "lon": 80.3192681
+  },
+  "tags": {
+    "addr:city": "Imbulgasdeniya",
+    "addr:postcode": "71055",
+    "addr:street": "Imbulgasdeniya - Rambukkana Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Imbulgasdeniya Sub Post Office",
+    "name:si": "ඉඹුල්ගස්දෙනිය උප තැපැල් කාර්යාලය"
+  }
+},
+{
+  "type": "way",
+  "id": 363681856,
+  "center": {
+    "lat": 6.1235235,
+    "lon": 80.1205225
+  },
+  "tags": {
+    "addr:city": "Hikkaduwa",
+    "addr:postcode": "80240",
+    "addr:street": "Thiranagama - Pinkanda",
+    "amenity": "post_office",
+    "building": "commercial",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 368719919,
+  "center": {
+    "lat": 6.8407123,
+    "lon": 80.0923572
+  },
+  "tags": {
+    "addr:city": "Padukka",
+    "addr:postcode": "10500",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "2",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 368854944,
+  "center": {
+    "lat": 7.3316291,
+    "lon": 80.3009072
+  },
+  "tags": {
+    "addr:city": "Polgahawela",
+    "addr:street": "Polgahawela - Kegalle Road",
+    "amenity": "post_office",
+    "building": "commercial",
+    "building:levels": "1",
+    "name": "Polgahawela Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 376184876,
+  "center": {
+    "lat": 7.0834713,
+    "lon": 80.0358128
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:age": "less_than_10",
+    "building:foundation_height": "1 to 1.5",
+    "building:levels": "2",
+    "building:material": "plaster",
+    "roof:material": "asbestos",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 376194128,
+  "center": {
+    "lat": 7.0836669,
+    "lon": 80.0357515
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:foundation_height": "1 to 1.5",
+    "building:levels": "2",
+    "building:material": "plaster",
+    "name": "Yakkala post office",
+    "roof:material": "asbestos",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 376324145,
+  "center": {
+    "lat": 7.0769153,
+    "lon": 79.9413007
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:foundation_height": "less_than1",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Sub Post Office Bollatha North",
+    "roof:material": "tile",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 378420735,
+  "center": {
+    "lat": 7.1393944,
+    "lon": 79.9004983
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:age": "more_than_20",
+    "building:foundation_height": "less_than_1",
+    "building:levels": "2",
+    "building:material": "plaster",
+    "name": "Raddolugama Post Office",
+    "roof:material": "asbestos",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 378621517,
+  "center": {
+    "lat": 7.0312148,
+    "lon": 79.9766312
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "building:foundation_height": "less_than_1",
+    "building:levels": "2",
+    "building:material": "plaster",
+    "roof:material": "asbestos",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 379310509,
+  "center": {
+    "lat": 7.0340277,
+    "lon": 79.9910699
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "office",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Pahala Ibmbulgoda Sub Post office",
+    "roof:material": "asbestos",
+    "roof:shape": "hipped"
+  }
+},
+{
+  "type": "way",
+  "id": 381189713,
+  "center": {
+    "lat": 6.8715101,
+    "lon": 81.3490915
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office Monaragala"
+  }
+},
+{
+  "type": "way",
+  "id": 384957072,
+  "center": {
+    "lat": 7.0957825,
+    "lon": 80.0405545
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:age": "10_to_20",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Sub Post Office",
+    "roof:material": "tile",
+    "roof:shape": "2 faces (pitched)"
+  }
+},
+{
+  "type": "way",
+  "id": 385808603,
+  "center": {
+    "lat": 8.2188718,
+    "lon": 81.4047360
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "Sub Post Office Puchakerney"
+  }
+},
+{
+  "type": "way",
+  "id": 385960641,
+  "center": {
+    "lat": 8.1001569,
+    "lon": 81.4456144
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 388172451,
+  "center": {
+    "lat": 7.0473704,
+    "lon": 79.9665873
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Kossinna Post Office",
+    "roof:material": "asbestos",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 389568213,
+  "center": {
+    "lat": 7.8189846,
+    "lon": 81.5560368
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "Sub Post Office,Sittandy"
+  }
+},
+{
+  "type": "way",
+  "id": 390064394,
+  "center": {
+    "lat": 8.7526608,
+    "lon": 80.3732701
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Poovarasankulam Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 391311259,
+  "center": {
+    "lat": 8.8633015,
+    "lon": 80.5013801
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Omanthai Sub Post Office",
+    "name:ta": "ஓமந்தை உப தபால் அலுவலகம்"
+  }
+},
+{
+  "type": "way",
+  "id": 392041862,
+  "center": {
+    "lat": 8.1302007,
+    "lon": 81.4369110
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "ooriyankaddu Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 392463116,
+  "center": {
+    "lat": 9.0573432,
+    "lon": 80.6576679
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Nedunkerny Post Office",
+    "name:ta": "நெடுங்கேணி அஞ்சல் அலுவலகம்",
+    "operator": "SL Post"
+  }
+},
+{
+  "type": "way",
+  "id": 392706167,
+  "center": {
+    "lat": 9.5660096,
+    "lon": 80.3954762
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Iyakachchi Sub Post Office",
+    "name:ta": "இயக்கச்சி உப அஞ்சல் அலுவலகம்",
+    "operator": "SLPOST"
+  }
+},
+{
+  "type": "way",
+  "id": 392707233,
+  "center": {
+    "lat": 9.4312604,
+    "lon": 80.4080395
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Paranthan Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 392710782,
+  "center": {
+    "lat": 9.1259743,
+    "lon": 80.4477768
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Mankulam Post Office",
+    "operator": "SLPOST"
+  }
+},
+{
+  "type": "way",
+  "id": 397941028,
+  "center": {
+    "lat": 7.0907580,
+    "lon": 79.9890614
+  },
+  "tags": {
+    "addr:street": "Somarathna Himi Mawatha",
+    "amenity": "post_office",
+    "building": "office",
+    "building:foundation_height": "1.5 to 3",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Pahalagama sub post office",
+    "roof:material": "concrete",
+    "roof:shape": "lean_to"
+  }
+},
+{
+  "type": "way",
+  "id": 404006608,
+  "center": {
+    "lat": 8.6412497,
+    "lon": 80.6696944
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office Kebitigollawa"
+  }
+},
+{
+  "type": "way",
+  "id": 405277511,
+  "center": {
+    "lat": 7.0482771,
+    "lon": 79.9898060
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "utility",
+    "building:age": "more_than_20",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "roof:material": "tile",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 409086117,
+  "center": {
+    "lat": 9.3935041,
+    "lon": 80.4077183
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kilinochchi Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 409292093,
+  "center": {
+    "lat": 9.3242426,
+    "lon": 80.2311969
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Vannerikkulam Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 410606791,
+  "center": {
+    "lat": 9.1590595,
+    "lon": 80.6554397
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Oddusuddan Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 411282727,
+  "center": {
+    "lat": 7.1016822,
+    "lon": 79.8990431
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Ekala"
+  }
+},
+{
+  "type": "way",
+  "id": 415294813,
+  "center": {
+    "lat": 8.6346574,
+    "lon": 80.3815578
+  },
+  "tags": {
+    "addr:city": "Veerapuram",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 418872354,
+  "center": {
+    "lat": 8.6886502,
+    "lon": 80.5286736
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "SubPostOffice - Asikulam"
+  }
+},
+{
+  "type": "way",
+  "id": 424182813,
+  "center": {
+    "lat": 5.9364014,
+    "lon": 80.6111803
+  },
+  "tags": {
+    "addr:city": "Gandara",
+    "addr:postcode": "81170",
+    "addr:street": "New Tangalle Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Gandara Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 429247883,
+  "center": {
+    "lat": 7.1234190,
+    "lon": 79.9249582
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "kotugoda post office"
+  }
+},
+{
+  "type": "way",
+  "id": 429554061,
+  "center": {
+    "lat": 7.0744769,
+    "lon": 79.9919347
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "building:foundation_height": "1_to_1.5",
+    "building:levels": "1",
+    "building:material": "plaster",
+    "name": "Moragoda Post Office",
+    "roof:material": "concrete",
+    "roof:shape": "gabled"
+  }
+},
+{
+  "type": "way",
+  "id": 433781651,
+  "center": {
+    "lat": 9.3784713,
+    "lon": 80.5505880
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office",
+    "operator": "Goverment"
+  }
+},
+{
+  "type": "way",
+  "id": 434323289,
+  "center": {
+    "lat": 9.6100653,
+    "lon": 80.3289597
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "Pallai-Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 434977854,
+  "center": {
+    "lat": 7.1123603,
+    "lon": 79.9588061
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 451307544,
+  "center": {
+    "lat": 7.6785912,
+    "lon": 81.6724233
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 452002817,
+  "center": {
+    "lat": 7.5957145,
+    "lon": 81.4829457
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office Koppaveli"
+  }
+},
+{
+  "type": "way",
+  "id": 452175687,
+  "center": {
+    "lat": 7.7377945,
+    "lon": 81.5767153
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 452226012,
+  "center": {
+    "lat": 7.7003558,
+    "lon": 81.5376306
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "post offices"
+  }
+},
+{
+  "type": "way",
+  "id": 453686285,
+  "center": {
+    "lat": 7.7838673,
+    "lon": 81.5936325
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post Office, Chenkaladi"
+  }
+},
+{
+  "type": "way",
+  "id": 454162401,
+  "center": {
+    "lat": 7.0562765,
+    "lon": 80.5352202
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Nawalapitiya Post Office",
+    "operator": "Sri Lanka Post"
+  }
+},
+{
+  "type": "way",
+  "id": 454985071,
+  "center": {
+    "lat": 9.8227462,
+    "lon": 80.1696578
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 456340057,
+  "center": {
+    "lat": 7.5782170,
+    "lon": 81.7563181
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government"
+  }
+},
+{
+  "type": "way",
+  "id": 456538465,
+  "center": {
+    "lat": 7.9198357,
+    "lon": 81.5576593
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kalkudah Post Office",
+    "opening_hours": "Mo-Fr 08:00-17:00; Sa 08:00-17:00"
+  }
+},
+{
+  "type": "way",
+  "id": 456552318,
+  "center": {
+    "lat": 7.4879167,
+    "lon": 81.6919801
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub post office"
+  }
+},
+{
+  "type": "way",
+  "id": 457826871,
+  "center": {
+    "lat": 7.5978362,
+    "lon": 81.7230588
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "DO office,Sub Post Office",
+    "office": "government"
+  }
+},
+{
+  "type": "way",
+  "id": 457827367,
+  "center": {
+    "lat": 7.6157150,
+    "lon": 81.7133965
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "Kokkadichcholai Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 460161361,
+  "center": {
+    "lat": 7.1408337,
+    "lon": 80.0909685
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 460873872,
+  "center": {
+    "lat": 7.6720193,
+    "lon": 81.7343924
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Arayampathy Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 464188755,
+  "center": {
+    "lat": 6.3885529,
+    "lon": 80.0083197
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Induruwa Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 482773997,
+  "center": {
+    "lat": 6.8747165,
+    "lon": 81.0482257
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 483601776,
+  "center": {
+    "lat": 7.7010998,
+    "lon": 81.5371307
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "government",
+    "name": "sup post offices"
+  }
+},
+{
+  "type": "way",
+  "id": 487592740,
+  "center": {
+    "lat": 7.8394210,
+    "lon": 81.5495128
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office",
+    "surface": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 487596034,
+  "center": {
+    "lat": 7.8394189,
+    "lon": 81.5494668
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "sub"
+  }
+},
+{
+  "type": "way",
+  "id": 488384366,
+  "center": {
+    "lat": 7.8621137,
+    "lon": 81.5394357
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Kiran Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 488399696,
+  "center": {
+    "lat": 7.8502678,
+    "lon": 81.4288511
+  },
+  "tags": {
+    "addr:street": "Pallathuchenai Road",
+    "amenity": "post_office",
+    "name": "Milk Centre and Sub-Post Office",
+    "name:en": "Milk Centre and Sub-Post Office",
+    "shop": "dairy"
+  }
+},
+{
+  "type": "way",
+  "id": 495874423,
+  "center": {
+    "lat": 7.6194876,
+    "lon": 80.2441149
+  },
+  "tags": {
+    "addr:city": "Wariyapola",
+    "addr:postcode": "60400",
+    "addr:street": "Chilaw Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Wariyapola Post Office",
+    "name:si": "වාරියපොල තැපැල් කාර්යාලය"
+  }
+},
+{
+  "type": "way",
+  "id": 497003163,
+  "center": {
+    "lat": 5.9453090,
+    "lon": 80.5145407
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Walgama Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 497648182,
+  "center": {
+    "lat": 8.3330221,
+    "lon": 80.4103577
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Anuradhapura post office"
+  }
+},
+{
+  "type": "way",
+  "id": 498531158,
+  "center": {
+    "lat": 6.0604124,
+    "lon": 80.5623216
+  },
+  "tags": {
+    "addr:city": "Mapalana",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Mapalana Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 500029860,
+  "center": {
+    "lat": 7.4857604,
+    "lon": 80.3646617
+  },
+  "tags": {
+    "addr:city": "Kurunegala",
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 505144675,
+  "center": {
+    "lat": 6.4466806,
+    "lon": 79.9897720
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Moragalla"
+  }
+},
+{
+  "type": "way",
+  "id": 525813185,
+  "center": {
+    "lat": 6.9555405,
+    "lon": 80.2069944
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 528048894,
+  "center": {
+    "lat": 6.9325787,
+    "lon": 79.8515473
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "7",
+    "height": "30",
+    "name": "General Post Office and Central Mail Exchange",
+    "opening_hours": "Mo-Fr 09:00-12:00, 13:00-15:00; Sa 09:00-12:30",
+    "operator": "Government"
+  }
+},
+{
+  "type": "way",
+  "id": 536902826,
+  "center": {
+    "lat": 6.8466898,
+    "lon": 79.9491043
+  },
+  "tags": {
+    "addr:city": "Pannipitiya",
+    "addr:postcode": "10230",
+    "addr:street": "Old Kottawa Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Pannipitiya Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 539151996,
+  "center": {
+    "lat": 7.7813985,
+    "lon": 81.1852784
+  },
+  "tags": {
+    "addr:city": "Aralaganwila",
+    "addr:postcode": "51100",
+    "addr:street": "Manampitiya-Aralaganwila-Maduru Oya Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Aralaganwila Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 549379384,
+  "center": {
+    "lat": 6.8867806,
+    "lon": 80.9867077
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "service",
+    "height": "7",
+    "name": "Pattiyagedara Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 551008275,
+  "center": {
+    "lat": 8.3523000,
+    "lon": 80.4438541
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 552554216,
+  "center": {
+    "lat": 8.3282810,
+    "lon": 80.3625579
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pandulagama Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 563264100,
+  "center": {
+    "lat": 6.0517833,
+    "lon": 80.2394685
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Haliwala Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 564572409,
+  "center": {
+    "lat": 6.0777635,
+    "lon": 80.2336860
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 564574080,
+  "center": {
+    "lat": 6.0632781,
+    "lon": 80.2347087
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post office Ambalanwaththa"
+  }
+},
+{
+  "type": "way",
+  "id": 568037033,
+  "center": {
+    "lat": 6.0553178,
+    "lon": 80.1974916
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Bope Junction Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 568056517,
+  "center": {
+    "lat": 6.0593413,
+    "lon": 80.2031262
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 568056523,
+  "center": {
+    "lat": 6.0597167,
+    "lon": 80.2035520
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 569210487,
+  "center": {
+    "lat": 9.6661720,
+    "lon": 80.0222180
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office Aththiyadya"
+  }
+},
+{
+  "type": "way",
+  "id": 571599488,
+  "center": {
+    "lat": 9.6609902,
+    "lon": 80.0291353
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Post office-Chundikuli"
+  }
+},
+{
+  "type": "way",
+  "id": 576953353,
+  "center": {
+    "lat": 9.6540782,
+    "lon": 80.0380927
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Sub Post Office-Kolobuthure"
+  }
+},
+{
+  "type": "way",
+  "id": 581178103,
+  "center": {
+    "lat": 9.6811481,
+    "lon": 80.0262443
+  },
+  "tags": {
+    "amenity": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 581198588,
+  "center": {
+    "lat": 9.6606604,
+    "lon": 80.0417865
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Ariyalai Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 587045565,
+  "center": {
+    "lat": 8.7597524,
+    "lon": 80.2369755
+  },
+  "tags": {
+    "addr:city": "Kannady",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 587989194,
+  "center": {
+    "lat": 6.8326664,
+    "lon": 79.8663086
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 589745442,
+  "center": {
+    "lat": 6.8326967,
+    "lon": 79.8664974
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 590029942,
+  "center": {
+    "lat": 7.2373652,
+    "lon": 80.2983933
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 592274025,
+  "center": {
+    "lat": 8.8626622,
+    "lon": 80.5009982
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 592629921,
+  "center": {
+    "lat": 7.6527964,
+    "lon": 79.9901821
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Weerapokuna Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 607685342,
+  "center": {
+    "lat": 7.7484647,
+    "lon": 80.1165915
+  },
+  "tags": {
+    "addr:city": "Nikaweratiya",
+    "addr:street": "Katugastota-Kurunegala-Puttalam Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Nikaweratiya Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 610077681,
+  "center": {
+    "lat": 7.6702315,
+    "lon": 80.0330527
+  },
+  "tags": {
+    "addr:street": "Manelembuwa Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Manelembuwa Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 612591315,
+  "center": {
+    "lat": 8.7197829,
+    "lon": 80.4395333
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "commercial"
+  }
+},
+{
+  "type": "way",
+  "id": 632090224,
+  "center": {
+    "lat": 9.2230688,
+    "lon": 80.7897368
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "postoffice"
+  }
+},
+{
+  "type": "way",
+  "id": 632111915,
+  "center": {
+    "lat": 6.4100807,
+    "lon": 80.3314333
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 662969114,
+  "center": {
+    "lat": 9.5611309,
+    "lon": 80.4892228
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 665474119,
+  "center": {
+    "lat": 8.9044647,
+    "lon": 80.4335327
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Palamoddai"
+  }
+},
+{
+  "type": "way",
+  "id": 668625351,
+  "center": {
+    "lat": 9.2711673,
+    "lon": 80.8170277
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Mullaitivu Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 703154368,
+  "center": {
+    "lat": 7.1318237,
+    "lon": 80.4002513
+  },
+  "tags": {
+    "addr:city": "Ganthuna",
+    "addr:street": "Mabopitiya Ganthuna Aranayake Road",
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 737325612,
+  "center": {
+    "lat": 7.5295128,
+    "lon": 81.3547026
+  },
+  "tags": {
+    "addr:city": "Mahaoya",
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 751307098,
+  "center": {
+    "lat": 8.1944366,
+    "lon": 80.0947515
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Saliya Wewa Sub post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 754654017,
+  "center": {
+    "lat": 8.4979122,
+    "lon": 81.1797102
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 758073051,
+  "center": {
+    "lat": 7.9199048,
+    "lon": 80.3606535
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 758665382,
+  "center": {
+    "lat": 7.9201719,
+    "lon": 80.2391757
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 759537323,
+  "center": {
+    "lat": 6.8838809,
+    "lon": 81.8260480
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 775995527,
+  "center": {
+    "lat": 6.8595527,
+    "lon": 81.8324657
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Pottuvil Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 776998199,
+  "center": {
+    "lat": 6.8762252,
+    "lon": 81.8355493
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub-Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 778156891,
+  "center": {
+    "lat": 7.8626808,
+    "lon": 80.6511661
+  },
+  "tags": {
+    "addr:city": "Dambulla",
+    "addr:street": "Jaffna - Kandy Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post office - Dambulla"
+  }
+},
+{
+  "type": "way",
+  "id": 786139208,
+  "center": {
+    "lat": 7.2106503,
+    "lon": 79.8357022
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Main Post Office (Negombo)"
+  }
+},
+{
+  "type": "way",
+  "id": 792118812,
+  "center": {
+    "lat": 7.3741917,
+    "lon": 80.5999699
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kasawatta Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 809885856,
+  "center": {
+    "lat": 6.3142457,
+    "lon": 80.4022200
+  },
+  "tags": {
+    "addr:city": "Kalubowitiyana",
+    "addr:postcode": "81478",
+    "addr:street": "Neluwa - Morawaka Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kalubowitiyana Post Office",
+    "operator": "Government"
+  }
+},
+{
+  "type": "way",
+  "id": 814333503,
+  "center": {
+    "lat": 6.9029309,
+    "lon": 81.4476449
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 889720244,
+  "center": {
+    "lat": 7.9964845,
+    "lon": 80.1850712
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 905076571,
+  "center": {
+    "lat": 6.7173338,
+    "lon": 80.3833444
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Hidellana Sub Post Office",
+    "opening_hours": "Mo-Fr 09:00-16:00"
+  }
+},
+{
+  "type": "way",
+  "id": 908854946,
+  "center": {
+    "lat": 7.9619314,
+    "lon": 80.3304933
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 930230401,
+  "center": {
+    "lat": 6.8441627,
+    "lon": 79.9754056
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Malapalla Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 945762831,
+  "center": {
+    "lat": 7.2814914,
+    "lon": 80.6845503
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 988546649,
+  "center": {
+    "lat": 6.1003207,
+    "lon": 80.1288375
+  },
+  "tags": {
+    "addr:city": "Dodanduwa",
+    "addr:postcode": "80250",
+    "addr:street": "Colombo-Galle Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Dodanduwa Post Office",
+    "opening_hours": "Mo-Sa 08:00-16:00",
+    "operator": "Sri Lanka Post",
+    "phone": "+94912267536",
+    "website": "https://slpost.gov.lk/"
+  }
+},
+{
+  "type": "way",
+  "id": 997331358,
+  "center": {
+    "lat": 6.2735870,
+    "lon": 80.1386593
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1002692833,
+  "center": {
+    "lat": 8.0603550,
+    "lon": 80.2814132
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1004974143,
+  "center": {
+    "lat": 7.0189661,
+    "lon": 80.8435943
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Brookside Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1005747103,
+  "center": {
+    "lat": 7.1743422,
+    "lon": 80.6975411
+  },
+  "tags": {
+    "addr:city": "Deltota",
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1007456711,
+  "center": {
+    "lat": 8.0558532,
+    "lon": 80.3545892
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1012854167,
+  "center": {
+    "lat": 7.9398216,
+    "lon": 80.3446835
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1019176018,
+  "center": {
+    "lat": 8.0051976,
+    "lon": 80.1058881
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1024179038,
+  "center": {
+    "lat": 8.0855181,
+    "lon": 80.3560287
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1033387319,
+  "center": {
+    "lat": 6.7171671,
+    "lon": 79.9079929
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "Panadura Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1039251411,
+  "center": {
+    "lat": 8.6142753,
+    "lon": 81.0037325
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "ar post office",
+    "name": "ar post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1039251817,
+  "center": {
+    "lat": 7.0066759,
+    "lon": 80.8627522
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1059791784,
+  "center": {
+    "lat": 6.8905000,
+    "lon": 79.8734957
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "check_date": "2023-01-10",
+    "name": "Anderson flats post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1064419080,
+  "center": {
+    "lat": 6.8736019,
+    "lon": 80.6043924
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1064472419,
+  "center": {
+    "lat": 7.0263033,
+    "lon": 80.9970438
+  },
+  "tags": {
+    "addr:city": "Badulla",
+    "addr:postcode": "90064",
+    "addr:street": "Galauda - Ketawala Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Sub-Post office Narangala",
+    "opening_hours": "Mo-Fr 08:00-15:00"
+  }
+},
+{
+  "type": "way",
+  "id": 1072532289,
+  "center": {
+    "lat": 6.8352149,
+    "lon": 80.5724065
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1077441853,
+  "center": {
+    "lat": 6.8243134,
+    "lon": 79.8704356
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Ratmalana Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1077626354,
+  "center": {
+    "lat": 7.2983246,
+    "lon": 80.6372039
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "commercial",
+    "height": "2",
+    "name": "Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1077681278,
+  "center": {
+    "lat": 7.2513919,
+    "lon": 80.4486778
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office Mawanella"
+  }
+},
+{
+  "type": "way",
+  "id": 1077894747,
+  "center": {
+    "lat": 6.0780587,
+    "lon": 80.5647269
+  },
+  "tags": {
+    "addr:city": "Kamburupitiya",
+    "addr:street": "Matara - Kamburupitiya Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "building:levels": "1",
+    "government": "public_service",
+    "name": "Post Ofiice"
+  }
+},
+{
+  "type": "way",
+  "id": 1078030874,
+  "center": {
+    "lat": 7.0795224,
+    "lon": 80.8932063
+  },
+  "tags": {
+    "addr:postcode": "22280",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office Nildandahinna"
+  }
+},
+{
+  "type": "way",
+  "id": 1078135901,
+  "center": {
+    "lat": 6.8530261,
+    "lon": 80.2622998
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office - Eheliyagoda"
+  }
+},
+{
+  "type": "way",
+  "id": 1078802224,
+  "center": {
+    "lat": 5.9943956,
+    "lon": 80.3085049
+  },
+  "tags": {
+    "addr:city": "Habaraduwa",
+    "addr:street": "Dikkumbura Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "levels": "2",
+    "name": "Habaraduwa Post Office",
+    "opening_hours": "Mo-Sa 08:30-16:30"
+  }
+},
+{
+  "type": "way",
+  "id": 1102692663,
+  "center": {
+    "lat": 7.0525339,
+    "lon": 80.5904206
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1106670853,
+  "center": {
+    "lat": 6.2433052,
+    "lon": 80.8133549
+  },
+  "tags": {
+    "addr:city": "middeniya",
+    "addr:street": "Hungama-Talawa-Middeniya Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "thalava post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1109955386,
+  "center": {
+    "lat": 7.1714332,
+    "lon": 81.0054636
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1110189020,
+  "center": {
+    "lat": 6.9452389,
+    "lon": 81.1258280
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Pelgahathanna Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1110198397,
+  "center": {
+    "lat": 7.0290143,
+    "lon": 81.0568560
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "thimbirigaspitiya post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1144278075,
+  "center": {
+    "lat": 8.0766990,
+    "lon": 80.9603170
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1144285487,
+  "center": {
+    "lat": 6.9446496,
+    "lon": 80.4032278
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1148400989,
+  "center": {
+    "lat": 6.4378829,
+    "lon": 80.1043695
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1150679160,
+  "center": {
+    "lat": 6.1128288,
+    "lon": 80.1255648
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Patuwatha Post Office",
+    "opening_hours": "Mo-Fr 08:00-17:00",
+    "operator": "Sri Lankan Post",
+    "phone": "+94912277828",
+    "website": "https://slpost.gov.lk/"
+  }
+},
+{
+  "type": "way",
+  "id": 1155370015,
+  "center": {
+    "lat": 7.8179712,
+    "lon": 80.3135399
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1157656451,
+  "center": {
+    "lat": 9.5926317,
+    "lon": 80.4391448
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "aliyawalai post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1158115598,
+  "center": {
+    "lat": 6.0131584,
+    "lon": 80.2399403
+  },
+  "tags": {
+    "amenity": "post_office",
+    "name": "post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1160841172,
+  "center": {
+    "lat": 7.2278179,
+    "lon": 80.0231524
+  },
+  "tags": {
+    "amenity": "post_office",
+    "area": "yes",
+    "building": "yes",
+    "name": "Divulapitiya Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1173021815,
+  "center": {
+    "lat": 6.2209508,
+    "lon": 80.6023884
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "post_office"
+  }
+},
+{
+  "type": "way",
+  "id": 1183763693,
+  "center": {
+    "lat": 6.4416446,
+    "lon": 80.0135238
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1186014865,
+  "center": {
+    "lat": 7.0795892,
+    "lon": 80.8017866
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Mathurata Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1186982349,
+  "center": {
+    "lat": 6.7012948,
+    "lon": 79.9117485
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1205165101,
+  "center": {
+    "lat": 7.4710001,
+    "lon": 81.6310610
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1208432848,
+  "center": {
+    "lat": 6.2107413,
+    "lon": 80.0722524
+  },
+  "tags": {
+    "addr:city": "Ambalangoda",
+    "addr:postcode": "80328",
+    "addr:street": "Aluthwala Road,Kuleegoda",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Kuleegoda Sub Post Office",
+    "opening_hours": "8 AM-12 PM, 1-5 PM Tuesday 8 AM-12 PM, 1-5 PM Wednesday 8 AM-12 PM, 1-5 PM Thursday 8 AM-12 PM, 1-5 PM Friday 8 AM-12 PM, 1-5 PM Saturday 8 AM-12 PM, 1-5 PM Suggest new hours"
+  }
+},
+{
+  "type": "way",
+  "id": 1233449517,
+  "center": {
+    "lat": 6.8145738,
+    "lon": 79.8778360
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1296567634,
+  "center": {
+    "lat": 7.3268335,
+    "lon": 81.8531650
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Sub Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1308395006,
+  "center": {
+    "lat": 6.8351101,
+    "lon": 81.8294420
+  },
+  "tags": {
+    "addr:city": "ulla",
+    "addr:postcode": "32500",
+    "addr:street": "Potuvil - Panama Road",
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "ULLAI POST OFFICE"
+  }
+},
+{
+  "type": "way",
+  "id": 1354641680,
+  "center": {
+    "lat": 7.2512384,
+    "lon": 81.8541095
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office -Addalaichenai"
+  }
+},
+{
+  "type": "way",
+  "id": 1373131355,
+  "center": {
+    "lat": 6.0837541,
+    "lon": 80.6437521
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Hakmana Post Office"
+  }
+},
+{
+  "type": "way",
+  "id": 1391563740,
+  "center": {
+    "lat": 7.4550927,
+    "lon": 80.5827030
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1391588944,
+  "center": {
+    "lat": 7.3143222,
+    "lon": 80.7857326
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Udispattuwa Post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1391599719,
+  "center": {
+    "lat": 7.2911742,
+    "lon": 81.6765554
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Ampara post office"
+  }
+},
+{
+  "type": "way",
+  "id": 1431109927,
+  "center": {
+    "lat": 6.7131957,
+    "lon": 80.6784820
+  },
+  "tags": {
+    "addr:postcode": "70130",
+    "amenity": "post_office",
+    "branch": "Pinnawala Branch (balangoda)",
+    "building": "yes",
+    "name": "Pinnawala Post Office",
+    "opening_hours": "Mo-Fr 08:00-17:00"
+  }
+},
+{
+  "type": "way",
+  "id": 1458918015,
+  "center": {
+    "lat": 5.9857752,
+    "lon": 80.6999623
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes",
+    "name": "Post Office - Walasgala"
+  }
+},
+{
+  "type": "way",
+  "id": 1544400463,
+  "center": {
+    "lat": 7.2954702,
+    "lon": 80.8530430
+  },
+  "tags": {
+    "amenity": "post_office",
+    "building": "yes"
+  }
+}
+
+  ]
+}

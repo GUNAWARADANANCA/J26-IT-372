@@ -1,0 +1,263 @@
+{
+  "set": "C:\\Users\\CYBORG 15\\OneDrive\\Desktop\\Research\\J26-IT-372\\Datasets\\processed\\synthetic_envelopes",
+  "split": "test",
+  "tesseract": "5.5.3.20260724",
+  "configs": {
+    "B1": {
+      "overall": {
+        "n": 67,
+        "cer_median": 0.956,
+        "cer_mean": 0.8004,
+        "required_field_exact_match": 0.1656,
+        "unsupported_digit_changes": 160,
+        "median_ms": 522,
+        "read_by_handwriting_model": 0.0
+      },
+      "by_group": {
+        "en/handwriting": {
+          "n": 7,
+          "cer_median": 1.0,
+          "cer_mean": 1.0606,
+          "required_field_exact_match": 0.0625,
+          "unsupported_digit_changes": 29,
+          "median_ms": 526,
+          "read_by_handwriting_model": 0.0
+        },
+        "en/printed": {
+          "n": 9,
+          "cer_median": 0.7286,
+          "cer_mean": 0.5377,
+          "required_field_exact_match": 0.2439,
+          "unsupported_digit_changes": 14,
+          "median_ms": 447,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/handwriting": {
+          "n": 7,
+          "cer_median": 1.0,
+          "cer_mean": 0.9382,
+          "required_field_exact_match": 0.1471,
+          "unsupported_digit_changes": 20,
+          "median_ms": 512,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/printed": {
+          "n": 7,
+          "cer_median": 0.75,
+          "cer_mean": 0.6658,
+          "required_field_exact_match": 0.2812,
+          "unsupported_digit_changes": 11,
+          "median_ms": 566,
+          "read_by_handwriting_model": 0.0
+        },
+        "si/handwriting": {
+          "n": 8,
+          "cer_median": 0.7837,
+          "cer_mean": 0.6449,
+          "required_field_exact_match": 0.1429,
+          "unsupported_digit_changes": 18,
+          "median_ms": 527.5,
+          "read_by_handwriting_model": 0.0
+        },
+        "si/printed": {
+          "n": 9,
+          "cer_median": 1.1268,
+          "cer_mean": 1.0984,
+          "required_field_exact_match": 0.119,
+          "unsupported_digit_changes": 33,
+          "median_ms": 585,
+          "read_by_handwriting_model": 0.0
+        },
+        "ta/handwriting": {
+          "n": 10,
+          "cer_median": 0.4312,
+          "cer_mean": 0.552,
+          "required_field_exact_match": 0.1915,
+          "unsupported_digit_changes": 14,
+          "median_ms": 547.0,
+          "read_by_handwriting_model": 0.0
+        },
+        "ta/printed": {
+          "n": 10,
+          "cer_median": 1.0609,
+          "cer_mean": 0.957,
+          "required_field_exact_match": 0.1333,
+          "unsupported_digit_changes": 21,
+          "median_ms": 527.5,
+          "read_by_handwriting_model": 0.0
+        }
+      }
+    },
+    "P1": {
+      "overall": {
+        "n": 67,
+        "cer_median": 1.0,
+        "cer_mean": 0.9647,
+        "required_field_exact_match": 0.1688,
+        "unsupported_digit_changes": 269,
+        "median_ms": 485,
+        "read_by_handwriting_model": 0.0
+      },
+      "by_group": {
+        "en/handwriting": {
+          "n": 7,
+          "cer_median": 1.0282,
+          "cer_mean": 1.0636,
+          "required_field_exact_match": 0.0938,
+          "unsupported_digit_changes": 27,
+          "median_ms": 478,
+          "read_by_handwriting_model": 0.0
+        },
+        "en/printed": {
+          "n": 9,
+          "cer_median": 0.7429,
+          "cer_mean": 0.5343,
+          "required_field_exact_match": 0.4146,
+          "unsupported_digit_changes": 13,
+          "median_ms": 471,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/handwriting": {
+          "n": 7,
+          "cer_median": 1.0784,
+          "cer_mean": 0.9815,
+          "required_field_exact_match": 0.1765,
+          "unsupported_digit_changes": 29,
+          "median_ms": 465,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/printed": {
+          "n": 7,
+          "cer_median": 0.8194,
+          "cer_mean": 0.941,
+          "required_field_exact_match": 0.25,
+          "unsupported_digit_changes": 22,
+          "median_ms": 476,
+          "read_by_handwriting_model": 0.0
+        },
+        "si/handwriting": {
+          "n": 8,
+          "cer_median": 1.0639,
+          "cer_mean": 1.0761,
+          "required_field_exact_match": 0.0,
+          "unsupported_digit_changes": 70,
+          "median_ms": 511.0,
+          "read_by_handwriting_model": 0.0
+        },
+        "si/printed": {
+          "n": 9,
+          "cer_median": 1.4225,
+          "cer_mean": 1.3934,
+          "required_field_exact_match": 0.0238,
+          "unsupported_digit_changes": 63,
+          "median_ms": 523,
+          "read_by_handwriting_model": 0.0
+        },
+        "ta/handwriting": {
+          "n": 10,
+          "cer_median": 0.7328,
+          "cer_mean": 0.7231,
+          "required_field_exact_match": 0.1915,
+          "unsupported_digit_changes": 24,
+          "median_ms": 498.0,
+          "read_by_handwriting_model": 0.0
+        },
+        "ta/printed": {
+          "n": 10,
+          "cer_median": 1.1151,
+          "cer_mean": 1.054,
+          "required_field_exact_match": 0.1778,
+          "unsupported_digit_changes": 21,
+          "median_ms": 472.5,
+          "read_by_handwriting_model": 0.0
+        }
+      },
+      "script_id_agreement": 0.2537
+    },
+    "P1+HW": {
+      "overall": {
+        "n": 67,
+        "cer_median": 1.0,
+        "cer_mean": 1.132,
+        "required_field_exact_match": 0.1656,
+        "unsupported_digit_changes": 265,
+        "median_ms": 758,
+        "read_by_handwriting_model": 0.0448
+      },
+      "by_group": {
+        "en/handwriting": {
+          "n": 7,
+          "cer_median": 1.0282,
+          "cer_mean": 1.0636,
+          "required_field_exact_match": 0.0938,
+          "unsupported_digit_changes": 27,
+          "median_ms": 511,
+          "read_by_handwriting_model": 0.0
+        },
+        "en/printed": {
+          "n": 9,
+          "cer_median": 0.7429,
+          "cer_mean": 0.5343,
+          "required_field_exact_match": 0.4146,
+          "unsupported_digit_changes": 13,
+          "median_ms": 460,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/handwriting": {
+          "n": 7,
+          "cer_median": 1.0784,
+          "cer_mean": 0.9815,
+          "required_field_exact_match": 0.1765,
+          "unsupported_digit_changes": 29,
+          "median_ms": 758,
+          "read_by_handwriting_model": 0.0
+        },
+        "mixed/printed": {
+          "n": 7,
+          "cer_median": 0.8194,
+          "cer_mean": 0.941,
+          "required_field_exact_match": 0.25,
+          "unsupported_digit_changes": 22,
+          "median_ms": 804,
+          "read_by_handwriting_model": 0.0
+        },
+        "si/handwriting": {
+          "n": 8,
+          "cer_median": 1.0639,
+          "cer_mean": 1.0432,
+          "required_field_exact_match": 0.0,
+          "unsupported_digit_changes": 69,
+          "median_ms": 878.5,
+          "read_by_handwriting_model": 0.125
+        },
+        "si/printed": {
+          "n": 9,
+          "cer_median": 1.4103,
+          "cer_mean": 1.327,
+          "required_field_exact_match": 0.0,
+          "unsupported_digit_changes": 61,
+          "median_ms": 880,
+          "read_by_handwriting_model": 0.1111
+        },
+        "ta/handwriting": {
+          "n": 10,
+          "cer_median": 0.7328,
+          "cer_mean": 0.7231,
+          "required_field_exact_match": 0.1915,
+          "unsupported_digit_changes": 24,
+          "median_ms": 780.0,
+          "read_by_handwriting_model": 0.0
+        },
+        "ta/printed": {
+          "n": 10,
+          "cer_median": 1.159,
+          "cer_mean": 2.2612,
+          "required_field_exact_match": 0.1778,
+          "unsupported_digit_changes": 20,
+          "median_ms": 474.5,
+          "read_by_handwriting_model": 0.1
+        }
+      }
+    }
+  }
+}

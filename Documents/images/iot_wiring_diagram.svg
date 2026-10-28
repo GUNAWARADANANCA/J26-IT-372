@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 860" font-family="Segoe UI, Arial, sans-serif" font-size="14">
+  <rect width="1280" height="860" fill="#ffffff"/>
+  <text x="640" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#1f2933">PostAssist LK – IoT scale + camera wiring (ESP32-CAM · 4-ch level shifter · HX711 · 1 kg load cell)</text>
+  <text x="640" y="56" text-anchor="middle" font-size="13" fill="#52606d">Match every wire by the label printed on the board, not by position – pin order differs between vendors.</text>
+
+  <!-- ===== power supply ===== -->
+  <rect x="40" y="76" width="280" height="84" rx="8" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+  <text x="180" y="100" text-anchor="middle" font-weight="700" fill="#7c2d12">5 V / 2 A USB phone charger</text>
+  <text x="180" y="120" text-anchor="middle" fill="#7c2d12">→ USB breakout board on the breadboard</text>
+  <text x="120" y="146" text-anchor="middle" fill="#b91c1c" font-weight="700">VBUS (5V)</text>
+  <text x="250" y="146" text-anchor="middle" fill="#111" font-weight="700">GND</text>
+  <line x1="120" y1="160" x2="120" y2="200" stroke="#dc2626" stroke-width="4"/>
+  <line x1="250" y1="160" x2="250" y2="225" stroke="#111" stroke-width="4"/>
+
+  <!-- ===== rails ===== -->
+  <line x1="20" y1="200" x2="1260" y2="200" stroke="#dc2626" stroke-width="6"/>
+  <line x1="20" y1="225" x2="1260" y2="225" stroke="#111" stroke-width="6"/>
+  <text x="1255" y="192" text-anchor="end" fill="#dc2626" font-weight="700">breadboard (+) rail = 5 V</text>
+  <text x="1255" y="246" text-anchor="end" fill="#111" font-weight="700">breadboard (−) rail = GND</text>
+
+  <!-- ===== ESP32-CAM ===== -->
+  <rect x="80" y="290" width="250" height="420" rx="10" fill="#eef2ff" stroke="#3730a3" stroke-width="2.5"/>
+  <text x="205" y="312" text-anchor="middle" font-weight="700" fill="#312e81">ESP32-CAM (AI-Thinker)</text>
+  <circle cx="205" cy="350" r="22" fill="#111827"/><circle cx="205" cy="350" r="9" fill="#4b5563"/>
+  <text x="205" y="388" text-anchor="middle" font-size="12" fill="#312e81">OV3660 camera (faces the platform)</text>
+  <g font-size="13" font-weight="600" fill="#1f2933">
+    <!-- left column -->
+    <circle cx="95" cy="420" r="6" fill="#3730a3"/><text x="108" y="425">5V</text>
+    <circle cx="95" cy="455" r="6" fill="#3730a3"/><text x="108" y="460">GND</text>
+    <circle cx="95" cy="490" r="6" fill="#9ca3af"/><text x="108" y="495" fill="#6b7280">IO12 (do not use)</text>
+    <circle cx="95" cy="525" r="6" fill="#3730a3"/><text x="108" y="530">IO13</text>
+    <circle cx="95" cy="560" r="6" fill="#9ca3af"/><text x="108" y="565" fill="#6b7280">IO15</text>
+    <circle cx="95" cy="595" r="6" fill="#3730a3"/><text x="108" y="600">IO14</text>
+    <circle cx="95" cy="630" r="6" fill="#9ca3af"/><text x="108" y="635" fill="#6b7280">IO2</text>
+    <circle cx="95" cy="665" r="6" fill="#9ca3af"/><text x="108" y="670" fill="#6b7280">IO4 (flash LED)</text>
+    <!-- right column -->
+    <circle cx="315" cy="420" r="6" fill="#3730a3"/><text x="302" y="425" text-anchor="end">3V3</text>
+    <circle cx="315" cy="455" r="6" fill="#9ca3af"/><text x="302" y="460" text-anchor="end" fill="#6b7280">IO16 (PSRAM)</text>
+    <circle cx="315" cy="490" r="6" fill="#9ca3af"/><text x="302" y="495" text-anchor="end" fill="#6b7280">IO0</text>
+    <circle cx="315" cy="525" r="6" fill="#9ca3af"/><text x="302" y="530" text-anchor="end" fill="#6b7280">GND</text>
+    <circle cx="315" cy="560" r="6" fill="#9ca3af"/><text x="302" y="565" text-anchor="end" fill="#6b7280">VCC (leave free)</text>
+    <circle cx="315" cy="595" r="6" fill="#9ca3af"/><text x="302" y="600" text-anchor="end" fill="#6b7280">U0R</text>
+    <circle cx="315" cy="630" r="6" fill="#9ca3af"/><text x="302" y="635" text-anchor="end" fill="#6b7280">U0T</text>
+    <circle cx="315" cy="665" r="6" fill="#9ca3af"/><text x="302" y="670" text-anchor="end" fill="#6b7280">GND</text>
+  </g>
+
+  <!-- ESP32 power wires -->
+  <polyline points="95,420 60,420 60,200" fill="none" stroke="#dc2626" stroke-width="3.5"/>
+  <polyline points="95,455 44,455 44,225" fill="none" stroke="#111" stroke-width="3.5"/>
+  <circle cx="60" cy="200" r="5" fill="#dc2626"/><circle cx="44" cy="225" r="5" fill="#111"/>
+
+  <!-- ===== level shifter ===== -->
+  <rect x="470" y="400" width="190" height="270" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="2.5"/>
+  <text x="565" y="390" text-anchor="middle" font-weight="700" fill="#065f46">4-ch bi-directional level shifter</text>
+  <text x="510" y="425" text-anchor="middle" font-size="12" fill="#065f46">low side 3.3 V</text>
+  <text x="620" y="425" text-anchor="middle" font-size="12" fill="#065f46">high side 5 V</text>
+  <g font-size="13" font-weight="600" fill="#1f2933">
+    <circle cx="485" cy="450" r="6" fill="#047857"/><text x="498" y="455">LV</text>
+    <circle cx="485" cy="490" r="6" fill="#047857"/><text x="498" y="495">LV1</text>
+    <circle cx="485" cy="530" r="6" fill="#047857"/><text x="498" y="535">LV2</text>
+    <circle cx="485" cy="570" r="6" fill="#9ca3af"/><text x="498" y="575" fill="#6b7280">LV3</text>
+    <circle cx="485" cy="610" r="6" fill="#9ca3af"/><text x="498" y="615" fill="#6b7280">LV4</text>
+    <circle cx="485" cy="650" r="6" fill="#9ca3af"/><text x="498" y="655" fill="#6b7280">GND</text>
+    <circle cx="645" cy="450" r="6" fill="#047857"/><text x="632" y="455" text-anchor="end">HV</text>
+    <circle cx="645" cy="490" r="6" fill="#047857"/><text x="632" y="495" text-anchor="end">HV1</text>
+    <circle cx="645" cy="530" r="6" fill="#047857"/><text x="632" y="535" text-anchor="end">HV2</text>
+    <circle cx="645" cy="570" r="6" fill="#9ca3af"/><text x="632" y="575" text-anchor="end" fill="#6b7280">HV3</text>
+    <circle cx="645" cy="610" r="6" fill="#9ca3af"/><text x="632" y="615" text-anchor="end" fill="#6b7280">HV4</text>
+    <circle cx="645" cy="650" r="6" fill="#047857"/><text x="632" y="655" text-anchor="end">GND</text>
+  </g>
+
+  <!-- 3V3 -> LV -->
+  <polyline points="315,420 420,420 420,450 485,450" fill="none" stroke="#f59e0b" stroke-width="3.5"/>
+  <text x="372" y="412" font-size="12" fill="#b45309" font-weight="700">3.3 V</text>
+  <!-- HV -> 5V rail, GND -> GND rail -->
+  <polyline points="645,450 690,450 690,200" fill="none" stroke="#dc2626" stroke-width="3.5"/>
+  <polyline points="645,650 665,650 665,225" fill="none" stroke="#111" stroke-width="3.5"/>
+  <circle cx="690" cy="200" r="5" fill="#dc2626"/><circle cx="665" cy="225" r="5" fill="#111"/>
+
+  <!-- IO13 -> LV1, IO14 -> LV2 (routed under the ESP32) -->
+  <polyline points="95,525 28,525 28,780 440,780 440,490 485,490" fill="none" stroke="#2563eb" stroke-width="3.5"/>
+  <polyline points="95,595 36,595 36,765 455,765 455,530 485,530" fill="none" stroke="#16a34a" stroke-width="3.5"/>
+  <text x="235" y="800" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="700">IO13 → LV1 (data, DT)</text>
+  <text x="235" y="757" text-anchor="middle" font-size="12" fill="#15803d" font-weight="700">IO14 → LV2 (clock, SCK)</text>
+
+  <!-- ===== HX711 ===== -->
+  <rect x="820" y="380" width="190" height="270" rx="8" fill="#f0fdf4" stroke="#166534" stroke-width="2.5"/>
+  <text x="915" y="370" text-anchor="middle" font-weight="700" fill="#14532d">HX711 module (green)</text>
+  <g font-size="13" font-weight="600" fill="#1f2933">
+    <circle cx="835" cy="430" r="6" fill="#166534"/><text x="848" y="435">GND</text>
+    <circle cx="835" cy="490" r="6" fill="#166534"/><text x="848" y="495">DT</text>
+    <circle cx="835" cy="530" r="6" fill="#166534"/><text x="848" y="535">SCK</text>
+    <circle cx="835" cy="580" r="6" fill="#166534"/><text x="848" y="585">VCC</text>
+    <circle cx="995" cy="420" r="6" fill="#166534"/><text x="982" y="425" text-anchor="end">E+</text>
+    <circle cx="995" cy="460" r="6" fill="#166534"/><text x="982" y="465" text-anchor="end">E−</text>
+    <circle cx="995" cy="500" r="6" fill="#166534"/><text x="982" y="505" text-anchor="end">A−</text>
+    <circle cx="995" cy="540" r="6" fill="#166534"/><text x="982" y="545" text-anchor="end">A+</text>
+    <circle cx="995" cy="580" r="6" fill="#9ca3af"/><text x="982" y="585" text-anchor="end" fill="#6b7280">B−</text>
+    <circle cx="995" cy="620" r="6" fill="#9ca3af"/><text x="982" y="625" text-anchor="end" fill="#6b7280">B+</text>
+  </g>
+  <!-- HV1 -> DT, HV2 -> SCK -->
+  <line x1="645" y1="490" x2="835" y2="490" stroke="#2563eb" stroke-width="3.5"/>
+  <line x1="645" y1="530" x2="835" y2="530" stroke="#16a34a" stroke-width="3.5"/>
+  <text x="733" y="482" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="700">HV1 → DT</text>
+  <text x="733" y="548" text-anchor="middle" font-size="11" fill="#15803d" font-weight="700">HV2 → SCK</text>
+  <!-- HX711 power -->
+  <polyline points="835,580 775,580 775,200" fill="none" stroke="#dc2626" stroke-width="3.5"/>
+  <polyline points="835,430 795,430 795,225" fill="none" stroke="#111" stroke-width="3.5"/>
+  <circle cx="775" cy="200" r="5" fill="#dc2626"/><circle cx="795" cy="225" r="5" fill="#111"/>
+
+  <!-- ===== load cell ===== -->
+  <rect x="1070" y="690" width="180" height="44" rx="4" fill="#d1d5db" stroke="#4b5563" stroke-width="2"/>
+  <circle cx="1105" cy="712" r="6" fill="#fff" stroke="#4b5563"/><circle cx="1215" cy="712" r="6" fill="#fff" stroke="#4b5563"/>
+  <rect x="1145" y="700" width="30" height="24" fill="#fef3c7" stroke="#92400e"/>
+  <text x="1160" y="756" text-anchor="middle" font-weight="700" fill="#374151">1 kg bar load cell</text>
+  <text x="1160" y="774" text-anchor="middle" font-size="12" fill="#374151">arrow on the cell points DOWN</text>
+  <text x="1160" y="790" text-anchor="middle" font-size="12" fill="#374151">(the direction of the load)</text>
+  <polyline points="1100,690 1100,420 995,420" fill="none" stroke="#dc2626" stroke-width="3"/>
+  <polyline points="1120,690 1120,460 995,460" fill="none" stroke="#111" stroke-width="3"/>
+  <polyline points="1140,690 1140,500 995,500" fill="none" stroke="#9ca3af" stroke-width="5"/>
+  <polyline points="1140,690 1140,500 995,500" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <polyline points="1160,690 1160,540 995,540" fill="none" stroke="#16a34a" stroke-width="3"/>
+  <text x="1265" y="392" text-anchor="end" font-size="12" font-weight="700" fill="#374151">load-cell wires: red→E+ · black→E−</text>
+  <text x="1265" y="408" text-anchor="end" font-size="12" font-weight="700" fill="#374151">white→A− · green→A+</text>
+
+  <!-- ===== notes ===== -->
+  <rect x="470" y="700" width="560" height="120" rx="8" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="485" y="724" font-weight="700" fill="#1f2933">Notes</text>
+  <text x="485" y="746" font-size="13" fill="#1f2933">• All GNDs are common: charger, ESP32-CAM, level shifter and HX711.</text>
+  <text x="485" y="766" font-size="13" fill="#1f2933">• HX711 runs at 5 V (stronger bridge excitation) – its DT/SCK reach the ESP32 only</text>
+  <text x="485" y="784" font-size="13" fill="#1f2933">  through the level shifter (ESP32 pins are 3.3 V, not 5 V tolerant).</text>
+  <text x="485" y="804" font-size="13" fill="#1f2933">• Flash first on the ESP32-CAM-MB USB board, then move the ESP32-CAM to this circuit.</text>
+</svg>
