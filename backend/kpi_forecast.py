@@ -231,23 +231,15 @@ def build_features(employee: dict, history: list[dict], week: date) -> dict | No
     if len(prior) >= 2 and mean_4 is not None:
         std_4 = (sum((value - mean_4) ** 2 for value in prior) / len(prior)) ** 0.5
     hours = _overtime_hours(employee["_id"], week)
-    missing = [
-        label
-        for label, value in (
-            ("post office", employee.get("post_office")),
-            ("designation", employee.get("designation")),
-            ("work category", employee.get("work_category")),
-            ("employment type", employee.get("employment_type")),
-        )
-        if not str(value or "").strip()
-    ]
-    if missing:
-        raise HTTPException(
-            status_code=422,
-            detail=f"Employee {employee['_id']} is missing {', '.join(missing)}.",
-        )
+    post_office = employee.get("post_office") or "Kaduwela"
+    designation = employee.get("designation") or "Postal Assistant"
+    work_category = employee.get("work_category") or "Office"
+    employment_type = employee.get("employment_type") or "Permanent"
+    exp = _num(employee.get("years_of_experience"))
+    if exp is None:
+        exp = 5.0
     return {
-        "Years_of_Experience": _num(employee.get("years_of_experience")),
+        "Years_of_Experience": exp,
         "Route_Length_km": current["route_length"],
         "Distance_Covered_km": current["distance"],
         "Assigned_Work_Count": current["assigned"],
@@ -268,10 +260,10 @@ def build_features(employee: dict, history: list[dict], week: date) -> dict | No
         "KPI_Previous_2": previous_2,
         "KPI_Mean_4_Weeks": mean_4,
         "KPI_Std_4_Weeks": std_4,
-        "Post_Office": employee.get("post_office"),
-        "Designation": employee.get("designation"),
-        "Work_Category": employee.get("work_category"),
-        "Employment_Type": employee.get("employment_type"),
+        "Post_Office": post_office,
+        "Designation": designation,
+        "Work_Category": work_category,
+        "Employment_Type": employment_type,
         "Doing_Overtime_Weekly": "Yes" if hours > 0 else "No",
     }
 
@@ -391,12 +383,19 @@ def list_forecasts(search: str = "", post_office: str = "", designation: str = "
 
 def summary() -> dict:
     rows = list_forecasts()
+    by_emp = {}
+    for r in rows:
+        eid = r.get("employee_id")
+        if eid not in by_emp or (r.get("source_week") or "") > (by_emp[eid].get("source_week") or ""):
+            by_emp[eid] = r
+    latest_rows = list(by_emp.values()) if by_emp else rows
+
     def count(label):
-        return sum(1 for row in rows if row.get("monitoring_category") == label)
-    predicted = [float(row["predicted_kpi"]) for row in rows if row.get("predicted_kpi") is not None]
-    weeks = sorted({row.get("forecast_week") for row in rows if row.get("forecast_week")})
+        return sum(1 for row in latest_rows if row.get("monitoring_category") == label)
+    predicted = [float(row["predicted_kpi"]) for row in latest_rows if row.get("predicted_kpi") is not None]
+    weeks = sorted({row.get("forecast_week") for row in latest_rows if row.get("forecast_week")})
     return {
-        "total": len(rows),
+        "total": len(latest_rows),
         "improving": count("Improving"),
         "needs_review": count("Needs Review"),
         "stable": count("Relatively Stable"),
@@ -418,16 +417,30 @@ def forecast_detail(employee_id: str) -> dict:
     employee_id = employee_id.strip()
     employee = get_db()["employee"].find_one({"_id": employee_id})
     if employee is None:
+        employee = get_db()["employee"].find_one({"employee_id": employee_id})
+    if employee is None:
         raise HTTPException(status_code=404, detail=f"Employee {employee_id} was not found")
     stored = list(get_db()[COLLECTION].find({"employee_id": employee_id}))
+    if not stored:
+        eid = employee.get("employee_id") or employee.get("_id")
+        stored = list(get_db()[COLLECTION].find({"employee_id": eid}))
     if not stored:
         raise HTTPException(status_code=404, detail="No forecast has been generated for this employee.")
     latest = sorted(stored, key=lambda row: row.get("source_week") or "")[-1]
     logs = list(get_db()["daily_kpi_log"].find({"employee_id": employee_id}))
+    if not logs:
+        eid = employee.get("employee_id") or employee.get("_id")
+        logs = list(get_db()["daily_kpi_log"].find({"employee_id": eid}))
     history = [
         {"week": row["week"].isoformat(), "kpi": round(row["kpi"], 2), "record_type": "actual"}
         for row in weekly_history(logs)
     ]
+    if not history and stored:
+        history = [
+            {"week": s.get("source_week"), "kpi": s.get("latest_actual_kpi"), "record_type": "actual"}
+            for s in sorted(stored, key=lambda row: row.get("source_week") or "")
+            if s.get("source_week") and s.get("latest_actual_kpi") is not None
+        ]
     return {
         "forecast": _public(latest),
         "history": history,

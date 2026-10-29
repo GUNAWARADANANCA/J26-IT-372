@@ -1,510 +1,838 @@
-# PostAssist LK
+# Intelligent Ledger and KPI Prediction Module
+### PostAssist LK – Intelligent Backbone for Local Postal Services
 
-**J26-IT-372 | Research prototype for local postal services**
+**Description:** An AI-assisted financial support module for postal branches. It suggests the correct General Ledger (GL) account for each transaction written in Sinhala, Tamil or English, shows a confidence score, and sends uncertain cases to an authorized officer for review. It also supports daily reconciliation, predicts each officer’s daily KPI achievement with improvement tips, and presents the results on Power BI dashboards. A human officer always makes the final accounting decision.
 
-PostAssist LK is a multi-part postal operations prototype. It brings registered-mail intake and tracking, staff
-operations, daily accounts, and address-processing research together around a FastAPI and MongoDB backend. The
-repository also contains a Flutter mobile app, ESP32-CAM scale firmware, machine-learning pipelines, datasets, and
-project documentation.
+**Status:** Proposal stage (project J26-IT-372) · **Tech:** FastAPI, React + TypeScript, PostgreSQL, Python ML/NLP, Postman, Power BI
 
-The project is intended for demonstration and research. Use synthetic data unless operational and ethics approval
-has been obtained. Recommendations and forecasts support staff decisions; they do not replace an authorised
-officer's review.
-
-## Project components
-
-The primary research focus documented here is **Component 1: the Intelligent Ledger and KPI Prediction Module**,
-also referred to as Daily Accounts Reconciliation, Ledger Prediction and the Postal KPI Desk.
-
-Component 1 is led by Gunawardena N C A (IT23323216), under supervisors Dr. Junius Anjana and
-Mrs. Poorna Panduwawala. The registered-mail component is led by Senarathna W.L.S.K (IT23324138).
-
-| # | Component | Purpose | Current implementation | Key code or data locations |
-|---|---|---|---|---|
-| **1** | **Intelligent Ledger and KPI Prediction Module** (Daily Accounts Reconciliation, Ledger Prediction and Postal KPI Desk) | Manage staff, attendance, daily KPIs, entitlements, payroll, productivity, and office accounts | FastAPI routes and React desk pages, including daily-account imports, reconciliation, reporting, and GL-code suggestions | `backend/main.py`, `backend/routes.py`, `backend/attendance.py`, `backend/payroll.py`, `backend/productivity.py`, `frontend/src/admin/`, `frontend/src/attendance/`, `frontend/src/entitlements/` |
-| 2 | Smart Registered Mail Intake and Tracking | Register, price, label, scan, review, and track registered mail | FastAPI API, React web app, Flutter staff app, and ESP32-CAM scale/camera integration | `backend/app/`, `frontend/src/pages/`, `frontend/src/components/`, `mobile_app/flutter_app/`, `iot/`, `ml/` |
-| 3 | Postal Delivery Operations and Relief Assignment | Organise delivery areas and provide delivery-operation data | Kaduwela-area dataset and related documentation | `Datasets/kaduwela_postal_dataset_Final.xlsx` |
-| 4 | Postal Address Beat/City Extraction | Identify a destination city from a mail-item image | Tesseract-based notebook and sample images | `firmware/address_extraction.ipynb` |
-
-The multilingual machine-learning GL classifier and a separate secure ledger-prediction API are research extensions,
-not completed product features. See [Limitations](#limitations) and the component documentation for scope details.
-
-### Component responsibilities
-
-| Component or role | Responsibility |
+| Detail | Information |
 |---|---|
-| Intelligent Ledger and KPI Prediction Module | The feature branch's daily-account import, reconciliation workflow, GL-code suggestions, staff/KPI desk, and reporting; the multilingual GL classifier and separate ledger API remain proposed research. |
-| Smart Registered Mail Intake and Tracking | Counter intake, pricing, labels, tracking scans, review, notifications, and the supporting web, mobile, and IoT integrations. |
-| Postal Delivery Operations and Relief Assignment | Delivery-area data and supporting research for delivery assignments and relief planning; this repository does not provide an integrated delivery-management application. |
-| Postal Address Beat/City Extraction | Notebook-based OCR and city matching from mail images; it is a research utility, not a production address service. |
-| Clerk | Enters and submits daily transactions; identity for any future secure ledger API must come from the authenticated session, not an editable request field. |
-| Finance officer / postmaster | Reviews and corrects GL suggestions, approves transactions, resolves reconciliation exceptions, and authorises posting. |
-| Manager | Reviews authorised, appropriately aggregated financial, reconciliation, and KPI reporting. |
+| **Student** | Gunawardena N C A |
+| **Student ID** | IT23323216 |
+| **Project ID** | J26-IT-372 |
+| **Programme** | B.Sc. (Hons) in Information Technology, Specialized in Information Technology |
+| **Institute** | Sri Lanka Institute of Information Technology (SLIIT), Department of Information Technology |
+| **Document** | Project Proposal Report, September 2026 |
 
-### Proposed research responsibility allocation
+> **Status note.** This README is derived from the project proposal. The system is at the design and planning stage. All numeric targets below are **proposed acceptance targets**, not achieved results.
 
-| Workstream | Component lead focus | Shared or team contribution |
+---
+
+## Table of Contents
+- [1. Overview](#1-overview)
+- [2. Problem and Research Gap](#2-problem-and-research-gap)
+- [3. Objectives and Acceptance Targets](#3-objectives-and-acceptance-targets)
+- [4. Key Features](#4-key-features)
+- [5. System Architecture](#5-system-architecture)
+  - [5.1 High-level architecture](#51-high-level-architecture)
+  - [5.2 Component boundary and integration](#52-component-boundary-and-integration)
+  - [5.3 Deployment view](#53-deployment-view)
+- [6. End-to-End Workflow](#6-end-to-end-workflow)
+- [7. GL Prediction and Human-in-the-Loop Logic](#7-gl-prediction-and-human-in-the-loop-logic)
+- [8. Transaction State Model](#8-transaction-state-model)
+- [9. Data Model](#9-data-model)
+- [10. Secure API Design](#10-secure-api-design)
+- [11. ML Pipeline and Experiments](#11-ml-pipeline-and-experiments)
+  - [11.1 GL prediction pipeline](#111-gl-prediction-pipeline)
+  - [11.2 Experiment configurations](#112-experiment-configurations)
+  - [11.3 Dataset plan](#113-dataset-plan)
+  - [11.4 Evaluation metrics](#114-evaluation-metrics)
+- [12. KPI Prediction Module](#12-kpi-prediction-module)
+- [13. Users and Roles](#13-users-and-roles)
+- [14. Technology Stack and Deployment](#14-technology-stack-and-deployment)
+- [15. Security, Privacy and Safeguards](#15-security-privacy-and-safeguards)
+- [16. Requirements Summary](#16-requirements-summary)
+  - [16.1 Functional requirements](#161-functional-requirements)
+  - [16.2 Non-functional requirements](#162-non-functional-requirements)
+- [17. Testing Plan](#17-testing-plan)
+- [18. Methodology](#18-methodology)
+- [19. Work Breakdown Structure](#19-work-breakdown-structure)
+- [20. Project Schedule (Gantt)](#20-project-schedule-gantt)
+- [21. Risks and Mitigations](#21-risks-and-mitigations)
+- [22. Budget](#22-budget)
+- [23. Commercialization Outlook](#23-commercialization-outlook)
+- [24. Proposed Repository Structure](#24-proposed-repository-structure)
+- [25. Getting Started (Planned)](#25-getting-started-planned)
+- [26. Limitations and Honest Notes](#26-limitations-and-honest-notes)
+- [27. References](#27-references)
+
+---
+
+## 1. Overview
+Daily postal branch operations require every financial transaction to have an accurate description, the correct General Ledger (GL) account, a reliable record, and reconciliation with operational activity. Clerks and officers often interpret transaction descriptions written in Sinhala, Tamil or English by hand, which causes delays, inconsistent classification and human error. KPI reporting is usually based on completed work, so shortfalls are noticed late.
+
+This component is the **Intelligent Ledger and KPI Prediction Module** of PostAssist LK. It:
+- Accepts transactions from clerks through a secure API pipeline.
+- Recommends a GL account using multilingual NLP and machine learning, with a confidence score.
+- Routes low-confidence predictions to an authorized officer (human-in-the-loop).
+- Stores approved corrections as feedback for future model improvement.
+- Performs daily reconciliation between transactions and ledger postings.
+- Predicts each officer’s daily KPI achievement and generates improvement recommendations.
+- Presents ledger, reconciliation, confidence and KPI information through Power BI dashboards.
+
+**Workflow:** `transaction data → AI prediction → human verification → reconciliation → KPI analytics`
+
+**Design principle:** The AI is a decision-support tool. Final accounting decisions always stay with an authorized human officer, and KPI predictions are never used for disciplinary, promotion or employment decisions.
+
+---
+
+## 2. Problem and Research Gap
+Established platforms (SAP S/4HANA, Oracle Fusion Cloud Financials, QuickBooks Online, Xero) provide mature GL processing and reporting. Existing research supports ML-based transaction classification, multilingual NLP for Sinhala and Tamil, human-in-the-loop decision support, and employee performance prediction. However, limited evidence exists for an integrated solution for multilingual postal transactions.
+
+| Gap | Proposed contribution | Evidence required |
 |---|---|---|
-| Secure transaction API | Draft and test clerk-to-officer transaction processing and data classification. | Agree API contracts, data formats and integration requirements. |
-| GL prediction and multilingual processing | Develop and evaluate the classifier and report Sinhala, Tamil and English results separately. | Define GL requirements and evaluation criteria; support data preparation. |
-| Human approval and reconciliation | Design confidence-based review, officer correction, feedback capture and reconciliation tests. | Agree approval rules, exception handling and user workflow; support UI integration and testing. |
-| KPI prediction and reporting | Evaluate KPI prediction and prepare authorised reporting for GL, reconciliation and KPI measures. | Agree dashboard requirements, data standards and system integration. |
-| Dataset and final evaluation | Prepare approved, anonymised or synthetic research data; document methods, experiments and limitations. | Review results, provide approved datasets where available, and contribute to final system testing and documentation. |
+| Limited GL prediction for postal transactions | AI-based GL account prediction | Prediction accuracy |
+| Limited Sinhala, Tamil and English transaction processing | Multilingual transaction understanding | Accuracy compared per language |
+| Limited human verification for uncertain predictions | Human-in-the-loop approval | Correct vs corrected predictions |
+| Limited prediction of daily employee KPI performance | KPI prediction module | Predicted vs actual KPI |
+| Financial and KPI functions handled separately | Integrated financial management workflow | System accuracy, processing time, usability |
 
-## Daily accounts and ledger research status
+**Research question:** Can an integrated, human-supervised Intelligent Ledger and KPI Prediction Module provide accurate and reliable multilingual GL recommendations and KPI predictions in a scoped postal-management environment?
 
-**Implemented on this feature branch:** daily-account workbook import, validation and correction; category and summary
-views; cash reconciliation; transaction workflows; reporting/export; and GL-code suggestions for officer review.
-**Proposed research only:** a multilingual GL classifier with confidence-based routing and a separate secure ledger API.
-The targets and designs below describe intended evaluation, not completed system behavior.
+---
 
-The implemented importer supports `.xlsx`, `.xls` and `.csv` files, multiple worksheets, header detection, column
-mapping, summary-row exclusion and staged batches. Account categories include money orders, postal services, stamp
-stock, utility collections, pension/welfare and expenses/imprest. Daily, weekly and monthly summaries include trends
-and revenue breakdowns. Suggestions do not post ledger transactions automatically.
+## 3. Objectives and Acceptance Targets
+**Main objective:** Within a provisional 24-week individual project, design, implement and evaluate an intelligent financial and performance-support component that securely processes postal transactions, predicts GL accounts from multilingual transaction information, supports daily reconciliation, predicts employee KPI achievement and provides human-supervised analytics through integrated dashboards.
 
-The proposed research extension is a multilingual GL classifier using transaction description, amount, service type,
-branch, payment method, language and approved historical data. It would return a recommended account, confidence
-score and model metadata. Even a high-confidence recommendation requires officer confirmation; low-confidence cases
-must be routed for manual selection.
+| ID | Specific objective | Proposed measure and target |
+|---|---|---|
+| **SO1** | Secure API for clerk-to-officer transactions with authentication and data protection | At least 95% of API tests succeed; all unauthorized-access tests rejected |
+| **SO2** | AI model to predict the correct GL account from transaction details and history | At least 85% macro-F1, compared against a baseline model |
+| **SO3** | Support Sinhala, Tamil and English with confidence-based officer review | Per-language results reported; at least 90% of high-confidence recommendations correct at the chosen threshold; low-confidence cases routed to an officer, never auto-finalized |
+| **SO4** | KPI prediction and financial monitoring module with management dashboards | At least 90% accuracy on reconciliation test cases; KPI performance reported with suitable metrics |
 
-### Research workflow and safeguards
+> Targets are to be confirmed by the supervisor after an initial feasibility assessment and before the final held-out evaluation.
 
-The planned transaction flow is:
+---
 
-```text
-clerk submission → validation → GL suggestion and confidence → officer review or correction
-                 → approval → posting → reconciliation → KPI analysis and reporting
+## 4. Key Features
+
+| Area | Feature |
+|---|---|
+| **Secure transaction processing** | Authenticated clerk-to-officer API, private/public data classification, validation, unique `reference_id`, audit logging |
+| **AI GL prediction** | Predicts a GL account from description, amount, service type, branch, payment method, language and history |
+| **Multilingual NLP** | Sinhala, Tamil and English preprocessing, evaluated separately per language |
+| **Confidence scoring** | Every prediction carries a confidence score; a threshold fixed on validation data drives routing |
+| **Human-in-the-loop** | Officers confirm, reject or manually change a predicted GL account; corrections are stored as feedback |
+| **Ledger posting** | Only approved transactions are posted, with posting status and audit trail |
+| **Daily reconciliation** | Matches transactions to ledger postings; flags unmatched and inconsistent records for review |
+| **KPI prediction** | Predicts daily KPI achievement per officer and generates coaching recommendations |
+| **Dashboards** | Power BI views for ledger activity, reconciliation, revenue, GL accuracy, confidence and KPI achievement |
+| **Notifications** | Submission, recommendation, approval, reconciliation and KPI messages that use `reference_id` instead of sensitive details |
+
+---
+
+## 5. System Architecture
+
+### 5.1 High-level architecture
+
+```mermaid
+flowchart TB
+    subgraph Users["Users"]
+        CL["Clerk"]
+        OF["Finance / Accounting Officer"]
+        MG["Postmaster / Manager"]
+    end
+
+    subgraph UI["Presentation Layer"]
+        WEB["React + TypeScript Web App"]
+        PBI["Power BI Dashboards"]
+    end
+
+    subgraph API["Secure API Layer - FastAPI"]
+        AUTH["Authentication and RBAC"]
+        VAL["Validation and Data Classification"]
+        TXS["Transaction Service"]
+        APR["Approval and Posting Service"]
+        REC["Reconciliation Service"]
+        DSH["Dashboard Data Service"]
+    end
+
+    subgraph AI["AI Services - Python"]
+        NLP["Multilingual NLP Preprocessing"]
+        GLM["GL Prediction Model + Confidence Score"]
+        KPI["KPI Prediction and Recommendations"]
+        FB["Feedback Store for Retraining"]
+    end
+
+    subgraph DATA["Data Layer"]
+        PG[("PostgreSQL")]
+        AUD[("Audit Log")]
+    end
+
+    CL --> WEB
+    OF --> WEB
+    MG --> PBI
+    WEB -->|HTTPS| AUTH
+    AUTH --> VAL --> TXS
+    TXS --> NLP --> GLM
+    GLM --> APR
+    APR --> REC
+    APR --> FB
+    REC --> KPI
+    TXS --> PG
+    APR --> PG
+    REC --> PG
+    KPI --> PG
+    FB --> PG
+    APR --> AUD
+    DSH --> PG
+    PBI --> DSH
 ```
 
-The design keeps transaction state separate from prediction status. Proposed transaction states include
-`created`, `submitted`, `validated`, `gl_predicted`, `pending_approval`, `approved`, `rejected`, `posted`,
-`reconciled` and `exception`; prediction outcomes include high/low confidence, corrected and manually selected.
-A rejection or missing approval is surfaced as an exception rather than silently treated as a completed posting.
+### 5.2 Component boundary and integration
+The module is independently demonstrable. Other PostAssist LK components may consume its versioned, approved APIs later, but none is required to demonstrate this contribution. Only approved, non-sensitive, aggregated information is exposed to other components or dashboards, and the full financial database is never shared directly.
 
-| Role | Proposed responsibility |
-|---|---|
-| Clerk | Submit a transaction with its business details through an authenticated workflow. |
-| Finance officer | Confirm, reject or correct a suggestion; resolve low-confidence cases and reconciliation discrepancies; authorise posting. |
-| Manager / postmaster | Review authorised summaries of ledger activity, reconciliation, revenue, prediction quality and KPI results. |
+### 5.3 Deployment view
+A browser (React + TypeScript) reaches the FastAPI app over HTTPS through a reverse proxy. The app hosts the API and AI services, reads and writes PostgreSQL, and loads versioned models from a model store. Power BI reads reporting views only. Development runs locally; secure cloud hosting is optional.
 
-These are research roles and do not imply that the proposed ledger API or every listed permission is currently
-implemented. Posting must require an authorised person's approval; the prediction alone must never finalise a
-transaction.
+---
 
-The research design calls for an authenticated clerk to submit a transaction and an authorised finance officer to
-confirm, reject or correct its suggested account. Proposed API operations include transaction submission,
-prediction, approval, posting, daily reconciliation and an authorised financial summary. These are design scope,
-not claims that a separate ledger-prediction API is currently implemented.
+## 6. End-to-End Workflow
 
-| Proposed operation | Intended use |
-|---|---|
-| `POST /transactions` | Validate and submit a clerk transaction; return a reference ID |
-| `POST /transactions/{id}/predictgl` | Return a suggested GL account and confidence |
-| `POST /transactions/{id}/approve-gl` | Confirm, reject or correct the suggestion as an authorised officer |
-| `POST /transactions/{id}/post` | Post an approved transaction with an audit trail |
-| `POST /reconciliation/daily` | Compare transactions with ledger postings and report exceptions |
-| `GET /dashboards/financialsummary` | Provide an authorised, aggregated financial summary |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Clerk
+    participant API as Secure API (FastAPI)
+    participant ML as GL Prediction Model
+    participant Officer as Authorized Officer
+    participant DB as PostgreSQL
+    participant Rec as Reconciliation
+    participant KPI as KPI Module
+    participant BI as Power BI
 
-The endpoints above are **proposed research interfaces**, not the implemented daily-account routes. The current
-feature branch's daily-account transaction routes are under `/api/daily-accounts/transactions`; see
-[`backend/routes.py`](backend/routes.py) and the OpenAPI page at <http://localhost:8000/docs> when running the API.
+    Clerk->>API: POST /transactions (description, amount, service type, branch, payment method, language)
+    API->>API: Authenticate, authorize, validate, classify private/public data
+    API->>DB: Store transaction with reference_id
+    API-->>Clerk: reference_id (status: submitted)
+    API->>ML: POST /transactions/{id}/predict-gl
+    ML-->>API: GL account + confidence score
+    API->>DB: Store prediction (model version, language, time)
+    API->>Officer: Review request (recommended GL + confidence)
+    alt Confidence at or above threshold
+        Officer->>API: Confirm predicted GL account
+    else Confidence below threshold
+        Officer->>API: Manually select or correct GL account
+    end
+    API->>DB: Store approval and correction as feedback (audit trail)
+    Officer->>API: POST /transactions/{id}/post
+    API->>DB: Post to ledger (status: posted)
+    Officer->>Rec: POST /reconciliation/daily
+    Rec->>DB: Compare transactions vs ledger postings
+    Rec-->>Officer: Matched / unmatched / exception results
+    DB->>KPI: Transaction and performance data
+    KPI-->>DB: Predicted daily KPI + recommendations
+    BI->>API: GET /dashboards/financial-summary
+    API-->>BI: Validated, role-restricted indicators
+```
 
-#### Proposed transaction API fields
+---
 
-The following is a draft contract for the planned ledger API, not a description of a currently implemented
-request/response schema:
+## 7. GL Prediction and Human-in-the-Loop Logic
 
-| Field | Direction | Proposed meaning |
+```mermaid
+flowchart TD
+    S(["Validated transaction"]) --> P["Predict GL account + confidence score"]
+    P --> Q{"Confidence at or above threshold?"}
+    Q -->|Yes| H["Show recommendation to officer for confirmation"]
+    Q -->|No| L["Flag as low confidence: officer must select GL account manually"]
+    H --> D{"Officer decision"}
+    L --> D
+    D -->|Confirm| A["Approved GL account"]
+    D -->|Modify| M["Corrected GL account"]
+    D -->|Reject| X["Rejected: needs review"]
+    A --> LOG["Audit record: original prediction, decision, timestamp"]
+    M --> LOG
+    X --> LOG
+    M --> FB[("Approved corrections feed future model improvement")]
+    A --> POST["Ledger posting"]
+    M --> POST
+    classDef warn fill:#FFF3E0,stroke:#FB8C00,color:#000
+    classDef ok fill:#E8F5E9,stroke:#43A047,color:#000
+    class L,X warn
+    class A,M,POST ok
+```
+
+**Key rules from the proposal:**
+- No transaction is posted solely on an AI prediction. Officer verification is required.
+- The confidence threshold is chosen on validation data and fixed before final testing.
+- High confidence does not automatically mean correct. Confidence reliability is evaluated on a separate test set.
+- Only approved corrections are used for future learning, since not every correction is assumed correct.
+- A prediction does not count as successful if it improves speed by increasing incorrect GL assignments.
+
+---
+
+## 8. Transaction State Model
+Transaction progress and GL prediction confidence are stored separately, so the system can distinguish how far a transaction has progressed from how reliable the AI recommendation is.
+
+```mermaid
+stateDiagram-v2
+    [*] --> created
+    created --> submitted
+    submitted --> validated : passes validation
+    submitted --> exception : fails validation
+    validated --> gl_predicted
+    gl_predicted --> pending_approval
+    pending_approval --> approved : officer confirms or corrects
+    pending_approval --> rejected : officer rejects
+    approved --> posted
+    posted --> reconciled : matched
+    posted --> exception : mismatch found
+    rejected --> [*]
+    reconciled --> [*]
+    exception --> [*] : resolved by officer
+```
+
+**Prediction result (stored separately):** `high_confidence` | `low_confidence` | `corrected` | `manually_selected`
+
+---
+
+## 9. Data Model
+
+```mermaid
+erDiagram
+    USER ||--o{ TRANSACTION : submits
+    USER ||--o{ OFFICER_APPROVAL : makes
+    USER ||--o{ KPI_RECORD : "is measured by"
+    TRANSACTION ||--o| GL_PREDICTION : has
+    TRANSACTION ||--o| OFFICER_APPROVAL : "reviewed in"
+    TRANSACTION ||--o| LEDGER_POSTING : "posted as"
+    TRANSACTION ||--o{ RECONCILIATION_RECORD : "checked in"
+    TRANSACTION ||--o{ AUDIT_LOG : generates
+
+    USER {
+        string user_id PK
+        string role
+        string branch_id
+    }
+    TRANSACTION {
+        string transaction_id PK
+        string reference_id UK
+        text transaction_description
+        decimal amount
+        string service_type
+        string branch_id
+        string payment_method
+        string language
+        string clerk_id FK
+        string state
+        datetime submitted_at
+        datetime received_at
+    }
+    GL_PREDICTION {
+        string prediction_id PK
+        string transaction_id FK
+        string predicted_gl_account
+        float confidence_score
+        string model_version
+        string language
+        datetime predicted_at
+        string outcome
+    }
+    OFFICER_APPROVAL {
+        string approval_id PK
+        string transaction_id FK
+        string officer_id FK
+        string decision
+        string final_gl_account
+        boolean corrected
+        datetime decided_at
+    }
+    LEDGER_POSTING {
+        string posting_id PK
+        string transaction_id FK
+        string gl_account
+        string posting_status
+        datetime posted_at
+    }
+    RECONCILIATION_RECORD {
+        string recon_id PK
+        string transaction_id FK
+        date recon_date
+        string result
+    }
+    KPI_RECORD {
+        string kpi_id PK
+        string officer_id FK
+        date kpi_date
+        int tasks_completed
+        decimal revenue_contribution
+        float predicted_kpi
+        float actual_kpi
+    }
+    AUDIT_LOG {
+        string log_id PK
+        string transaction_id FK
+        string action
+        string actor_id
+        datetime logged_at
+    }
+```
+
+### Transaction payload
+- **Client-submitted fields:** `transaction_id`, `reference_id`, `transaction_description`, `amount`, `service_type`, `branch_id`, `payment_method`, `language`, `clerk_id`, `client_version`, `submitted_at`.
+- **Server-added fields:** `received_at`, `validation_status`, `GL_prediction`, `confidence_score`, `approval_status`, `policy_version`, `transaction_revision`.
+- The clerk identity comes from authentication, never from an editable field in the request.
+- `submitted_at` and `received_at` are kept separate so network delays are not wrongly treated as invalid.
+- Amounts must be non-negative; service type, payment method, language and GL account must match approved values.
+
+---
+
+## 10. Secure API Design
+
+| Endpoint | Authorized actor | Essential behavior |
 |---|---|---|
-| `transaction_id` | Request or server-assigned | Transaction identifier; uniqueness and assignment rules must be defined by the API contract. |
-| `reference_id` | Request | Client or source reference used to detect duplicate submissions. |
-| `transaction_description` | Request | Transaction description in Sinhala, Tamil or English. |
-| `amount` | Request | Non-negative transaction amount, validated against the approved currency and accounting rules. |
-| `service_type` | Request | Approved postal service or transaction category. |
-| `branch_id` | Request | Identifier for the submitting branch. |
-| `payment_method` | Request | Approved payment method. |
-| `language` | Request | Declared or detected description language; validation behavior remains to be specified. |
-| `clerk_id` | Server-derived | Authenticated clerk identity; must not be trusted from a caller-editable field. |
-| `client_version`, `submitted_at` | Request metadata | Client version and client submission time; validation and clock-skew rules remain to be defined. |
-| `received_at` | Server-generated | Server receipt time, kept distinct from client submission time. |
-| `validation_status` | Server-generated | Result of schema and business-rule validation. |
-| `gl_prediction`, `confidence_score` | Server-generated | Proposed GL account and model confidence, with model/version metadata retained for audit. |
-| `approval_status` | Server-generated | Approval workflow state and recorded decision. |
-| `policy_version`, `transaction_revision` | Server-generated | Applicable validation/prediction policy and transaction revision for traceability. |
+| `POST /transactions` | Clerk | Create and submit a transaction; returns a unique reference ID |
+| `POST /transactions/{id}/predict-gl` | Authorized officer / system | Generates the recommended GL account and confidence score |
+| `POST /transactions/{id}/approve-gl` | Finance officer | Confirms the predicted GL account or manually selects another when confidence is below threshold |
+| `POST /transactions/{id}/post` | Authorized finance officer | Posts the approved transaction to the selected GL account with an audit trail |
+| `POST /reconciliation/daily` | Finance officer | Compares transactions with ledger postings; returns mismatches for review |
+| `GET /dashboards/financial-summary` | Authorized manager | Validated financial, reconciliation, GL prediction and KPI indicators for Power BI, with data-access rules enforced |
 
-Final field names, optionality, enumerations, error responses, versioning, and identity rules must be agreed and tested
-before implementation. Do not send secrets or unnecessary personal or financial details in ordinary logs.
+> API collections are designed and tested with Postman.
 
-Key safeguards are human approval before posting, audit history for the prediction and any correction, idempotent
-processing, role/object-level access checks, privacy-preserving logs and manual accounting procedures when services
-are unavailable. Only approved corrections are candidates for model feedback; dashboards should expose only
-authorised and appropriately aggregated information.
+---
 
-### Research evaluation plan
+## 11. ML Pipeline and Experiments
 
-The classifier is to be compared with manual GL selection and a conventional ML baseline. A proposed
-development/validation/held-out-test split is 60/20/20; this split must be confirmed after data-feasibility review.
-Related or duplicate transactions must remain in one partition to limit leakage. Sinhala, Tamil and English results
-should be reported separately. Choose the confidence threshold on validation data and freeze it before held-out
-testing. Compare feature groups rather than assuming every additional field improves predictions. If translation
-services are considered, evaluate their privacy, cost and language-specific effects separately.
-
-The proposal includes targets such as at least 85% macro-F1 against a baseline and at least 90% correctness among
-high-confidence suggestions. These are **proposed research targets, not achieved results**. A controlled
-reconciliation dataset is also planned to test matched, unmatched and exception outcomes, including repeat processing
-and restart behavior. Use approved, anonymised or synthetic financial and employee data; planned dataset sizes and
-targets are not evidence of completed evaluation.
-
-| Evaluation area | Proposed method and measures |
-|---|---|
-| GL classification | Compare manual selection (B0), a conventional classifier using description/basic attributes (B1), and the proposed feature set (P1). Report accuracy, precision, recall, macro-F1, top-k accuracy, and per-account results. |
-| Language | Report Sinhala, Tamil and English separately; document class balance, preprocessing and any translation use. |
-| Confidence and review | Select a threshold on validation data; report calibration/reliability, high-confidence correctness and officer correction rate. Low-confidence cases must offer manual selection. |
-| Reconciliation | Use controlled matched, unmatched and exception examples; test repeat processing and restart behavior against known references and totals. |
-| KPI prediction | Compare with an appropriate simple baseline using temporal validation (train on earlier periods and test on later periods) to reduce future-data leakage. |
-| Secure API and integration | Exercise valid/invalid inputs, authentication, role/object access, duplicate references, idempotent replays, failure handling and dashboard consistency. |
-
-Proposed acceptance targets include at least 95% of API tests passing with unauthorised-access cases rejected, at least
-90% accuracy on controlled reconciliation cases, and a 95th-percentile API response below 2 seconds at 10 concurrent
-pilot users. These are **targets only**; they require feasibility review and supervisor approval before held-out
-evaluation. No test counts, model scores or security certification are claimed here as completed results.
-
-Additional proposed non-functional criteria are no duplicate ledger records during idempotency tests, manual selection
-for every low-confidence test case, and no private transaction or employee data in ordinary logs.
-
-The proposal estimates 1,000–1,500 unique primary postal transactions for GL evaluation, a separate multilingual
-secondary dataset, and 500–1,000 operational or synthetic KPI records. These are **planning estimates**, not
-datasets confirmed as available or collected. Sample sizes, labels, data permissions and class coverage must be
-validated before the study relies on them.
-
-### Proposed work packages and milestones
-
-The remote proposal describes a provisional 24-week plan (approximately 600 planned hours); schedule and workload
-remain subject to supervisor approval.
-
-| Work package | Intended deliverable |
-|---|---|
-| WP1: Research and evidence | Research protocol, evidence matrix, questions and a frozen test plan. |
-| WP2: Data and transaction foundation | Validated dataset, GL mapping and data-classification rules. |
-| WP3: Secure API pipeline | Draft API contract, tested client collection and transaction flow. |
-| WP4: GL prediction | Baseline and proposed models with confidence and multilingual evaluation. |
-| WP5: Approval and reconciliation | Officer approval/correction workflow and reconciliation/exception results. |
-| WP6: KPI prediction and dashboard | KPI evaluation, recommendations and reporting/dashboard integration. |
-| WP7: Integration and validation | Integrated prototype, baseline comparisons and test report. |
-| WP8: Handover and demonstration | Setup/API documentation, final report and demonstration materials. |
-
-Provisional checkpoints are M1 (week 4: scope, API design and data classification), M2 (week 8: dataset and baseline),
-and M3–M5 (weeks 12–21: secure API, prediction, approval, reconciliation, KPI and dashboard integration). Do not
-begin final held-out evaluation until the dataset split, confidence threshold, metrics and test procedures are fixed.
-
-The desk's other feature-branch capabilities include postmaster/clerk sign-in, session and attendance security,
-forecast monitoring, saved KPI simulations, coaching, leave workflows and work allocation. Forecasts, coaching and
-review suggestions are decision support only; they do not change pay, warnings or promotions without an authorised
-person's decision.
-
-## Features
-
-### Registered mail
-
-- Counter intake with drafts, address assistance, tariff-based quotes, payment recording, and printable labels/receipts.
-- IoT scale readings and envelope-camera capture, with manual weighing available where permitted.
-- Barcode/QR label verification and item lookup.
-- Location-aware delivery scans, offline mobile scan queues, and a postmaster review workflow for held events.
-- Sender notifications through a configurable outbox and a public, redacted tracking page.
-- Staff sign-in, role-specific operations, and audit history.
-
-### Postal KPI desk and daily accounts
-
-- Employee records, daily KPI logs, attendance, office settings, productivity, and KPI forecasts.
-- Entitlement workflows and payroll calculations, including EPF and ETF.
-- Postmaster sign-in, attendance QR workflows, work allocation, and productivity coaching.
-- Daily-account import for `.xlsx`, `.xls`, and `.csv` files, including multiple worksheets, header detection,
-  column mapping, summary-row exclusion, staged batches, validation, and correction workflows.
-- Account categories include money orders, postal services, stamp stock, utility collections, pension/welfare, and
-  expenses/imprest. Daily, weekly, and monthly summaries include trends and revenue breakdowns.
-- Cash reconciliation, transaction status workflow, category and consolidated Excel reports, and audit history.
-- Each transaction can receive a GL-code suggestion and confidence score for postmaster approval or correction; a
-  suggestion is never an autonomous ledger posting.
-- Optional Power BI reporting and embedding when configured with a suitable workspace and service principal.
-
-The KPI desk also includes a postmaster/clerk role model, secure session-cookie sign-in, attendance-door codes,
-duplicate-scan protection, leave and entitlement workflows, KPI forecast monitoring, and saved what-if simulations.
-The branch's KPI forecast model uses work counts/rates, route length, leave, overtime, KPI history and employee/
-office attributes; its feature documentation describes 26 inputs and provisional 0.40/0.30/0.30 completion,
-accuracy and timeliness weights. Forecasts, coaching and work-allocation or performance-review suggestions are
-decision-support only; they do not change pay, warnings or promotions without an authorised person's decision.
-
-The KPI desk's existing records and attendance settings support staff, daily work, office location and attendance
-windows, payroll, EPF/ETF contributions, leave and other entitlements. Forecast weights and example review thresholds
-are prototype settings, not official employment or Sri Lanka Post policy.
-
-#### Web routes and API surface
-
-The React app exposes the following principal KPI desk routes:
-
-| Area | Routes |
-|---|---|
-| Employees and daily KPI | `/employee`, `/employee/:id`, `/daily-kpi-log`, `/daily-kpi-log/:id` |
-| Attendance | `/attendance-qr/token`, `/daily-attendance`, `/attendance-log`, `/attendance-log/:id` |
-| Daily accounts | `/daily-accounts` |
-| Productivity and forecast tools | `/productivity`, `/kpi-simulator`, `/kpi-forecasts`, `/forecast-monitoring` |
-| Administration and reporting | `/settings`, `/postal-kpi-dashboard`, `/work-allocation` |
-| Entitlements and payroll | `/entitlements`, `/entitlements/payroll`, `/entitlements/epf`, `/entitlements/etf`, `/entitlements/leave`, `/entitlements/holiday-pay`, `/entitlements/overtime`, `/entitlements/gratuity`, `/entitlements/promotions`, `/entitlements/transfers`, `/entitlements/family-benefits`, `/entitlements/retirement`, `/entitlements/loans` |
-
-These are routes in the current frontend, not a claim that the separate research ledger screens are implemented. The
-backend exposes KPI-desk route groups for authentication, daily accounts, attendance, payroll, entitlements,
-productivity/coaching, forecasts, allocation, reporting and optional Power BI. Consult the running OpenAPI page at
-<http://localhost:8000/docs> for exact methods and request schemas. The proposed ledger endpoints and fields above
-remain separate from the implemented `/api/daily-accounts/` API.
-
-### Research and hardware
-
-- Address parsing, script identification, OCR/handwriting experiments, and model evaluation tools.
-- ESP32-CAM and HX711 firmware for weighing and envelope photography.
-- A Flutter app for staff workflows, scanning, location capture, and offline operation.
-- Delivery-area data and a notebook for destination-city extraction.
-
-## Architecture
+### 11.1 GL prediction pipeline
 
 ```mermaid
 flowchart LR
-    WEB["React web app"] --> API["FastAPI API"]
-    MOBILE["Flutter staff app"] --> API
-    DEVICE["ESP32-CAM scale/camera"] --> API
-    API --> MAILDB[("MongoDB<br/>registered mail")]
-    API --> KPI["Postal KPI and accounts routes"]
-    KPI --> KPI_DB[("MongoDB<br/>KPI desk")]
-    ML["OCR and ML tools"] -. used by .-> API
+    RAW["Transaction records: Sinhala / Tamil / English"] --> PRE["Preprocessing and normalization"]
+    PRE --> FE["Feature engineering"]
+    subgraph FEAT["Features"]
+        F1["Description text"]
+        F2["Amount"]
+        F3["Service type"]
+        F4["Branch"]
+        F5["Payment method"]
+        F6["Language"]
+        F7["Historical records"]
+    end
+    FE --> FEAT
+    FEAT --> MODEL["Supervised GL classifier"]
+    MODEL --> OUT["Top GL account + confidence score"]
+    OUT --> CAL["Threshold selection on validation set"]
+    CAL --> ROUTE["Officer confirmation or manual selection"]
+    ROUTE --> FBK[("Approved corrections")]
+    FBK -.->|"periodic retraining"| MODEL
 ```
 
-The integrated API is served by `backend/app/main.py`. It registers the registered-mail routes and, when the KPI
-desk dependencies are installed, the KPI desk routes in the same process. The two components use separate MongoDB
-databases by default. Some research components remain separate datasets, notebooks, or firmware rather than
-end-to-end application features.
+> Candidate algorithms (for example TF-IDF with a conventional classifier as baseline, and tree-based or multilingual embedding approaches for the proposed model) will be finalized after the feasibility assessment.
 
-## Technologies
+### 11.2 Experiment configurations
+Each experiment compares a manual/existing approach, a conventional baseline and the proposed approach on the same scenarios.
 
-| Area | Technologies |
+| Config | Secure API experiment | GL prediction experiment |
+|---|---|---|
+| **B0** | Existing/manual transaction flow | Manual GL selection by the officer |
+| **B1** | Basic API with authentication and structured exchange | Conventional ML on description and basic attributes |
+| **P1** | Adds private/public classification, validation, secure exchange and audit logging | Proposed model using description, amount, service type, branch, payment method, language and history |
+
+### 11.3 Dataset plan
+**Split:** 60% development, 20% validation (threshold selection and tuning), 20% held-out test (untouched until thresholds are frozen).
+
+| Material | Proposed amount | Ground truth | Limitation |
+|---|---|---|---|
+| Primary postal transaction dataset | 1,000–1,500 unique records | GL verified with predefined rules and authorized review | May not represent all Sri Lankan postal branches |
+| Multilingual secondary dataset | Suitable Sinhala, Tamil and English text | Existing labels and predefined NLP criteria | Controlled cases may not match real offices |
+| KPI prediction dataset | 500–1,000 operational or synthetic records | Predefined KPI values and approved indicators | Synthetic or limited history may reduce generalizability |
+| Synchronization tests | 1,000 replay requests plus ordered failure scenarios | Expected event IDs, revisions and outcomes | Synthetic load, not nationwide traffic |
+| API and security tests | 100+ valid and invalid requests | Expected responses and access rules | Prototype-level, not a security certification |
+
+> Related or duplicate transactions must not cross partitions.
+
+### 11.4 Evaluation metrics
+
+| Component | Metrics |
 |---|---|
-| Backend | Python, FastAPI, Uvicorn, Pydantic, PyMongo |
-| Data | MongoDB, CSV and Excel import/export |
-| Web | React, Vite, React Router, Material UI, Tailwind CSS |
-| Mobile | Flutter, Dart, SQLite-backed offline queue |
-| Device | ESP32-CAM, Arduino, HX711 load-cell ADC |
-| OCR and machine learning | Tesseract, OpenCV, ONNX Runtime, CRF, PyTorch/scikit-learn training tools |
-| Tests | pytest, frontend ESLint/build checks, Flutter test and analysis tools |
+| **GL prediction** | Accuracy, precision, recall, F1, macro-F1, top-k accuracy, per-GL-account and per-language results |
+| **Confidence** | Calibration and reliability analysis; share of low-confidence cases correctly flagged for review |
+| **Human-in-the-loop** | Officer correction rate; performance before and after incorporating approved corrections |
+| **Secure API** | Successful request rate, response time, validation accuracy, rejected unauthorized requests |
+| **Reconciliation** | Accuracy on matched, unmatched and flagged test cases |
+| **KPI prediction** | Suitable regression or classification metrics, with temporal validation |
+| **End to end** | Processing time, transaction accuracy, dashboard calculation consistency, task completion |
 
-## Repository layout
+---
+
+## 12. KPI Prediction Module
+The KPI module predicts daily KPI achievement for individual officers and produces personalized recommendations. It supports performance improvement; it does not judge an employee’s overall value.
+
+```mermaid
+flowchart LR
+    subgraph IN["Inputs: approved data only"]
+        I1["Transaction records"]
+        I2["Task completion"]
+        I3["Work history"]
+        I4["Revenue contribution"]
+        I5["Rewards and approved performance indicators"]
+    end
+    IN --> FE["Feature engineering"]
+    FE --> MD["KPI prediction model"]
+    MD --> PR["Predicted daily KPI achievement"]
+    PR --> RC["Personalized recommendations"]
+    PR --> DB["Power BI: KPI dashboard"]
+    RC --> DB
+    DB --> MGR["Postmaster / Manager view"]
+```
+
+### Validity safeguards
+- Temporal validation (train on the past, test on the future) to avoid overly optimistic results from randomly mixed records.
+- Historical data may contain organizational bias or reflect opportunity rather than ability, so predictions are decision support only.
+- No disciplinary, promotion or employment decisions are made from predictions.
+- Recommendations display the relevant prediction or confidence information.
+
+---
+
+## 13. Users and Roles
+
+| Persona | Needs |
+|---|---|
+| **Clerk** | Fast, limited-time transaction entry through the secure API; multilingual input; clear error recovery |
+| **Officer** | Review and approve or correct AI recommendations; resolve low-confidence cases and reconciliation discrepancies |
+| **Postmaster / Manager** | Reliable dashboards: ledger activity, reconciliation, revenue, KPI achievement, prediction performance |
+| **Administrator** | User, role and policy management |
+
+> The finance or accounts manager is the operational decision-maker for ledger rules, reconciliation and exception handling. The project supervisor approves the research scope.
+
+---
+
+## 14. Technology Stack and Deployment
+
+| Function | Technology | Cost and feasibility note |
+|---|---|---|
+| **Frontend (clerk and officer UI)** | React + TypeScript | Open source |
+| **Secure API and AI services** | Python FastAPI, REST, HTTPS, role-based authentication | Open source |
+| **API design and testing** | Postman | Free academic/open-source allowance |
+| **GL and KPI prediction** | Python ML / NLP libraries | Accuracy depends on data quality and availability |
+| **Multilingual processing** | Python NLP for Sinhala, Tamil, English; optional translation API | External APIs may have usage limits or costs |
+| **Database** | PostgreSQL | Local use is sufficient for the prototype |
+| **Dashboards** | Power BI | Free Desktop/academic allowance |
+| **Deployment** | Local first; secure cloud optional (HTTPS, access control, regular backups) | Cloud hosting may add cost |
+
+> **Methodology and process:** Design Science Research with Agile/Scrum iterations.
+
+---
+
+## 15. Security, Privacy and Safeguards
+- **Access control:** Authentication on every endpoint, role-based authorization, object-level authorization (no access by changing an ID).
+- **Transport and session:** HTTPS/TLS, secure password handling, session management, rate limiting.
+- **Data protection:** Private/public data classification, no sensitive data in API responses or logs, protected backups, secrets kept outside source code.
+- **Governance:** Audit logging of corrections and approvals, AI predictions never authorize decisions, synthetic or anonymized data preferred, manual-procedure fallback on outage.
+
+**Failure handling:** If the API, database or prediction service is unavailable, the approved manual accounting procedure is followed. The transaction can be entered later as an explicitly marked reconciliation record, without creating false system records.
+
+---
+
+## 16. Requirements Summary
+
+### 16.1 Functional requirements
+
+| ID | Requirement | Priority |
+|---|---|---|
+| **FR01** | Authenticate clerks and officers; enforce role-based access | Must |
+| **FR02** | Classify data as private or permitted public and enforce it through the API | Must |
+| **FR03** | Create, submit, retrieve and update transactions via the secure API | Must |
+| **FR04** | Securely transfer approved transaction information from clerk to officer review | Must |
+| **FR05** | Generate a unique reference ID per accepted transaction and maintain its status | Must |
+| **FR06** | Capture description, amount, service type, branch, payment method and language | Must |
+| **FR07** | Preprocess and normalize Sinhala, Tamil and English descriptions | Must |
+| **FR08** | Recommend the most appropriate GL account from attributes and history | Must |
+| **FR09** | Generate and display a confidence score with each prediction | Must |
+| **FR10** | Route low-confidence predictions to an officer for manual selection | Must |
+| **FR11** | Allow officers to confirm, reject or modify predicted GL accounts before posting | Must |
+| **FR12** | Record corrections and approved decisions for audit and model improvement | Must |
+| **FR13** | Post approved transactions to the ledger and maintain posting status | Must |
+| **FR14** | Perform daily reconciliation of transactions, postings and totals | Must |
+| **FR15** | Flag reconciliation discrepancies for officer review and resolution | Must |
+| **FR16** | Predict daily KPI achievement from transactions, tasks and performance data | Must |
+| **FR17** | Generate personalized KPI and coaching recommendations | Should |
+| **FR18** | Provide interactive dashboards for postings, reconciliation, accuracy, confidence, KPI and revenue | Must |
+
+### 16.2 Non-functional requirements
+
+| ID | Attribute | Proposed acceptance criterion |
+|---|---|---|
+| **NFR01** | API responsiveness | 95th-percentile response under 2 s at 10 concurrent pilot users |
+| **NFR02** | API security and privacy | All protected endpoints require authentication and authorization; unauthorized tests denied; no private data in ordinary logs |
+| **NFR03** | Data integrity | No duplicate transaction or ledger records in idempotency tests; every approval and correction retained with reference ID and timestamp |
+| **NFR04** | GL prediction accuracy | Accuracy and confidence reported on a defined test set; low-confidence cases routed to human review |
+| **NFR05** | Human-in-the-loop control | Officers can confirm, reject or change predictions; 100% of low-confidence cases offer manual selection |
+| **NFR06** | Multilingual support | Representative Sinhala, Tamil and English processed; performance reported per language |
+| **NFR07** | Reconciliation reliability | Defined test transactions correctly matched, unmatched or flagged; consistent after repeated runs and restarts |
+| **NFR08** | KPI prediction and recommendation | Generated from declared data and evaluated on a defined test set; shows prediction or confidence information |
+| **NFR09** | Dashboard usability and timeliness | Dashboards show required indicators from validated test data without exposing unauthorized private information |
+| **NFR10** | Maintainability and cost | Versioned APIs, documented schemas, automated critical-path tests, reproducible setup, backup/restore, no mandatory paid cloud during development |
+
+---
+
+## 17. Testing Plan
+Eighteen scenario tests (T01–T18) cover the happy path, validation, multilingual input, confidence routing, security and recovery.
+
+| Test | Setup | Expected outcome |
+|---|---|---|
+| **T01** | Submit valid transaction with all fields | Accepted and sent for GL prediction |
+| **T02** | Missing description | Rejected with required-field message |
+| **T03** | Invalid or negative amount | Rejected and flagged invalid |
+| **T04–T06** | Valid Sinhala / Tamil / English description | Processed and GL prediction generated |
+| **T07** | Unsupported language value | Rejected or flagged without an incorrect prediction |
+| **T08** | Valid service type, branch, payment method | Attributes used in prediction |
+| **T09** | Confidence above threshold | Recommendation presented for officer confirmation |
+| **T10** | Confidence below threshold | Routed to an authorized officer |
+| **T11** | Officer approves low-confidence prediction | Approval and decision recorded |
+| **T12** | Officer rejects and selects correct account | Correction stored; corrected account becomes the approved classification |
+| **T13** | Unauthenticated or unauthorized user | Denied; nothing processed |
+| **T14** | Private data sent to an unauthorized role | Denied per classification policy |
+| **T15** | Same transaction identifier submitted twice | Duplicate prevented or safely identified |
+| **T16** | Temporary API or network failure | No partial commit; failure recorded for retry or review |
+| **T17** | Valid transactions then reconciliation | Records compared and status generated |
+| **T18** | Transaction and performance data to KPI module | Daily KPI predicted and available for dashboard and recommendations |
+
+---
+
+## 18. Methodology
+- **Stages:** `secure API pipeline → GL prediction → multilingual processing → confidence and human-in-the-loop → reconciliation → KPI prediction → Power BI analytics → integrated evaluation`, iterated with Design Science Research and Agile/Scrum.
+- Each stage is independently demonstrable and tested with secondary and synthetic datasets, predefined measures and baselines. Research decisions, results and limitations are documented for reproducibility.
+- **Participants (planning ranges, not yet recruited):** 3–5 postal clerks, 2–4 accounting officers, 1–2 postmasters or branch managers, and 4–6 adult postal service users, subject to institutional and postal permission. If postal access is unavailable, role-based university participants and synthetic or secondary data are used, and findings are labelled as simulated.
+
+---
+
+## 19. Work Breakdown Structure
+The work is split into eight packages, shown with their completion evidence. Chronology is shown in the Gantt chart below.
+
+| Package | Completion evidence |
+|---|---|
+| **WP1 Research and evidence** | Approved research protocol, evidence matrix, research questions, frozen test dataset |
+| **WP2 Data and transaction foundation** | Validated transaction dataset, GL mapping, documented data-classification rules |
+| **WP3 Secure API pipeline** | Tested secure API collection, successful transaction flow, API security test results |
+| **WP4 AI GL prediction** | Trained GL model, confidence results, accuracy metrics, multilingual evaluation |
+| **WP5 Human approval and reconciliation** | Officer approval workflow, correction records, reconciliation results, exception report |
+| **WP6 KPI prediction and dashboard** | KPI prediction results, personalized recommendations, interactive Power BI dashboard |
+| **WP7 Integration and validation** | Integrated prototype, test report, comparative results, limitations analysis |
+| **WP8 Handover and demonstration** | Reproducible package, final report, supervisor-ready demonstration |
+
+---
+
+## 20. Project Schedule (Gantt)
+Provisional 24-week schedule (about 600 planned hours). Week 1 starts after proposal approval. The calendar dates in the chart are placeholders; read the bars as relative weeks.
+
+```mermaid
+gantt
+    title 24-Week Plan (relative weeks, Week 1 = 05 Jan placeholder)
+    dateFormat YYYY-MM-DD
+    axisFormat Wk %U
+    section Research
+    Literature review and research gap (40h)      :a1, 2026-01-05, 28d
+    Ethics, data requirements, security (30h)     :a2, 2026-01-05, 28d
+    section Data
+    Dataset collection and preprocessing (50h)    :b1, 2026-01-19, 35d
+    section Secure API
+    Secure API pipeline (55h)                     :c1, 2026-02-02, 35d
+    section AI
+    GL mapping and baseline model (50h)           :d1, 2026-02-16, 35d
+    AI-powered GL prediction (65h)                :d2, 2026-03-02, 42d
+    Multilingual transaction processing (50h)     :d3, 2026-03-16, 42d
+    Human-in-the-loop and learning (45h)          :d4, 2026-04-06, 35d
+    KPI prediction and modelling (35h)            :d5, 2026-05-04, 28d
+    section Finance and BI
+    Reconciliation and ledger processing (40h)    :e1, 2026-05-18, 28d
+    Power BI dashboard (25h)                      :e2, 2026-05-25, 28d
+    section Validation
+    Integration, security, performance tests (25h):f1, 2026-05-25, 21d
+    Evaluation and analysis (35h)                 :f2, 2026-06-01, 21d
+    Final report and demonstration (25h)          :f3, 2026-06-08, 14d
+```
+
+### Milestones
+
+| Milestone | Week | Outcome |
+|---|---|---|
+| **M1** | 4 | Secure API design, data classification, required permissions and minimum scope confirmed |
+| **M2** | 8 | Dataset, preprocessing, data split and baseline GL model completed |
+| **M3–M5** | 12–21 | Secure API, multilingual GL prediction, human approval, reconciliation, KPI prediction, dashboards and security completed |
+
+> The held-out evaluation cannot begin until thresholds and test scripts are frozen. Permission delays must be reflected in an updated schedule, not hidden by backdating.
+
+---
+
+## 21. Risks and Mitigations
+
+| Risk | Impact | Mitigation |
+|---|---|---|
+| **Real postal data delayed or unavailable** | Limited real-world validation | Approved synthetic and secondary datasets; state the limitation |
+| **Data contains sensitive information** | Privacy, security and ethical risk | Classification, minimization, access control, redaction, secure storage |
+| **Secure API authentication or exchange fails** | Clerk-to-officer processing blocked | Test authN/authZ, TLS, validation and failure handling in Postman before integration |
+| **Insufficient or imbalanced historical data** | Poor GL prediction | Combine approved historical and synthetic data, class balancing, report limitations |
+| **Inconsistent GL labels** | Incorrect training and predictions | Controlled GL mapping, validate labels with domain guidance, remove or correct bad records |
+| **Low prediction confidence** | Unreliable recommendations | Predefined threshold; manual ledger selection for low confidence |
+| **Incorrect GL recommendations** | Misclassified financial records | Human approval; never auto-finalize unsupported predictions |
+| **Sinhala, Tamil or English text hard to process** | Lower accuracy for some languages | Multilingual preprocessing, per-language evaluation, manual review fallback |
+| **KPI data incomplete or inconsistent** | Unreliable KPI predictions | Define required fields, validate missing values, approved synthetic data where needed |
+
+---
+
+## 22. Budget
+
+| Item | Allowance | Subtotal |
+|---|---|---|
+| **Postman / API testing tools** | Free academic / open-source | 0 |
+| **Cloud hosting / backend services** | 6 months × 1,500 | 9,000 |
+| **Database / cloud storage** | 6 months × 1,000 | 6,000 |
+| **AI/ML model development and computing** | Approx. | 5,000 |
+| **Google Translate API / multilingual processing** | Approx. | 3,000 |
+| **Power BI / dashboard development** | Free academic / Desktop | 0 |
+| **Domain, SSL and deployment contingency** | Approx. | 3,000 |
+| **Dataset preparation and validation** | Approx. | 3,000 |
+| **Total** | | **29,000** |
+
+**Cost controls:** Local backend and database before any cloud deployment, open-source ML before commercial AI services, and synthetic or existing data to reduce collection cost. Production payment gateways, enterprise financial-system integration and security certification are excluded from the academic prototype.
+
+---
+
+## 23. Commercialization Outlook
+- **Stages:** (1) academic prototype with synthetic and secondary data → (2) small authorized shadow pilot with approved data → (3) limited operational integration, only if evidence and approval exist. Organization-wide rollout is outside this project.
+- **Target adopter:** A financial or postal-service organization managing daily transactions, ledgers, reconciliation and officer performance.
+- **Value proposition:** An integrated support layer combining secure transaction processing, multilingual AI GL prediction, reconciliation, KPI prediction and dashboards.
+- **Possible model:** One-time integration/configuration fee plus annual maintenance and support.
+- No revenue forecast or customer commitment is claimed at this stage. Benefits remain hypotheses until pilot-tested.
+
+---
+
+## 24. Proposed Repository Structure
+> This is a suggested layout for the implementation phase and does not yet exist.
 
 ```text
-backend/
-  app/                 Registered-mail FastAPI application and services
-  main.py, routes.py   Postal KPI and daily-account API
-  tests and test_*.py  Backend test suites
-  models/, ml_models/  Model artifacts and forecast data
-frontend/
-  src/                 Registered-mail and KPI/accounts React interfaces
-mobile_app/
-  flutter_app/         Flutter staff application
-iot/
-  postassist_scale_cam/ ESP32-CAM scale and camera firmware
-ml/                    Dataset preparation, training, and evaluation
-Datasets/              Research datasets and data documentation
-firmware/              Address-extraction notebook and sample material
-Documents/             Requirements, setup, hardware, and component guides
+postassist-ledger-kpi/
+├── README.md
+├── docs/
+│   ├── proposal.pdf
+│   ├── architecture/
+│   └── api/                    # OpenAPI schema, Postman exports
+├── backend/
+│   ├── app/
+│   │   ├── main.py             # FastAPI entry point
+│   │   ├── api/                # transactions, approvals, posting, reconciliation, dashboards
+│   │   ├── core/               # auth, RBAC, security, config
+│   │   ├── models/             # SQLAlchemy models
+│   │   ├── schemas/            # Pydantic schemas
+│   │   └── services/           # business logic, audit logging
+│   └── tests/
+├── ml/
+│   ├── data/                   # synthetic / anonymized datasets only
+│   ├── notebooks/
+│   ├── gl_prediction/          # preprocessing, training, calibration, evaluation
+│   ├── kpi_prediction/
+│   └── models/                 # versioned model artifacts
+├── frontend/                   # React + TypeScript clerk/officer UI
+├── dashboards/                 # Power BI (.pbix) and reporting SQL views
+├── postman/                    # API collections and environments
+├── scripts/                    # seed data, migrations, backup/restore
+├── .env.example
+└── docker-compose.yml          # optional local setup
 ```
 
-## Requirements
+---
 
-For the web application and integrated API:
+## 25. Getting Started (Planned)
+> Placeholder commands for when the implementation exists. Adjust paths and names to match the final code.
 
-- Windows, macOS, or Linux
-- Python 3.11 or newer (the backend requirements include Python-version-specific ML dependencies)
-- Node.js and pnpm (Corepack can provide pnpm)
-- MongoDB Community Server or a MongoDB Atlas connection
+**Prerequisites:** Python 3.10+, Node.js 18+, PostgreSQL 14+, Postman, Power BI Desktop.
 
-Optional tools:
+```bash
+# 1. Clone
+git clone <your-repository-url>
+cd postassist-ledger-kpi
 
-- Flutter SDK and Android Studio/Android SDK for the mobile app
-- Arduino CLI or Arduino IDE for building firmware
-- Tesseract OCR with the required language data for address OCR
-- PyTorch and the ML dependencies for training or evaluating models
-- Power BI workspace and service principal for optional embedding
-
-## Installation and setup
-
-### 1. Configure the backend
-
-From the repository root, create a virtual environment and install backend dependencies:
-
-```powershell
+# 2. Backend
 cd backend
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp ../.env.example .env            # set DB URL, JWT secret and threshold (never commit secrets)
+uvicorn app.main:app --reload
+
+# 3. Frontend
+cd ../frontend
+npm install
+npm run dev
+
+# 4. API testing
+# Import the collections from /postman into Postman and select the local environment
 ```
 
-Edit `backend/.env` before using the application. At minimum, set a private `JWT_SECRET`, a suitable
-`DEMO_PASSWORD`, and a strong `SEED_DEVICE_KEY`. For the KPI desk, set `POSTMASTER_PASSWORD` and a unique
-`ATTENDANCE_DOOR_SECRET`. Keep real credentials out of source control.
-
-The registered-mail API uses `MONGODB_URI` and `MONGODB_DB` (default database: `postassist_registered_mail`).
-The KPI desk uses `KPI_MONGODB_URI` and `KPI_MONGODB_DB` (default database: `postassist`); if no KPI-specific URI
-is supplied, it uses `MONGODB_URI`. The registered-mail application can start a local MongoDB instance when
-`MONGODB_AUTOSTART=true`; alternatively, run MongoDB yourself or configure an Atlas URI.
-
-### 2. Install the web application
-
-In another terminal, from the repository root:
-
-```powershell
-cd frontend
-corepack pnpm install
+**Suggested configuration (`.env`):**
+```ini
+DATABASE_URL=postgresql://user:password@localhost:5432/postassist
+JWT_SECRET=change-me
+GL_CONFIDENCE_THRESHOLD=0.80   # example only; select on validation data, then freeze
 ```
 
-Vite proxies `/api` and `/health` to `http://127.0.0.1:8000` by default. Copy `frontend/.env.example` to
-`frontend/.env.local` only if you need to change the proxy, HTTPS behavior, public app URL, or other documented
-frontend settings.
+---
 
-### 3. Start the integrated API
+## 26. Limitations and Honest Notes
+This section states plainly what this project is, and is not, so that nobody reads more into it than the evidence supports.
 
-From the `backend` directory:
+### 26.1 Current status
+- The project is at proposal stage. No code, model, dataset, experiment, interview or survey result exists yet.
+- Every number in this README (95% API tests, 85% macro-F1, 90% high-confidence accuracy, 90% reconciliation accuracy, 2 s response, 10 concurrent users) is a proposed target, not an achieved result.
+- The targets still need supervisor approval after a feasibility check and before the final held-out evaluation.
+- Technology choices (FastAPI, PostgreSQL, React, Power BI) are plans. The ML algorithms are not yet chosen.
 
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+### 26.2 Data limitations
+- The plan relies on synthetic, anonymized or approved secondary data (about 1,000–1,500 transactions, 500–1,000 KPI records). Real postal records are not guaranteed to be available.
+- Results from such data will not prove performance in real Sri Lankan postal branches, and no nationwide validation is claimed.
+- GL labels depend on how well the account mapping and officer review reflect real accounting practice. Inconsistent labels would hurt training.
+- A small dataset may be imbalanced across GL accounts, so rare accounts may be predicted poorly. Results will be reported per account and per language.
+- Sinhala and Tamil have fewer language resources than English, so performance may differ by language. English results cannot be assumed to transfer.
 
-The API is available at <http://localhost:8000>. Interactive API documentation is at
-<http://localhost:8000/docs>; registered-mail health is at <http://localhost:8000/api/health>.
-The desk's `/health` endpoint may require a working MongoDB connection.
+### 26.3 Model and evaluation limitations
+- High confidence does not guarantee a correct prediction. Calibration is tested, not assumed.
+- Accuracy on a general financial dataset in the literature does not guarantee similar accuracy on postal transactions.
+- Officer corrections are not automatically correct, so only approved corrections will be used for retraining.
+- A faster prediction is not a success if it increases wrong GL assignments.
+- KPI prediction may inherit organizational bias and may reflect opportunity rather than individual ability. Without temporal validation, random splits would give overly optimistic results.
+- Predicted KPI is decision support only. It must not be used for disciplinary, promotion or employment decisions.
 
-### 4. Start the web app
+### 26.4 Security and scope limitations
+- API security testing is prototype-level and is not a formal security certification.
+- The prototype is evaluated as a decision-support system. It does not replace approved Sri Lanka Post accounting procedures, and it never makes autonomous financial decisions.
+- Out of scope: production payment gateways, integration with official financial systems, security certification, ongoing staff support, and organization-wide rollout. Each would need separate costing and approval.
+- Cash reconciliation of other modules and route optimization are not part of this component. Other PostAssist LK components may only use its approved, versioned APIs.
+- The proposal’s commercial benefits (time saved, fewer errors, cost advantages) are hypotheses until pilot-tested. No revenue forecast or customer commitment is claimed.
 
-From the `frontend` directory, in a separate terminal:
+### 26.5 Ethics and permissions
+- Interviews and observations need institutional and postal permission, are voluntary, and focus on workflows, not employee monitoring. No participant has been recruited yet, and no operational approval is represented as complete.
+- Real financial and employee records are treated as private. Sensitive data must not appear in API responses, logs or dashboards.
+- If postal access is unavailable, findings from role-based university participants and synthetic data will be clearly labelled as simulated.
 
-```powershell
-corepack pnpm dev
-```
+### 26.6 Schedule and budget caveats
+- The 24-week schedule is provisional and relative to proposal approval. Permission delays will be reflected in an updated schedule, not hidden.
+- The budget (29,000) is an allowance estimate for an academic prototype, based on free tiers and open-source tools. Hosting, translation API usage and cloud costs may vary.
 
-Open the URL Vite prints (typically <https://localhost:5173>). The development server may use a self-signed
-certificate; accept it locally when prompted. Set `VITE_HTTPS=false` in `frontend/.env.local` to use plain HTTP.
-Browser camera and location features generally require `localhost` or HTTPS.
+### 26.7 AI use disclosure
+The proposal was prepared with AI assistance (ChatGPT) for planning, design and methodology drafting. This README was also drafted with AI assistance from the proposal text. The student is responsible for verifying the content, checking institutional requirements, running the experiments and making the final research decisions.
 
-### 5. Optional: run the mobile app
+---
 
-Install Flutter and the required platform tools, then from the repository root:
+## 27. References
+Key sources (full list in the proposal report):
+- **[34]** Z. Yang et al., “A deep learning framework for automated transaction classification and budget prediction in personal financial management,” *Discover Artificial Intelligence*, vol. 6, 2026.
+- **[35]** Y. Li, “Accounting Data Classification and Prediction Based on Machine Learning Algorithms,” *Procedia Computer Science*, vol. 285, 2026.
+- **[36]** A. Booker et al., “AIS research opportunities utilizing machine learning,” *Int. J. Accounting Information Systems*, vol. 52, 2024.
+- **[10]** “Si-Ta: Machine Translation of Sinhala and Tamil Official Documents,” *NITC*, 2018.
+- **[11]** “A Multi-way Parallel Named Entity Annotated Corpus for English, Tamil and Sinhala,” *Natural Language Processing Journal*, vol. 11, 2025.
+- **[13]** “Human-in-the-loop: Explainable or Accurate Artificial Intelligence by Exploiting Human Bias?” *IEEE*, 2022.
+- **[15]** “Analysis and Prediction of Employee Promotions Using Machine Learning,” *DSIT*, 2022.
+- **[16]** “Predicting Employee Performance Using Machine Learning to Enhance Workforce Efficiency,” *IEEE*, 2024.
+- **[5]** NIST, “Guidelines for API Protection for Cloud-Native Systems,” *SP 800-228*, 2025.
+- **[6]** NIST, “Data Classification Concepts and Considerations for Improving Data Protection,” *IR 8496*, 2023.
 
-```powershell
-cd mobile_app\flutter_app
-flutter pub get
-flutter run
-```
+---
 
-Use the backend's reachable LAN address as the server URL on a physical phone, and ensure the phone and computer
-can reach each other. See the [Flutter app guide](Documents/Flutter_Mobile_App_Guide.md) for platform-specific
-instructions.
-
-### 6. Optional: connect the scale and camera
-
-Follow the [IoT hardware setup guide](Documents/IoT_Hardware_Setup_Guide.md). Copy
-`iot/postassist_scale_cam/config.example.h` to `config.h` and configure Wi-Fi, backend URL, device ID, and device
-key. The device ID and key must match `SEED_DEVICE_ID` and `SEED_DEVICE_KEY` in `backend/.env`.
-
-## Running tests and checks
-
-Backend tests (run from `backend`; MongoDB is required by integration tests):
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
-```
-
-Frontend build and lint (run from `frontend`):
-
-```powershell
-corepack pnpm build
-corepack pnpm lint
-```
-
-Flutter checks (run from `mobile_app\flutter_app`):
-
-```powershell
-flutter analyze
-flutter test
-```
-
-ML training and evaluation instructions are in [ml/README.md](ml/README.md). Hardware verification steps are in
-the [IoT integration test flow](Documents/IoT_Integration_Test_Flow.md).
-
-The repository includes the weekly KPI model at `backend/models/weekly_kpi_model.joblib`, a next-week evaluation
-script at `backend/evaluation/evaluate_next_week_kpi.py`, and synthetic employee-week data at
-`backend/data/synthetic/synthetic_employee_weeks.csv`. A planned multilingual GL model and ledger-prediction
-evaluation are not represented as completed models or results here.
-
-Ledger-research validation is planned to cover invalid and duplicate submissions, authentication and role checks,
-Sinhala/Tamil/English inputs, confidence routing, officer approval and correction, reconciliation exceptions,
-idempotent replay and service-failure handling. These proposed scenarios are not evidence that the planned ledger
-API has been implemented or passed testing.
-
-For the implemented modules, the backend suite includes daily-account import/classification and persistence tests,
-productivity and forecast checks, plus API integration coverage; run the full backend command above from `backend`.
-Use test data and a test database for integration tests. The React package exposes `build` and `lint` scripts, but no
-test script. Flutter analysis and tests apply only to the mobile app. The planned ledger research should add explicit
-contract, authorization, duplicate/idempotency, multilingual, confidence-routing, approval, reconciliation and
-failure-injection tests before claiming those behaviors.
-
-## Configuration and security notes
-
-- Copy example environment files for local use; never commit populated `.env` files, API keys, or device secrets.
-- Use HTTPS and set `AUTH_COOKIE_SECURE=true` when deploying the KPI desk outside local development.
-- Do not expose a development API or Vite proxy publicly as a production deployment.
-- Configure CORS, authentication, cookies, database access, and firewall rules for the target environment.
-- Keep operational mail, location, attendance, payroll, and financial data private. Use approved or synthetic data
-  for development and demonstrations.
-- Power BI embedding is optional and requires server-side credentials; do not put client secrets in `VITE_` variables.
-
-## Documentation
-
-- [Setup and run guide](Documents/Setup_and_Run_Guide.md)
-- [Requirements specification](Documents/Requirements_Specification.md)
-- [Flutter mobile app guide](Documents/Flutter_Mobile_App_Guide.md)
-- [IoT hardware setup guide](Documents/IoT_Hardware_Setup_Guide.md)
-- [IoT integration test flow](Documents/IoT_Integration_Test_Flow.md)
-- [Dataset documentation](Datasets/README.md)
-- [Backend details](backend/README.md)
-- [Web frontend details](frontend/README.md)
-- [Mobile app details](mobile_app/flutter_app/README.md)
-- [IoT firmware details](iot/README.md)
-- [Machine-learning details](ml/README.md)
-
-## Limitations
-
-- The delivery-operations component currently includes its dataset and supporting documentation; this README does
-  not claim that it is an integrated delivery-management application.
-- City extraction is provided as a notebook and depends on image quality, OCR installation, and its limited city
-  reference list.
-- Address-recognition results depend on training data; much of the Sinhala and Tamil research material is
-  synthetic. Validate on appropriately consented real-world samples before making performance claims.
-- The GL-code functionality in daily accounts is a suggestion/workflow, not the planned multilingual GL
-  classification model or an autonomous posting system.
-- The proposed `/transactions`, `predictgl`, approval/posting and daily reconciliation API operations are not the
-  same as the implemented `/api/daily-accounts/transactions` routes; the separate research API is not claimed as
-  implemented.
-- KPI forecasts, coaching, work allocation, and entitlement outputs are decision-support features. Confirm
-  decisions with authorised staff and treat applicable rules as provisional unless formally approved.
-- KPI weights, confidence thresholds, research sample sizes, acceptance thresholds, performance goals and milestones
-  are provisional planning assumptions, not official Sri Lanka Post standards or completed evaluation results.
-- Research data may be synthetic, limited or unrepresentative of other branches. Validate language coverage, labels,
-  class balance, temporal/geographic generalisation, privacy and approval before making operational claims.
-- The prototype is not a security certification or an integration with official financial systems. Production use
-  would require a separately reviewed security design, approved accounting procedures, protected hosting/backups,
-  staff training and operational support.
-- Hardware behavior depends on correct assembly, calibration, network configuration, and device testing.
-
-## Branch and integration status
-
-This working tree is on `feature/daily-accounts-reconciliation-ledger-prediction`, intended for review against
-`main`. The core KPI desk is in `main`; the feature branch adds daily accounts, postmaster sign-in, enhanced
-attendance security, forecast monitoring, simulations, coaching, work allocation and reporting. The registered-mail
-application, delivery-area research material and address-extraction notebook are also documented repository
-components. The multilingual GL model and separate secure ledger-prediction API remain planned research work.
+<p align="center">
+<strong>PostAssist LK – Intelligent Ledger and KPI Prediction</strong><br>
+Gunawardena N C A · IT23323216 · J26-IT-372 · SLIIT · September 2026
+</p>

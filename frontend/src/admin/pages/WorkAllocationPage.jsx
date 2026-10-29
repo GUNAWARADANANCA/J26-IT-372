@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   AlertTriangle,
   ArrowRightLeft,
@@ -20,13 +20,22 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  CheckSquare,
+  ChevronDown,
+  ChevronUp,
+  ListChecks,
+  ListTodo,
+  Square,
   UserCheck,
   Users,
   X,
+  Zap,
 } from 'lucide-react'
 import { useAuth } from '../data/auth'
 import {
   approveAllocation,
+  authorizeAttendance,
+  autoBalanceWorkload,
   create,
   getAllocation,
   list,
@@ -41,6 +50,7 @@ import {
   computeAutoBalancePreview,
   generateWorkloadRecommendations,
   validateAllocationForm,
+  resolveEmployeeTaskItems,
 } from '../data/workAllocationHelpers'
 import ChartCard from '../ui/ChartCard'
 import { Donut } from '../ui/charts'
@@ -55,6 +65,24 @@ function todayIso() {
 
 const TASK_OPTIONS = Object.keys(TASK_ROLE_FIT)
 const PRIORITY_OPTIONS = ['Normal', 'High', 'Urgent', 'Low']
+
+export const DEFAULT_DAILY_OPERATIONAL_CHECKLIST = [
+  'Parcel Delivery by Route',
+  'Ordinary Letter Delivery',
+  'Registered Mail Delivery',
+  'Pending Mail and Parcel Clearance',
+  'Undelivered Article Processing',
+  'Proof of Delivery Verification',
+  'Incoming Mail Registration',
+  'Parcel Registration and Sorting',
+  'Article Scanning and Tracking Updates',
+  'Counter Customer Service',
+  'Postal Financial Transactions',
+  'Postage and Fee Verification',
+  'Money Order Processing',
+  'Incorrect Record and Address Verification',
+  'Postal Clerk Duties',
+]
 
 export default function WorkAllocationPage() {
   const { user } = useAuth()
@@ -100,10 +128,21 @@ export default function WorkAllocationPage() {
     checkDuplicateTask: true,
   })
 
+  const [expandedRowId, setExpandedRowId] = useState(null)
+  const [togglingTaskId, setTogglingTaskId] = useState(null)
   const [detailEmployee, setDetailEmployee] = useState(null)
   const [reassignModal, setReassignModal] = useState(null)
   const [autoBalanceOpen, setAutoBalanceOpen] = useState(false)
+  const [autoBalanceResult, setAutoBalanceResult] = useState(null)
+  const [autoBalancing, setAutoBalancing] = useState(false)
   const [reviewRecModal, setReviewRecModal] = useState(null)
+
+  // Attendance authorization state
+  const [authAttendanceModalOpen, setAuthAttendanceModalOpen] = useState(false)
+  const [selectedOfficersToAuth, setSelectedOfficersToAuth] = useState([])
+  const [authStatusChoice, setAuthStatusChoice] = useState('Present')
+  const [authNotes, setAuthNotes] = useState('Authorized by Postmaster for work allocation')
+  const [authorizingAttendance, setAuthorizingAttendance] = useState(false)
 
   // ── Load Real Application Data ──────────────────────────────────────────
   const loadData = useCallback(async (targetDate = selectedDate) => {
@@ -172,6 +211,11 @@ export default function WorkAllocationPage() {
     [workloadRows],
   )
 
+  const unrecordedOfficers = useMemo(
+    () => workloadRows.filter((r) => !r.is_eligible && !r.on_leave && r.availability === 'Attendance Not Recorded'),
+    [workloadRows],
+  )
+
   // ── Filter Options & Filtered Table Rows ────────────────────────────────
   const postOfficeOptions = useMemo(() => {
     const s = new Set(workloadRows.map((r) => r.post_office).filter(Boolean))
@@ -223,6 +267,7 @@ export default function WorkAllocationPage() {
     priority,
     startTime,
     expectedCompletionTime,
+    taskItems,
     notes,
   }) {
     const docId = `${employeeRow.employee_id}-${dateStr}`
@@ -254,6 +299,7 @@ export default function WorkAllocationPage() {
       start_time: startTime || employeeRow.start_time || '08:00',
       expected_completion_time: expectedCompletionTime || employeeRow.expected_completion_time || '16:30',
       notes: notes !== undefined ? notes : employeeRow.notes || '',
+      task_items: taskItems !== undefined ? taskItems : (existingOnDate?.task_items || employeeRow.task_items || []),
     }
 
     if (existingOnDate) {
@@ -261,6 +307,294 @@ export default function WorkAllocationPage() {
     } else {
       await create('daily_kpi_log', payload)
     }
+  }
+
+  // ── Handler: Toggle Task Completion (Checkbox) ───────────────────────────
+  async function handleToggleTaskComplete(employeeRow, taskId) {
+    if (!employeeRow || togglingTaskId) return
+    setTogglingTaskId(taskId)
+    try {
+      const currentTasks = resolveEmployeeTaskItems(employeeRow)
+      const updatedTasks = currentTasks.map((t) => {
+        if (t.id === taskId) {
+          const nextCompleted = !t.completed
+          return {
+            ...t,
+            completed: nextCompleted,
+            completed_at: nextCompleted
+              ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : null,
+          }
+        }
+        return t
+      })
+
+      const newCompleted = updatedTasks.filter((t) => t.completed).length
+      const newPending = Math.max(0, employeeRow.assigned_tasks - newCompleted)
+
+      await saveEmployeeDailyAllocation({
+        dateStr: selectedDate,
+        employeeRow,
+        assignedTasks: employeeRow.assigned_tasks,
+        completedTasks: newCompleted,
+        taskItems: updatedTasks,
+        taskType: employeeRow.primary_task_type,
+        routeId: employeeRow.route_id,
+        routeLengthKm: employeeRow.route_length_km,
+        deliveryPoints: employeeRow.delivery_points,
+        priority: employeeRow.priority,
+        startTime: employeeRow.start_time,
+        expectedCompletionTime: employeeRow.expected_completion_time,
+        notes: employeeRow.notes,
+      })
+
+      if (detailEmployee && detailEmployee.employee_id === employeeRow.employee_id) {
+        setDetailEmployee((prev) => ({
+          ...prev,
+          completed_tasks: newCompleted,
+          pending_tasks: newPending,
+          task_items: updatedTasks,
+        }))
+      }
+
+      await loadData(selectedDate)
+    } catch (err) {
+      setError(err.message || 'Failed to update task completion status.')
+    } finally {
+      setTogglingTaskId(null)
+    }
+  }
+
+  // ── Render: Employee Assigned Tasks Clearance Checklist ──────────────────
+  function renderEmployeeTasksChecklist(empRow, isModal = false) {
+    if (!empRow) return null
+    const tasks = resolveEmployeeTaskItems(empRow)
+    const pendingTasks = tasks.filter((t) => !t.completed)
+    const completedTasks = tasks.filter((t) => t.completed)
+    const pctCompleted = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0
+
+    if (tasks.length === 0) {
+      return (
+        <div className="rounded-xl border border-dashed border-[#DFE8F2] bg-slate-50/70 p-5 text-center">
+          <Briefcase className="mx-auto size-6 text-[#94A3B8]" />
+          <p className="mt-1.5 text-xs font-semibold text-[#172B4D]">No Assigned Tasks on Record</p>
+          <p className="mt-0.5 text-[11px] text-[#64748B]">
+            No workload batches are currently assigned to {empRow.employee_name} for {selectedDate}.
+          </p>
+          {isPostmaster && (
+            <button
+              type="button"
+              onClick={() => openCreateDrawerFor(empRow)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#1677D2] px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#125ea7]"
+            >
+              <Plus className="size-3.5" />
+              Assign Work to {empRow.employee_name}
+            </button>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div className={`space-y-4 rounded-xl border border-[#DFE8F2] bg-white p-4 shadow-xs ${isModal ? 'mt-4' : ''}`}>
+        {/* Header & Progress Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DFE8F2] pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <ListTodo className="size-4 text-[#1677D2]" />
+              <h4 className="text-xs font-bold text-[#0B1F3A]">
+                Assigned Tasks &amp; Clearance Checklist — {empRow.employee_name}
+              </h4>
+              <span className="font-mono text-[10px] text-[#64748B]">({empRow.employee_id})</span>
+            </div>
+            <p className="mt-0.5 text-[11px] text-[#64748B]">
+              Check the box when an assigned task is finished. Pending task counts update automatically in real-time.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-bold">
+            <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[#1677D2]">
+              {tasks.length} Assigned
+            </span>
+            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-emerald-700">
+              {completedTasks.length} Completed
+            </span>
+            <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-amber-800">
+              {pendingTasks.length} Pending
+            </span>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="font-semibold text-[#0B1F3A]">
+              Task Clearance Progress: <strong className="text-[#1677D2]">{completedTasks.length} of {tasks.length} Cleared</strong>
+            </span>
+            <span className="font-bold text-[#1677D2]">{pctCompleted}%</span>
+          </div>
+          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div
+              className={`h-full transition-all duration-300 ${
+                pctCompleted === 100 ? 'bg-emerald-600' : 'bg-[#1677D2]'
+              }`}
+              style={{ width: `${pctCompleted}%` }}
+            />
+          </div>
+        </div>
+
+        {/* SECTION 1: PENDING TASKS */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Clock className="size-3.5 text-amber-600" />
+              <h5 className="text-[11px] font-bold uppercase tracking-wider text-amber-900">
+                Pending Tasks ({pendingTasks.length})
+              </h5>
+            </div>
+            <span className="text-[10px] text-[#64748B]">Click checkbox to mark completed</span>
+          </div>
+
+          {pendingTasks.length === 0 ? (
+            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 text-xs text-emerald-800">
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
+              <div>
+                <span className="font-bold">All assigned tasks completed!</span>
+                <p className="text-[11px] text-emerald-700">
+                  {empRow.employee_name} has successfully cleared all {tasks.length} allocated batches for {selectedDate}.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {pendingTasks.map((task) => {
+                const isToggling = togglingTaskId === task.id
+                return (
+                  <div
+                    key={task.id}
+                    className="group flex items-start gap-3 rounded-xl border border-amber-200/80 bg-amber-50/30 p-3 transition-colors hover:border-[#1677D2] hover:bg-blue-50/30"
+                  >
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => handleToggleTaskComplete(empRow, task.id)}
+                      className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all hover:border-[#1677D2] hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-[#1677D2] disabled:opacity-50"
+                      title="Click to check off and mark task as completed"
+                      aria-label={`Mark task ${task.title} as completed`}
+                    >
+                      {isToggling ? (
+                        <RefreshCw className="size-3 animate-spin text-[#1677D2]" />
+                      ) : (
+                        <Square className="size-3 text-transparent group-hover:text-slate-300" />
+                      )}
+                    </button>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5">
+                        <span className="text-xs font-bold text-[#0B1F3A]">{task.title}</span>
+                        <span className="inline-flex items-center rounded border border-amber-200 bg-amber-100/70 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+                          Pending
+                        </span>
+                      </div>
+
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-[#64748B]">
+                        <span className="font-medium text-[#172B4D]">{task.task_type}</span>
+                        {task.route_id && (
+                          <span className="rounded bg-slate-100 px-1.5 py-0.5 font-semibold text-[#0B1F3A]">
+                            Route: {task.route_id}
+                          </span>
+                        )}
+                        <span
+                          className={`rounded px-1.5 py-0.5 font-semibold ${
+                            task.priority === 'High'
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                              : 'bg-slate-100 text-[#475569]'
+                          }`}
+                        >
+                          Priority: {task.priority}
+                        </span>
+                        <span>⏱ Est: {task.estimated_duration}</span>
+                        <span>Due: {task.due_time}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => handleToggleTaskComplete(empRow, task.id)}
+                      className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-[#DFE8F2] bg-white px-2 py-1 text-[11px] font-semibold text-[#172B4D] shadow-2xs hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50"
+                      title="Mark this task as completed"
+                    >
+                      <CheckCircle2 className="size-3 text-emerald-600" />
+                      Mark Done
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* SECTION 2: COMPLETED TASKS */}
+        {completedTasks.length > 0 && (
+          <div className="space-y-2 border-t border-[#DFE8F2] pt-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
+                <h5 className="text-[11px] font-bold uppercase tracking-wider text-emerald-900">
+                  Completed Tasks ({completedTasks.length})
+                </h5>
+              </div>
+              <span className="text-[10px] text-[#64748B]">Click checkbox to uncheck if marked by mistake</span>
+            </div>
+
+            <div className="space-y-2">
+              {completedTasks.map((task) => {
+                const isToggling = togglingTaskId === task.id
+                return (
+                  <div
+                    key={task.id}
+                    className="flex items-start gap-3 rounded-xl border border-emerald-200/60 bg-emerald-50/20 p-2.5 transition-colors"
+                  >
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => handleToggleTaskComplete(empRow, task.id)}
+                      className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded border-2 border-emerald-600 bg-emerald-600 text-white transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                      title="Click to uncheck (move back to pending)"
+                      aria-label={`Unmark completed task ${task.title}`}
+                    >
+                      {isToggling ? (
+                        <RefreshCw className="size-3 animate-spin text-white" />
+                      ) : (
+                        <CheckSquare className="size-3 text-white" />
+                      )}
+                    </button>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5">
+                        <span className="text-xs font-medium text-slate-500 line-through">
+                          {task.title}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-100/70 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                          <CheckCircle2 className="size-2.5" />
+                          Done {task.completed_at ? `(${task.completed_at})` : ''}
+                        </span>
+                      </div>
+
+                      <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-[#94A3B8]">
+                        <span>{task.task_type}</span>
+                        {task.route_id && <span>Route: {task.route_id}</span>}
+                        <span>Est: {task.estimated_duration}</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   // ── Handlers: Open Create Allocation Drawer ─────────────────────────────
@@ -399,49 +733,138 @@ export default function WorkAllocationPage() {
     }
   }
 
-  // ── Handler: Confirm Auto-Balance Workload Plan ─────────────────────────
-  async function handleConfirmAutoBalance() {
-    if (!isPostmaster) return
-    const { transfers, afterRows } = autoBalancePreview
-    if (!transfers.length) {
-      setAutoBalanceOpen(false)
+  // ── Handler: Auto-Balance Workload Using Employee Attendance ───────────
+  async function handleRunAutoBalance() {
+    if (!isPostmaster) {
+      setError('Only an authenticated Postmaster may execute auto-balance workload.')
       return
     }
+    setAutoBalancing(true)
+    setError('')
+    setNotice('')
+    try {
+      const res = await autoBalanceWorkload(selectedDate, {
+        post_office: postOfficeFilter !== 'All' ? postOfficeFilter : '',
+        checklist: DEFAULT_DAILY_OPERATIONAL_CHECKLIST,
+        confirm: false,
+      })
+      setAutoBalanceResult(res)
+      setAutoBalanceOpen(true)
+      if (res && res.ok) {
+        setNotice(
+          res.message ||
+            `Auto-Balance proposal calculated: ${res.tasks_assigned || 0} task(s) across ${res.eligible_count || 0} attending officer(s). Review and confirm below.`,
+        )
+      } else if (res && res.attendance_missing) {
+        setNotice(res.message || 'Attendance verification required for this date.')
+      } else if (res && !res.ok) {
+        setNotice(res.message || 'Auto-Balance evaluated: review details below.')
+      }
+    } catch (err) {
+      setError(err.message || 'Could not execute auto-balance workload operation.')
+    } finally {
+      setAutoBalancing(false)
+    }
+  }
 
+  // ── Handler: Confirm Auto-Balance Workload Plan (Persists to MongoDB) ──
+  async function handleConfirmAutoBalance() {
+    if (!isPostmaster) return
     setSaving(true)
     setError('')
     setNotice('')
     try {
-      const affectedIds = new Set()
-      for (const t of transfers) {
-        affectedIds.add(t.from_employee_id)
-        affectedIds.add(t.to_employee_id)
-      }
-      for (const empId of affectedIds) {
-        const updatedRow = afterRows.find((r) => r.employee_id === empId)
-        if (updatedRow) {
-          await saveEmployeeDailyAllocation({
-            dateStr: selectedDate,
-            employeeRow: updatedRow,
-            assignedTasks: updatedRow.assigned_tasks,
-            completedTasks: updatedRow.completed_tasks,
-            notes: `Auto-balanced workload on ${selectedDate}`,
-          })
-        }
-      }
-      // Also trigger backend allocation approval if attendance moves exist
-      if (backendPlan?.moves?.length || backendPlan?.checklist?.length) {
-        await approveAllocation(selectedDate, []).catch(() => null)
-      }
+      const res = await autoBalanceWorkload(selectedDate, {
+        post_office: postOfficeFilter !== 'All' ? postOfficeFilter : '',
+        checklist: DEFAULT_DAILY_OPERATIONAL_CHECKLIST,
+        confirm: true,
+      })
       setAutoBalanceOpen(false)
       await loadData(selectedDate)
       setNotice(
-        `Auto-Balance applied across ${affectedIds.size} officers (${transfers.length} transfer operation(s)) for ${selectedDate}.`,
+        res?.message || `Auto-Balance successfully persisted to MongoDB for ${selectedDate}.`,
       )
     } catch (err) {
-      setError(err.message || 'Could not apply auto-balance plan.')
+      setError(err.message || 'Could not apply and persist auto-balance plan.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  // ── Handler: Authorize All Staff and Immediately Auto-Balance ───────────
+  async function handleAuthorizeAndAutoBalance() {
+    if (!isPostmaster) return
+    setAutoBalancing(true)
+    setError('')
+    try {
+      const res = await autoBalanceWorkload(selectedDate, {
+        post_office: postOfficeFilter !== 'All' ? postOfficeFilter : '',
+        checklist: DEFAULT_DAILY_OPERATIONAL_CHECKLIST,
+        authorize_all_active: true,
+        confirm: false,
+      })
+      await loadData(selectedDate)
+      setAutoBalanceResult(res)
+      setNotice(res?.message || 'Attendance authorized and workload balance preview generated.')
+    } catch (err) {
+      setError(err.message || 'Could not authorize attendance and run auto-balance.')
+    } finally {
+      setAutoBalancing(false)
+    }
+  }
+
+  // ── Handler: Quick Authorize All Active Staff on Selected Date ─────────
+  async function handleQuickAuthorizeAll() {
+    if (!isPostmaster) return
+    setAuthorizingAttendance(true)
+    setError('')
+    try {
+      const res = await authorizeAttendance({
+        date: selectedDate,
+        postOffice: postOfficeFilter !== 'All' ? postOfficeFilter : '',
+        status: 'Present',
+        notes: `Authorized by Postmaster for ${selectedDate}`,
+      })
+      await loadData(selectedDate)
+      setNotice(res?.message || `Successfully authorized attendance for active officers on ${selectedDate}.`)
+    } catch (err) {
+      setError(err.message || 'Could not authorize attendance records.')
+    } finally {
+      setAuthorizingAttendance(false)
+    }
+  }
+
+  // ── Handler: Open Modal with Checkboxes for Individual Staff ──────────
+  function handleOpenAuthModal() {
+    const unrecIds = unrecordedOfficers.map((o) => o.employee_id)
+    setSelectedOfficersToAuth(unrecIds.length > 0 ? unrecIds : workloadRows.filter((r) => !r.on_leave).map((r) => r.employee_id))
+    setAuthAttendanceModalOpen(true)
+  }
+
+  // ── Handler: Submit Selected Officers Attendance Authorization ─────────
+  async function handleSubmitAttendanceAuth() {
+    if (!isPostmaster) return
+    if (!selectedOfficersToAuth.length) {
+      setError('Please select at least one officer to authorize.')
+      return
+    }
+    setAuthorizingAttendance(true)
+    setError('')
+    try {
+      const res = await authorizeAttendance({
+        date: selectedDate,
+        employeeIds: selectedOfficersToAuth,
+        status: authStatusChoice,
+        notes: authNotes,
+        postOffice: postOfficeFilter !== 'All' ? postOfficeFilter : '',
+      })
+      setAuthAttendanceModalOpen(false)
+      await loadData(selectedDate)
+      setNotice(res?.message || `Attendance authorized for ${selectedOfficersToAuth.length} officer(s) on ${selectedDate}.`)
+    } catch (err) {
+      setError(err.message || 'Failed to submit attendance authorization.')
+    } finally {
+      setAuthorizingAttendance(false)
     }
   }
 
@@ -490,17 +913,17 @@ export default function WorkAllocationPage() {
 
           <button
             type="button"
-            disabled={!isPostmaster || loading}
-            onClick={() => setAutoBalanceOpen(true)}
+            disabled={!isPostmaster || loading || autoBalancing}
+            onClick={handleRunAutoBalance}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#1677D2] bg-blue-50/70 px-4 text-xs font-bold text-[#1677D2] shadow-2xs transition-colors hover:bg-blue-100 disabled:opacity-50"
           >
             <Scale className="size-4" />
-            Auto-Balance Workload
+            {autoBalancing ? 'Balancing Workload...' : 'Auto-Balance Workload'}
           </button>
 
           <button
             type="button"
-            disabled={!isPostmaster || loading}
+            disabled={!isPostmaster || loading || autoBalancing}
             onClick={() => openCreateDrawerFor(null)}
             className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#1677D2] px-4 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#125ea7] disabled:opacity-50"
           >
@@ -649,6 +1072,54 @@ export default function WorkAllocationPage() {
             </div>
           </div>
 
+          {/* ── Interactive Attendance Verification Required Banner ────────── */}
+          {unrecordedOfficers.length > 0 && (
+            <div className="rounded-2xl border border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 p-4 shadow-xs">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                    <AlertTriangle className="size-5" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-amber-950">
+                        Staff Attendance Verification Required
+                      </h3>
+                      <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[10px] font-extrabold text-amber-900">
+                        {unrecordedOfficers.length} Officer{unrecordedOfficers.length === 1 ? '' : 's'} Unrecorded
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-amber-800">
+                      Attendance records have not been recorded for officers on <strong>{selectedDate}</strong>. Under Sri Lanka Postal Department Policy, officers are excluded from daily task allocations until attendance is confirmed or authorized by the Postmaster.
+                    </p>
+                  </div>
+                </div>
+
+                {isPostmaster && (
+                  <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={authorizingAttendance}
+                      onClick={handleQuickAuthorizeAll}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#1677D2] px-3.5 text-xs font-bold text-white shadow-xs hover:bg-[#125ea7] disabled:opacity-50"
+                    >
+                      <Zap className="size-3.5" />
+                      {authorizingAttendance ? 'Authorizing...' : 'Authorize All Active (1-Click)'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenAuthModal}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-amber-300 bg-white px-3.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                    >
+                      <CheckSquare className="size-3.5" />
+                      Verify & Authorize Staff...
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* ── 3. Employee Workload Distribution Table ────────────────────── */}
           <div className="rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs">
             <div className="flex flex-col gap-3 border-b border-[#DFE8F2] pb-4 lg:flex-row lg:items-center lg:justify-between">
@@ -741,8 +1212,10 @@ export default function WorkAllocationPage() {
                     <tbody className="divide-y divide-[#DFE8F2]">
                       {paginatedRows.map((row) => {
                         const progressWidth = Math.min(100, Math.max(6, row.workload_pct))
+                        const isExpanded = expandedRowId === row.employee_id
                         return (
-                          <tr key={row.employee_id} className="transition-colors hover:bg-slate-50/80">
+                          <Fragment key={row.employee_id}>
+                            <tr className={`transition-colors hover:bg-slate-50/80 ${isExpanded ? 'bg-blue-50/30' : ''}`}>
                             <td className="py-3 px-3 font-mono font-bold text-[#0B1F3A]">
                               {row.employee_id}
                             </td>
@@ -755,16 +1228,33 @@ export default function WorkAllocationPage() {
                                     {row.route_id} ({row.route_length_km} km)
                                   </span>
                                 )}
-                                {row.on_leave && (
-                                  <span className="rounded bg-rose-100 px-1.5 py-0.2 font-semibold text-rose-800">
-                                    On Leave
+                                {(row.eligibility_tag || row.on_leave) && (
+                                  <span className={`rounded border px-1.5 py-0.2 font-semibold ${row.eligibility_class || 'bg-rose-100 text-rose-800'}`} title={row.eligibility_reason || 'Employee attendance status'}>
+                                    {row.eligibility_tag || 'On Leave'}
                                   </span>
                                 )}
                               </div>
                             </td>
                             <td className="py-3 px-3 text-[#475569]">{row.designation}</td>
-                            <td className="py-3 px-3 text-center font-bold text-[#0B1F3A]">
-                              {row.assigned_tasks}
+                            <td className="py-3 px-3 text-center">
+                              <div className="flex flex-col items-center">
+                                <span className="font-bold text-[#0B1F3A]">{row.assigned_tasks}</span>
+                                {row.assigned_tasks > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedRowId((prev) => (prev === row.employee_id ? null : row.employee_id))}
+                                    className={`mt-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold transition-colors ${
+                                      isExpanded
+                                        ? 'bg-[#1677D2] text-white shadow-2xs'
+                                        : 'bg-blue-50 text-[#1677D2] hover:bg-blue-100'
+                                    }`}
+                                    title="Click to view assigned tasks and check off completed work"
+                                  >
+                                    <ListTodo className="size-2.5" />
+                                    {isExpanded ? 'Hide' : `Tasks (${row.completed_tasks}/${row.assigned_tasks})`}
+                                  </button>
+                                )}
+                              </div>
                             </td>
                             <td className="py-3 px-3 text-center font-semibold text-emerald-700">
                               {row.completed_tasks}
@@ -842,6 +1332,14 @@ export default function WorkAllocationPage() {
                               </div>
                             </td>
                           </tr>
+                            {isExpanded && (
+                              <tr className="border-b border-[#DFE8F2] bg-gradient-to-r from-blue-50/20 via-slate-50/60 to-blue-50/20">
+                                <td colSpan={9} className="p-3 sm:p-4">
+                                  {renderEmployeeTasksChecklist(row)}
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
                         )
                       })}
                     </tbody>
@@ -936,7 +1434,7 @@ export default function WorkAllocationPage() {
                             {/* Assigned bar */}
                             <div className="flex flex-col items-center">
                               <span className="mb-0.5 text-[9px] font-bold text-[#1677D2]">
-                                {row.assigned_tasks}
+  
                               </span>
                               <div
                                 className="w-3 rounded-t bg-[#1677D2] transition-all group-hover:bg-[#125ea7]"
@@ -1113,7 +1611,7 @@ export default function WorkAllocationPage() {
                 <button
                   type="button"
                   disabled={!isPostmaster}
-                  onClick={() => setAutoBalanceOpen(true)}
+                  onClick={handleRunAutoBalance}
                   className="rounded-lg bg-[#0B1F3A] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#17355b] disabled:opacity-50"
                 >
                   Open Auto-Balance Preview
@@ -1403,10 +1901,10 @@ export default function WorkAllocationPage() {
                   Automated Capacity Optimization
                 </span>
                 <h2 id="autobalance-title" className="text-lg font-bold text-[#0B1F3A]">
-                  Auto-Balance Workload Preview ({selectedDate})
+                  {autoBalancing ? 'Balancing Workload...' : 'Auto-Balance Workload'} Preview ({selectedDate})
                 </h2>
                 <p className="mt-0.5 text-xs text-[#64748B]">
-                  Calculated from employee availability, approved leave, pending tasks, route distance, and role-fit capacity.
+                  Calculated from verified employee attendance, approved leave, pending tasks, route distance, and role-fit capacity.
                 </p>
               </div>
               <button
@@ -1418,6 +1916,67 @@ export default function WorkAllocationPage() {
               </button>
             </div>
 
+            {/* Attendance Missing Alert & Instant Fallback */}
+            {(autoBalanceResult?.attendance_missing || (!workloadRows.some((r) => r.is_eligible) && unrecordedOfficers.length > 0)) ? (
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <div className="flex items-start gap-3">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                    <AlertTriangle className="size-5" />
+                  </span>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold text-amber-950">
+                      Attendance Verification Required
+                    </h3>
+                    <p className="mt-1 text-xs text-amber-800">
+                      Attendance records have not been recorded for officers on <strong>{selectedDate}</strong>. Under Sri Lanka Postal Department Policy, officers are excluded until attendance is verified. You can authorize active staff below to generate the workload allocation plan.
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={autoBalancing}
+                        onClick={handleAuthorizeAndAutoBalance}
+                        className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#1677D2] px-4 text-xs font-bold text-white shadow-xs hover:bg-[#125ea7] disabled:opacity-50"
+                      >
+                        <Zap className="size-3.5" />
+                        {autoBalancing ? 'Authorizing & Balancing...' : 'Authorize Active Staff & Auto-Balance'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAutoBalanceOpen(false)
+                          handleOpenAuthModal()
+                        }}
+                        className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-amber-300 bg-white px-3.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                      >
+                        <CheckSquare className="size-3.5" />
+                        Select Staff to Authorize...
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : autoBalanceResult && (
+              <div
+                className={`mt-3 flex items-start gap-2.5 rounded-xl border p-3 text-xs ${
+                  autoBalanceResult.ok
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                    : 'border-amber-200 bg-amber-50 text-amber-900'
+                }`}
+              >
+                {autoBalanceResult.ok ? (
+                  <CheckCircle2 className="size-4 shrink-0 text-emerald-600 mt-0.5" />
+                ) : (
+                  <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                )}
+                <div>
+                  <p className="font-bold">{autoBalanceResult.message}</p>
+                  <p className="mt-0.5 text-[11px] opacity-90">
+                    Allocation Date: {autoBalanceResult.date} · {autoBalanceResult.tasks_assigned || 0} task(s) proposed · {autoBalanceResult.eligible_count || 0} eligible attending officer(s) · {autoBalanceResult.unassigned_count || 0} unassigned
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Before vs After Summary Comparison */}
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
@@ -1425,7 +1984,7 @@ export default function WorkAllocationPage() {
                 <p className="mt-1 text-base font-extrabold text-[#0B1F3A]">
                   <span className="text-rose-600">{autoBalancePreview.beforeSummary.overloadedOfficers}</span>
                   {' → '}
-                  <span className="text-emerald-700">{autoBalancePreview.afterSummary.overloadedOfficers}</span>
+                  <span className="text-emerald-700">{autoBalanceResult?.overloaded_count ?? autoBalancePreview.afterSummary.overloadedOfficers}</span>
                 </p>
               </div>
               <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
@@ -1433,7 +1992,7 @@ export default function WorkAllocationPage() {
                 <p className="mt-1 text-base font-extrabold text-[#0B1F3A]">
                   <span>{autoBalancePreview.beforeSummary.balancedWorkloads}</span>
                   {' → '}
-                  <span className="text-emerald-700">{autoBalancePreview.afterSummary.balancedWorkloads}</span>
+                  <span className="text-emerald-700">{autoBalanceResult?.balanced_count ?? autoBalancePreview.afterSummary.balancedWorkloads}</span>
                 </p>
               </div>
               <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
@@ -1441,23 +2000,179 @@ export default function WorkAllocationPage() {
                 <p className="mt-1 text-base font-extrabold text-[#0B1F3A]">
                   <span>{autoBalancePreview.beforeSummary.underutilizedOfficers}</span>
                   {' → '}
-                  <span className="text-[#1677D2]">{autoBalancePreview.afterSummary.underutilizedOfficers}</span>
+                  <span className="text-[#1677D2]">{autoBalanceResult?.underutilized_count ?? autoBalancePreview.afterSummary.underutilizedOfficers}</span>
                 </p>
               </div>
               <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
                 <span className="text-[10px] font-semibold text-[#64748B] uppercase">Proposed Transfers</span>
                 <p className="mt-1 text-base font-extrabold text-[#1677D2]">
-                  {autoBalancePreview.transfers.length} move(s)
+                  {(autoBalanceResult?.transfers?.length ?? autoBalancePreview.transfers.length)} move(s)
                 </p>
               </div>
             </div>
+
+            {/* Proposed Employee Workload Distribution Table */}
+            {autoBalanceResult?.eligible_employees && autoBalanceResult.eligible_employees.length > 0 && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-[#0B1F3A]">
+                    Employee Workload Distribution (Proposed Allocation Breakdown)
+                  </h3>
+                  <span className="text-[10px] text-[#64748B]">
+                    {autoBalanceResult.eligible_employees.length} eligible officer(s) on duty
+                  </span>
+                </div>
+                <div className="mt-2 max-h-64 overflow-y-auto rounded-xl border border-[#DFE8F2]">
+                  <table className="w-full text-left text-xs">
+                    <thead className="border-b border-[#DFE8F2] bg-[#F8FAFC] text-[10px] font-bold text-[#64748B] uppercase sticky top-0">
+                      <tr>
+                        <th className="py-2.5 px-3">Officer</th>
+                        <th className="py-2.5 px-3">Role &amp; Department</th>
+                        <th className="py-2.5 px-3 text-center">Current Tasks</th>
+                        <th className="py-2.5 px-3 text-center">Proposed Tasks</th>
+                        <th className="py-2.5 px-3 text-center">Workload %</th>
+                        <th className="py-2.5 px-3">Proposed Status</th>
+                        <th className="py-2.5 px-3">Assigned Tasks / Policy Note</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#DFE8F2]">
+                      {autoBalanceResult.eligible_employees.map((emp) => {
+                        const newTasks = (autoBalanceResult.transfers || [])
+                          .filter((t) => t.to_employee_id === emp.employee_id)
+                          .map((t) => t.task || t.task_type)
+                        const taskDiff = (emp.after_assigned ?? emp.assigned_tasks) - (emp.before_assigned ?? 0)
+                        const statusBadge =
+                          emp.workload_status === 'Overloaded'
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : emp.workload_status === 'Near Capacity'
+                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            : emp.workload_status === 'Balanced'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-blue-50 text-[#1677D2] border-blue-200'
+
+                        return (
+                          <tr key={emp.employee_id} className="hover:bg-slate-50/70">
+                            <td className="py-2.5 px-3">
+                              <div className="font-semibold text-[#0B1F3A]">{emp.employee_name}</div>
+                              <span className="font-mono text-[10px] text-[#64748B]">{emp.employee_id}</span>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <div className="font-medium text-[#172B4D]">{emp.designation}</div>
+                              <div className="text-[10px] text-[#64748B]">{emp.work_category}</div>
+                            </td>
+                            <td className="py-2.5 px-3 text-center font-medium text-[#475569]">
+                              {emp.before_assigned ?? 0}
+                            </td>
+                            <td className="py-2.5 px-3 text-center">
+                              <span className="font-bold text-[#0B1F3A]">
+                                {emp.after_assigned ?? emp.assigned_tasks}
+                              </span>
+                              {taskDiff > 0 && (
+                                <span className="ml-1 text-[10px] font-bold text-emerald-600">
+                                  (+{taskDiff})
+                                </span>
+                              )}
+                              {taskDiff < 0 && (
+                                <span className="ml-1 text-[10px] font-bold text-rose-600">
+                                  ({taskDiff})
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-3 text-center">
+                              <span className="font-bold text-[#1677D2]">{emp.workload_pct}%</span>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusBadge}`}>
+                                {emp.workload_status}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              {newTasks.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {newTasks.map((tName, tIdx) => (
+                                    <span
+                                      key={tIdx}
+                                      className="inline-block rounded bg-blue-50 border border-blue-200 px-1.5 py-0.5 text-[10px] font-medium text-[#1677D2]"
+                                    >
+                                      {tName}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (emp.after_assigned ?? emp.assigned_tasks) > 0 ? (
+                                <span className="text-[11px] text-[#64748B]">
+                                  Retained existing assigned work ({emp.after_assigned ?? emp.assigned_tasks} task)
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-amber-700">
+                                  {emp.allocation_note || 'Shortage of matching operational tasks for this role'}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Attendance Transparency: Excluded Staff List */}
+            {((autoBalanceResult?.excluded_employees && autoBalanceResult.excluded_employees.length > 0) || workloadRows.filter((r) => !r.is_eligible).length > 0) && (
+              <div className="mt-4">
+                <h3 className="text-xs font-bold text-[#0B1F3A]">
+                  Excluded Officers (Attendance & Leave Policy)
+                </h3>
+                <div className="mt-2 max-h-40 overflow-y-auto rounded-xl border border-[#DFE8F2]">
+                  <table className="w-full text-left text-xs">
+                    <thead className="border-b border-[#DFE8F2] bg-[#F8FAFC] text-[10px] font-bold text-[#64748B] uppercase">
+                      <tr>
+                        <th className="py-2 px-3">Officer</th>
+                        <th className="py-2 px-3">Designation</th>
+                        <th className="py-2 px-3">Attendance Eligibility</th>
+                        <th className="py-2 px-3">Policy Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#DFE8F2]">
+                      {(autoBalanceResult?.excluded_employees || workloadRows.filter((r) => !r.is_eligible).map((r) => ({
+                        employee_id: r.employee_id,
+                        employee_name: r.employee_name,
+                        designation: r.designation,
+                        reason: r.eligibility_tag,
+                        details: r.eligibility_reason,
+                      }))).map((ex, i) => (
+                        <tr key={i} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 font-semibold text-[#0B1F3A]">
+                            {ex.employee_name} <span className="font-mono text-[10px] text-[#64748B]">({ex.employee_id})</span>
+                          </td>
+                          <td className="py-2 px-3 text-[#475569]">{ex.designation}</td>
+                          <td className="py-2 px-3">
+                            <span className="rounded bg-rose-50 border border-rose-200 px-2 py-0.5 text-[10px] font-bold text-rose-700">
+                              {ex.reason}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3 text-[11px] text-[#64748B]">{ex.details}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             {/* Transfers Table */}
             <div className="mt-4">
               <h3 className="text-xs font-bold text-[#0B1F3A]">
                 Proposed Task Reassignments (Before → After)
               </h3>
-              {autoBalancePreview.transfers.length === 0 ? (
+              {(autoBalanceResult?.attendance_missing || (!workloadRows.some((r) => r.is_eligible) && unrecordedOfficers.length > 0)) ? (
+                <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50/50 p-4 text-xs text-amber-900">
+                  <p className="font-bold">No eligible employees are currently available for allocation on this date.</p>
+                  <p className="mt-1 text-[11px] text-amber-800">
+                    Please authorize staff attendance above to unlock automated workload balancing.
+                  </p>
+                </div>
+              ) : (autoBalanceResult?.transfers?.length ?? autoBalancePreview.transfers.length) === 0 ? (
                 <p className="mt-2 rounded-xl border border-[#DFE8F2] bg-slate-50 p-4 text-xs text-[#64748B]">
                   All active officers are already balanced within acceptable thresholds. No transfers required.
                 </p>
@@ -1466,37 +2181,30 @@ export default function WorkAllocationPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="border-b border-[#DFE8F2] bg-[#F8FAFC] text-[10px] font-bold text-[#64748B] uppercase">
                       <tr>
-                        <th className="py-2.5 px-3">From Officer</th>
-                        <th className="py-2.5 px-3">Before → After</th>
+                        <th className="py-2.5 px-3">From Officer / Source</th>
                         <th className="py-2.5 px-3">To Officer</th>
-                        <th className="py-2.5 px-3">Before → After</th>
+                        <th className="py-2.5 px-3">Assigned Task & Role Fit</th>
                         <th className="py-2.5 px-3 text-center">Tasks Moved</th>
                         <th className="py-2.5 px-3">Reason</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#DFE8F2]">
-                      {autoBalancePreview.transfers.map((tr, idx) => (
+                      {(autoBalanceResult?.transfers || autoBalancePreview.transfers).map((tr, idx) => (
                         <tr key={idx}>
                           <td className="py-2.5 px-3">
                             <div className="font-semibold text-[#0B1F3A]">{tr.from_employee_name}</div>
-                            <div className="text-[10px] text-[#64748B]">{tr.from_employee_id} · {tr.from_designation}</div>
-                          </td>
-                          <td className="py-2.5 px-3 font-mono text-[11px]">
-                            <span className="font-bold text-rose-600">{tr.before_from_pct}% ({tr.before_from_tasks})</span>
-                            {' → '}
-                            <span className="font-bold text-emerald-700">{tr.after_from_pct}% ({tr.after_from_tasks})</span>
+                            <div className="text-[10px] text-[#64748B]">{tr.from_employee_id} {tr.from_designation ? `· ${tr.from_designation}` : ''}</div>
                           </td>
                           <td className="py-2.5 px-3">
                             <div className="font-semibold text-[#0B1F3A]">{tr.to_employee_name}</div>
-                            <div className="text-[10px] text-[#64748B]">{tr.to_employee_id} · {tr.to_designation}</div>
+                            <div className="text-[10px] text-[#64748B]">{tr.to_employee_id} · {tr.to_designation || tr.designation}</div>
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-[11px]">
-                            <span className="font-bold text-[#1677D2]">{tr.before_to_pct}% ({tr.before_to_tasks})</span>
-                            {' → '}
-                            <span className="font-bold text-emerald-700">{tr.after_to_pct}% ({tr.after_to_tasks})</span>
+                          <td className="py-2.5 px-3">
+                            <div className="font-semibold text-[#0B1F3A]">{tr.task || tr.task_type}</div>
+                            <div className="text-[10px] text-[#64748B]">{tr.work_category} {tr.route_id ? `· Route ${tr.route_id}` : ''}</div>
                           </td>
                           <td className="py-2.5 px-3 text-center font-bold text-[#1677D2]">
-                            +{tr.tasks_moved}
+                            +{tr.tasks_moved || 1}
                           </td>
                           <td className="py-2.5 px-3 text-[11px] text-[#475569]">{tr.reason}</td>
                         </tr>
@@ -1509,7 +2217,7 @@ export default function WorkAllocationPage() {
 
             <div className="mt-5 flex items-center justify-between border-t border-[#DFE8F2] pt-4">
               <span className="text-[11px] text-[#64748B]">
-                Postmaster confirmation is required before saving any reassignment.
+                {autoBalanceResult?.confirmed ? 'Assignments are safely persisted to MongoDB.' : 'Postmaster confirmation is required before saving any reassignment.'}
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -1517,15 +2225,170 @@ export default function WorkAllocationPage() {
                   onClick={() => setAutoBalanceOpen(false)}
                   className="h-9 rounded-xl border border-[#DFE8F2] px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50"
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="button"
-                  disabled={saving || autoBalancePreview.transfers.length === 0}
+                  disabled={
+                    saving ||
+                    autoBalancing ||
+                    autoBalanceResult?.attendance_missing ||
+                    (!autoBalanceResult?.transfers?.length && autoBalancePreview.transfers.length === 0)
+                  }
                   onClick={handleConfirmAutoBalance}
                   className="h-9 rounded-xl bg-[#1677D2] px-4 text-xs font-bold text-white shadow-xs hover:bg-[#125ea7] disabled:opacity-50"
                 >
                   {saving ? 'Applying Rebalance...' : 'Confirm & Save Reassignment'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Attendance Authorization Modal (Postmaster Fallback) ───────────── */}
+      {authAttendanceModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-xl rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-[#DFE8F2] pb-4">
+              <div>
+                <span className="text-[10px] font-bold tracking-wider text-[#1677D2] uppercase">
+                  Postal Attendance & Availability Policy
+                </span>
+                <h2 className="text-lg font-bold text-[#0B1F3A]">
+                  Authorize Staff Attendance ({selectedDate})
+                </h2>
+                <p className="mt-0.5 text-xs text-[#64748B]">
+                  Select available officers to authorize for work allocation on this date.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAuthAttendanceModalOpen(false)}
+                className="rounded-lg p-1.5 text-[#64748B] hover:bg-slate-100"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <label className="text-xs font-semibold text-[#0B1F3A]">Attendance Capacity & Status</label>
+              <div className="mt-1.5 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAuthStatusChoice('Present')}
+                  className={`flex flex-col items-start rounded-xl border p-3 text-left transition ${
+                    authStatusChoice === 'Present'
+                      ? 'border-[#1677D2] bg-blue-50/50 ring-2 ring-[#1677D2]/20'
+                      : 'border-[#DFE8F2] hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="text-xs font-bold text-[#0B1F3A]">Present (Full Day)</span>
+                  <span className="mt-0.5 text-[11px] text-[#64748B]">Standard capacity: 5 task batches (100%)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthStatusChoice('Half Day')}
+                  className={`flex flex-col items-start rounded-xl border p-3 text-left transition ${
+                    authStatusChoice === 'Half Day'
+                      ? 'border-[#1677D2] bg-blue-50/50 ring-2 ring-[#1677D2]/20'
+                      : 'border-[#DFE8F2] hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="text-xs font-bold text-[#0B1F3A]">Present (Half Day)</span>
+                  <span className="mt-0.5 text-[11px] text-[#64748B]">Adjusted capacity: 3 task batches (50%)</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-[#0B1F3A]">Select Officers to Authorize</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allIds = workloadRows.filter((r) => !r.on_leave).map((r) => r.employee_id)
+                    setSelectedOfficersToAuth((prev) => (prev.length === allIds.length ? [] : allIds))
+                  }}
+                  className="text-xs font-semibold text-[#1677D2] hover:underline"
+                >
+                  {selectedOfficersToAuth.length === workloadRows.filter((r) => !r.on_leave).length ? 'Deselect All' : 'Select All Active'}
+                </button>
+              </div>
+
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-xl border border-[#DFE8F2] divide-y divide-[#DFE8F2]">
+                {workloadRows.map((emp) => {
+                  const isChecked = selectedOfficersToAuth.includes(emp.employee_id)
+                  const isDisabled = emp.on_leave
+                  return (
+                    <label
+                      key={emp.employee_id}
+                      className={`flex items-center justify-between p-3 transition ${
+                        isDisabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          disabled={isDisabled}
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedOfficersToAuth((prev) => [...prev, emp.employee_id])
+                            } else {
+                              setSelectedOfficersToAuth((prev) => prev.filter((id) => id !== emp.employee_id))
+                            }
+                          }}
+                          className="size-4 rounded border-[#DFE8F2] text-[#1677D2] focus:ring-[#1677D2]"
+                        />
+                        <div>
+                          <div className="text-xs font-bold text-[#0B1F3A]">{emp.employee_name}</div>
+                          <div className="text-[10px] text-[#64748B]">{emp.employee_id} · {emp.designation} · {emp.work_category}</div>
+                        </div>
+                      </div>
+                      <span className={`rounded border px-2 py-0.5 text-[10px] font-bold ${emp.eligibility_class}`}>
+                        {emp.eligibility_tag}
+                      </span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="text-xs font-semibold text-[#0B1F3A]">Postmaster Authorization Note</label>
+              <input
+                type="text"
+                value={authNotes}
+                onChange={(e) => setAuthNotes(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-[#DFE8F2] px-3 py-2 text-xs text-[#0B1F3A] focus:border-[#1677D2] focus:outline-hidden"
+                placeholder="Reason or authorization reference..."
+              />
+            </div>
+
+            <div className="mt-5 flex items-center justify-between border-t border-[#DFE8F2] pt-4">
+              <span className="text-[11px] text-[#64748B]">
+                {selectedOfficersToAuth.length} officer{selectedOfficersToAuth.length === 1 ? '' : 's'} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAuthAttendanceModalOpen(false)}
+                  className="h-9 rounded-xl border border-[#DFE8F2] px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={authorizingAttendance || selectedOfficersToAuth.length === 0}
+                  onClick={handleSubmitAttendanceAuth}
+                  className="h-9 rounded-xl bg-[#1677D2] px-4 text-xs font-bold text-white shadow-xs hover:bg-[#125ea7] disabled:opacity-50"
+                >
+                  {authorizingAttendance ? 'Authorizing...' : 'Authorize Selected Staff'}
                 </button>
               </div>
             </div>
@@ -1540,7 +2403,7 @@ export default function WorkAllocationPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-2xl">
             <div className="flex items-start justify-between border-b border-[#DFE8F2] pb-3">
               <div>
                 <span className="font-mono text-xs font-bold text-[#1677D2]">{detailEmployee.employee_id}</span>
@@ -1578,6 +2441,16 @@ export default function WorkAllocationPage() {
                 </p>
               </div>
               <div className="rounded-xl bg-[#F8FAFC] p-3">
+                <span className="text-[10px] text-[#64748B]">Attendance Eligibility</span>
+                <div className="mt-0.5">
+                  <span className={`inline-block rounded border px-1.5 py-0.2 text-[10px] font-bold ${detailEmployee.eligibility_class || 'bg-slate-100 text-[#64748B]'}`}>
+                    {detailEmployee.eligibility_tag || 'Attendance Not Recorded — Excluded'}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-[10px] text-[#64748B]">{detailEmployee.eligibility_reason}</p>
+              </div>
+
+              <div className="rounded-xl bg-[#F8FAFC] p-3">
                 <span className="text-[10px] text-[#64748B]">Route & Task</span>
                 <p className="mt-0.5 text-xs font-bold text-[#0B1F3A]">{detailEmployee.primary_task_type}</p>
                 {detailEmployee.route_id && (
@@ -1587,6 +2460,9 @@ export default function WorkAllocationPage() {
                 )}
               </div>
             </div>
+
+            {/* Itemized Assigned Tasks Checklist */}
+            {renderEmployeeTasksChecklist(detailEmployee, true)}
 
             <div className="mt-5 flex justify-end gap-2 border-t border-[#DFE8F2] pt-3">
               <button
@@ -1722,7 +2598,7 @@ export default function WorkAllocationPage() {
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-2xl">
             <div className="flex items-start justify-between border-b border-[#DFE8F2] pb-3">
               <div>
                 <span className="text-[10px] font-bold text-[#1677D2] uppercase">

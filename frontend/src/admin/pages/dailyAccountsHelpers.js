@@ -237,8 +237,13 @@ export function autoDetectColumnMapping(headers = [], sampleRows = []) {
         'ledger head',
         'sub head',
         'details',
+        'stock type',
+        'stamp type',
+        'item type',
+        'stock_type',
+        'stamp_type',
       ],
-      keywords: ['category', 'service', 'particular', 'desc', 'head', 'narrat'],
+      keywords: ['category', 'service', 'particular', 'desc', 'head', 'narrat', 'stock type', 'stamp type'],
       exclude: ['sub total', 'grand total', 'biller', 'date'],
     },
     {
@@ -379,6 +384,54 @@ export function autoDetectColumnMapping(headers = [], sampleRows = []) {
       keywords: ['payment', 'method', 'mode'],
       exclude: ['biller', 'amount'],
     },
+    {
+      field: 'denomination',
+      exact: ['denomination (rs.)', 'denomination', 'denom', 'denom (rs.)', 'face value', 'stamp denomination'],
+      keywords: ['denomination', 'denom', 'face value'],
+      exclude: ['count', 'total', 'amount', 'qty', 'reference'],
+    },
+    {
+      field: 'opening_qty',
+      exact: ['opening qty', 'opening quantity', 'opening stock', 'opening bal', 'opening balance', 'opening balance (qty)'],
+      keywords: ['opening'],
+      exclude: ['closing', 'received', 'issued', 'damaged'],
+    },
+    {
+      field: 'receipts_qty',
+      exact: ['received from hpo / stores', 'received from hpo/stores', 'receipts', 'received', 'received qty', 'stock receipts', 'stores receipts', 'receipts (qty from hpo)'],
+      keywords: ['received', 'receipts'],
+      exclude: ['damaged', 'issued', 'sold'],
+    },
+    {
+      field: 'issued_qty',
+      exact: ['sold / issued qty', 'sold/issued qty', 'issued qty', 'sold qty', 'sales qty', 'issues', 'stock issued', 'sold / issued (qty)'],
+      keywords: ['issued', 'sold', 'issues'],
+      exclude: ['received', 'damaged', 'opening', 'closing'],
+    },
+    {
+      field: 'damaged_qty',
+      exact: ['damaged / returned qty', 'damaged/returned qty', 'damaged qty', 'returned qty', 'damaged', 'returned', 'damaged stock', 'damaged / withdrawn (qty)'],
+      keywords: ['damaged', 'returned', 'withdrawn', 'spoiled'],
+      exclude: ['received', 'sold', 'issued'],
+    },
+    {
+      field: 'closing_qty',
+      exact: ['closing qty', 'closing quantity', 'closing stock', 'closing bal', 'closing balance', 'closing balance (qty)', 'in hand qty'],
+      keywords: ['closing'],
+      exclude: ['opening', 'received', 'issued', 'damaged'],
+    },
+    {
+      field: 'closing_value',
+      exact: ['closing value (rs.)', 'closing value', 'closing valuation', 'stock value', 'stock valuation'],
+      keywords: ['closing value', 'stock value'],
+      exclude: ['issued', 'opening', 'damaged'],
+    },
+    {
+      field: 'verified_by',
+      exact: ['verified by', 'checked by', 'certified by', 'audited by', 'verified_by', 'checked_by', 'verified by / postmaster', 'postmaster'],
+      keywords: ['verified', 'checked', 'certified', 'postmaster'],
+      exclude: ['date', 'office'],
+    },
   ]
 
   const assignedHeaders = new Set()
@@ -417,6 +470,19 @@ export function autoDetectColumnMapping(headers = [], sampleRows = []) {
         break
       }
     }
+  }
+
+  // Bidirectional aliases for stock fields vs standard fields
+  if (mapping.closing_value && !mapping.amount) {
+    mapping.amount = mapping.closing_value
+  } else if (mapping.amount && !mapping.closing_value) {
+    mapping.closing_value = mapping.amount
+  }
+
+  if (mapping.issued_qty && !mapping.count) {
+    mapping.count = mapping.issued_qty
+  } else if (mapping.count && !mapping.issued_qty && /issued|sold|issues/i.test(mapping.count || '')) {
+    mapping.issued_qty = mapping.count
   }
 
   return mapping

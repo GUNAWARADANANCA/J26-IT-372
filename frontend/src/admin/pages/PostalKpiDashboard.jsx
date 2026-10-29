@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../data/auth'
 import { getPostalKpiDashboard } from '../data/repository'
 import PageHeader from '../ui/PageHeader'
@@ -96,6 +96,12 @@ export default function PostalKpiDashboard() {
         subtitle="Manage user roles, configure offline ML models, review audit logs, and oversee postal department performance."
         action={
           <div className="flex items-center gap-2">
+            <Link
+              to="/kpi-dashboard"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#1677D2] bg-[#EFF6FF] px-3.5 py-1.5 text-xs font-semibold text-[#1677D2] shadow-sm hover:bg-[#DBEAFE]"
+            >
+              📊 Open Comprehensive KPI Dashboard
+            </Link>
             <button
               type="button"
               onClick={() => {

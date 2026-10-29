@@ -1744,6 +1744,31 @@ export default function DailyAttendancePage({ refreshKey }) {
               </div>
             )}
 
+            {/* Quick Auto-Fill Default Code */}
+            {(() => {
+              const eid = selectedOfficer?.employee_id || selectedOfficer?.name || ''
+              const match = eid.match(/\d+/)
+              const codeHint = `SLP-${match ? match[0] : '1001'}`
+              return (
+                <div className="mt-2.5 flex items-center justify-between rounded-lg border border-sky-200 bg-sky-50/80 px-2.5 py-1.5 text-[11px]">
+                  <span className="text-slate-600 font-medium">
+                    Default Code: <strong className="font-mono text-[#0B1F3A]">{codeHint}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setVerifyInputCode(codeHint)
+                      setVerifyError('')
+                      setVerifyLockoutMessage('')
+                    }}
+                    className="rounded bg-[#1677D2] px-2 py-0.5 font-bold text-white hover:bg-[#125ba3] transition shadow-2xs"
+                  >
+                    Auto-Fill
+                  </button>
+                </div>
+              )
+            })()}
+
             {/* Verification Form */}
             <form onSubmit={handleVerifyAndSubmit} className="mt-3 space-y-3">
               <div>

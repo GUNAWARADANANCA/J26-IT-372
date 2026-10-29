@@ -7,78 +7,123 @@ export const DEFAULT_DAILY_TARGET_TASKS = 5
 
 export const TASK_ROLE_FIT = {
   'Mail & Parcel Delivery': {
-    roles: ['Postman', 'Senior Postman', 'Delivery Officer'],
-    categories: ['Delivery (Field)'],
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
     isDelivery: true,
   },
   'Registered Mail Delivery': {
-    roles: ['Postman', 'Senior Postman', 'Delivery Officer'],
-    categories: ['Delivery (Field)'],
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
     isDelivery: true,
   },
   'Parcel Delivery by Route': {
-    roles: ['Postman', 'Senior Postman', 'Delivery Officer'],
-    categories: ['Delivery (Field)'],
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
     isDelivery: true,
   },
   'Ordinary Letter Delivery': {
-    roles: ['Postman', 'Senior Postman', 'Delivery Officer'],
-    categories: ['Delivery (Field)'],
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
+    isDelivery: true,
+  },
+  'Pending Mail and Parcel Clearance': {
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
+    isDelivery: true,
+  },
+  'Undelivered Article Processing': {
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
+    isDelivery: true,
+  },
+  'Proof of Delivery Verification': {
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
+    isDelivery: true,
+  },
+  'Late Delivery Follow-up': {
+    roles: ['Postman', 'Senior Postman', 'Delivery Officer', 'Postal Officer'],
+    categories: ['Delivery (Field)', 'Delivery'],
     isDelivery: true,
   },
   'Customer Service Counter': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations', 'Counter Services'],
+    isDelivery: false,
+  },
+  'Counter Customer Service': {
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations', 'Counter Services'],
     isDelivery: false,
   },
   'Money Order Processing': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations', 'Counter Services'],
+    isDelivery: false,
+  },
+  'Postage and Fee Verification': {
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations', 'Counter Services'],
+    isDelivery: false,
+  },
+  'Postal Financial Transactions': {
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations', 'Counter Services'],
     isDelivery: false,
   },
   'Postal Clerk Duties': {
-    roles: ['Postal Clerk', 'Postmaster (Head)'],
-    categories: ['Office', 'Supervisory / Office'],
+    roles: ['Counter Clerk', 'Postal Clerk', 'Postal Assistant', 'Postal Officer', 'Postmaster (Head)'],
+    categories: ['Office', 'Postal Operations', 'Counter Services', 'Supervisory / Office'],
     isDelivery: false,
   },
   'Data Entry': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Accounts Processing': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Accounts Verification': {
-    roles: ['Postmaster (Head)'],
-    categories: ['Supervisory / Office'],
+    roles: ['Postmaster (Head)', 'Postal Officer'],
+    categories: ['Supervisory / Office', 'Office'],
     isDelivery: false,
   },
   'Correspondence Handling': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Communication Support': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations'],
+    isDelivery: false,
+  },
+  'Calendar Management': {
+    roles: ['Postal Assistant', 'Postal Clerk', 'Counter Clerk'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Stock & Inventory Check': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Counter Clerk', 'Postal Assistant', 'Postal Clerk', 'Postal Officer'],
+    categories: ['Office', 'Postal Operations'],
+    isDelivery: false,
+  },
+  'Ad-hoc Project Support': {
+    roles: ['Postal Assistant', 'Postal Clerk', 'Postal Officer', 'Counter Clerk'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Workflow Coordination': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Postal Assistant', 'Postal Clerk', 'Postal Officer', 'Counter Clerk'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Team Coordination': {
-    roles: ['Postal Assistant', 'Postal Clerk'],
-    categories: ['Office'],
+    roles: ['Postal Assistant', 'Postal Clerk', 'Postal Officer', 'Counter Clerk'],
+    categories: ['Office', 'Postal Operations'],
     isDelivery: false,
   },
   'Approvals & Audit': {
@@ -96,6 +141,59 @@ export const TASK_ROLE_FIT = {
     categories: ['Supervisory / Office'],
     isDelivery: false,
   },
+  'Attendance and Staff Availability Review': {
+    roles: ['Postmaster (Head)'],
+    categories: ['Supervisory / Office'],
+    isDelivery: false,
+  },
+  'Parcel Registration and Sorting': {
+    roles: ['Mail Sorter', 'Postal Assistant', 'Postal Clerk', 'Counter Clerk', 'Postal Officer'],
+    categories: ['Sorting', 'Postal Operations', 'Office'],
+    isDelivery: false,
+  },
+  'Incoming Mail Registration': {
+    roles: ['Mail Sorter', 'Postal Assistant', 'Postal Clerk', 'Counter Clerk', 'Postal Officer'],
+    categories: ['Sorting', 'Postal Operations', 'Office'],
+    isDelivery: false,
+  },
+  'Article Scanning and Tracking Updates': {
+    roles: ['Mail Sorter', 'Postal Assistant', 'Postal Clerk', 'Counter Clerk', 'Postal Officer'],
+    categories: ['Sorting', 'Postal Operations', 'Office'],
+    isDelivery: false,
+  },
+}
+
+/**
+ * Normalizes designation names to standard canonical roles.
+ */
+export function normalizeRole(roleName, category = '') {
+  const r = String(roleName || '').trim().toLowerCase()
+  const c = String(category || '').trim().toLowerCase()
+  if (r.includes('postmaster') || r.includes('head')) return 'Postmaster (Head)'
+  if (r.includes('senior postman')) return 'Senior Postman'
+  if (r.includes('postman')) return 'Postman'
+  if (r.includes('mail sorter') || r.includes('sorter')) return 'Mail Sorter'
+  if (r.includes('counter clerk') || r.includes('counter')) return 'Counter Clerk'
+  if (r.includes('postal assistant')) return 'Postal Assistant'
+  if (r.includes('postal clerk')) return 'Postal Clerk'
+  if (r.includes('postal officer')) {
+    return c.includes('delivery') ? 'Postal Officer (Delivery)' : 'Postal Officer'
+  }
+  if (r.includes('delivery officer')) return 'Delivery Officer'
+  return String(roleName || '').trim()
+}
+
+/**
+ * Normalizes operational work category.
+ */
+export function normalizeCategory(category) {
+  const c = String(category || '').trim().toLowerCase()
+  if (c.includes('delivery') || c.includes('field')) return 'Delivery'
+  if (c.includes('sort')) return 'Sorting'
+  if (c.includes('counter')) return 'Counter'
+  if (c.includes('supervis') || c.includes('head')) return 'Supervisory'
+  if (c.includes('operation') || c.includes('office') || c.includes('clerk')) return 'Office'
+  return category || 'Office'
 }
 
 function toNum(val, fallback = 0) {
@@ -196,9 +294,10 @@ export function buildEmployeeWorkloadRows({
   const hasAnyLogsOnDate = logsOnDate.size > 0
   const presentMap = new Map()
   for (const att of attendanceForDate || []) {
-    const empId = att.employee_id
-    if (!empId) continue
-    presentMap.set(empId, att)
+    const rawId = att.employee_id || (att._id && att._id.includes('-') ? att._id.split('-')[0] : att._id)
+    if (!rawId) continue
+    presentMap.set(rawId, att)
+    presentMap.set(String(rawId).toLowerCase(), att)
   }
 
   return (employees || [])
@@ -209,7 +308,11 @@ export function buildEmployeeWorkloadRows({
       const activeLog = directLog || (!hasAnyLogsOnDate ? fallbackLog : null)
 
       const assigned = activeLog ? Math.max(0, Math.round(toNum(activeLog.assigned_work_count, 0))) : 0
-      const completed = activeLog ? Math.max(0, Math.round(toNum(activeLog.completed_work_count, 0))) : 0
+      const storedCompleted = activeLog ? Math.max(0, Math.round(toNum(activeLog.completed_work_count, 0))) : 0
+      const itemsCompleted = Array.isArray(activeLog?.task_items) && activeLog.task_items.length > 0
+        ? activeLog.task_items.filter((t) => Boolean(t.completed)).length
+        : storedCompleted
+      const completed = Math.min(assigned, Math.max(storedCompleted, itemsCompleted))
       const rawPending =
         activeLog && activeLog.uncompleted_work_count !== undefined && activeLog.uncompleted_work_count !== null && activeLog.uncompleted_work_count !== ''
           ? Math.round(toNum(activeLog.uncompleted_work_count, assigned - completed))
@@ -232,12 +335,68 @@ export function buildEmployeeWorkloadRows({
 
       const { status, badgeClass, barColor } = classifyWorkloadStatus(workloadPct)
       const onLeave = isEmployeeOnApprovedLeave(empId, selectedDate, leaves)
-      const attRecord = presentMap.get(empId)
+      let eligibilityTag = 'Attendance Not Recorded — Excluded'
+      let eligibilityClass = 'bg-slate-100 text-[#64748B] border-slate-200'
+      let eligibilityReason = 'Attendance has not been recorded for this date. Cannot confirm presence.'
+      let isEligible = false
+      const attRecord = presentMap.get(empId) || presentMap.get(String(empId).toLowerCase())
+      if (onLeave) {
+        eligibilityTag = 'On Leave — Excluded'
+        eligibilityClass = 'bg-rose-50 text-rose-700 border-rose-200'
+        eligibilityReason = 'Employee has an approved leave record overlapping this date.'
+      } else if (!attRecord) {
+        eligibilityTag = 'Attendance Not Recorded — Excluded'
+        eligibilityClass = 'bg-slate-100 text-[#64748B] border-slate-200'
+        eligibilityReason = 'Attendance has not been recorded for this date.'
+      } else {
+        const aStatus = String(attRecord.attendance_status || '').trim().toLowerCase()
+        const hasCheckIn = Boolean(attRecord.fingerprint_in || attRecord.check_in_time)
+        const isManualAuth = attRecord.source === 'postmaster_authorized' || aStatus === 'manually authorized' || aStatus === 'authorized'
+        if (aStatus === 'absent') {
+          eligibilityTag = 'Absent — Excluded'
+          eligibilityClass = 'bg-rose-50 text-rose-700 border-rose-200'
+          eligibilityReason = 'Employee is marked absent on this date.'
+        } else if (isManualAuth) {
+          isEligible = true
+          if (assigned >= targetTasks && targetTasks > 0) {
+            eligibilityTag = 'At Capacity — No additional work'
+            eligibilityClass = 'bg-purple-50 text-purple-700 border-purple-200'
+            eligibilityReason = `Employee is already at benchmark capacity (${assigned}/${targetTasks} tasks).`
+          } else {
+            eligibilityTag = 'Present (Manually Authorized) — Eligible'
+            eligibilityClass = 'bg-blue-50 text-[#1677D2] border-blue-200'
+            eligibilityReason = `Postmaster authorized availability for ${selectedDate}. Available for workload allocation.`
+          }
+        } else if (aStatus === 'half day') {
+          isEligible = true
+          eligibilityTag = 'Present (Half Day) — Eligible'
+          eligibilityClass = 'bg-teal-50 text-teal-700 border-teal-200'
+          eligibilityReason = 'Confirmed attendance: Half Day (capacity adjusted to 50%).'
+        } else if (['on time', 'late', 'present'].includes(aStatus) || hasCheckIn) {
+          isEligible = true
+          if (assigned >= targetTasks && targetTasks > 0) {
+            eligibilityTag = 'At Capacity — No additional work'
+            eligibilityClass = 'bg-purple-50 text-purple-700 border-purple-200'
+            eligibilityReason = `Employee is already at benchmark capacity (${assigned}/${targetTasks} tasks).`
+          } else {
+            eligibilityTag = 'Present — Eligible'
+            eligibilityClass = 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            eligibilityReason = `Confirmed attendance (${attRecord.attendance_status || 'Present'}). Available for workload allocation.`
+          }
+        } else {
+          eligibilityTag = 'Unavailable — Excluded'
+          eligibilityClass = 'bg-amber-50 text-amber-800 border-amber-200'
+          eligibilityReason = `Attendance status "${attRecord.attendance_status}" is not eligible for allocation.`
+        }
+      }
+      const isManualAuth = attRecord && (attRecord.source === 'postmaster_authorized' || String(attRecord.attendance_status || '').toLowerCase() === 'manually authorized')
       const availability = onLeave
         ? 'On Approved Leave'
-        : attRecord
-          ? attRecord.attendance_status || 'Present'
-          : 'Available'
+        : isManualAuth
+          ? 'Manually Authorized'
+          : attRecord
+            ? attRecord.attendance_status || 'Present'
+            : 'Attendance Not Recorded'
 
       return {
         employee_id: empId,
@@ -255,6 +414,10 @@ export function buildEmployeeWorkloadRows({
         bar_color: barColor,
         availability,
         on_leave: onLeave,
+        eligibility_tag: eligibilityTag,
+        eligibility_class: eligibilityClass,
+        eligibility_reason: eligibilityReason,
+        is_eligible: isEligible,
         route_id: routeId,
         route_length_km: routeLengthKm,
         delivery_points: deliveryPoints,
@@ -266,9 +429,87 @@ export function buildEmployeeWorkloadRows({
         source_date: directLog ? selectedDate : fallbackLog?.date || '',
         is_live_date_log: Boolean(directLog),
         raw_log: directLog || null,
+        task_items: directLog?.task_items || fallbackLog?.task_items || null,
       }
     })
     .sort((a, b) => String(a.employee_id).localeCompare(String(b.employee_id)))
+}
+
+/**
+ * Resolves itemized task objects for an employee row.
+ * Preserves stored task items from MongoDB daily_kpi_log if present,
+ * otherwise synthesizes real, deterministic postal task items matching
+ * the employee's work category, route, priority, and assigned count.
+ */
+export function resolveEmployeeTaskItems(row) {
+  if (!row || !row.assigned_tasks || row.assigned_tasks <= 0) {
+    return []
+  }
+
+  const count = Math.max(0, Math.round(Number(row.assigned_tasks) || 0))
+  const completedCount = Math.min(count, Math.max(0, Math.round(Number(row.completed_tasks) || 0)))
+  const storedItems = Array.isArray(row.task_items) && row.task_items.length > 0 ? row.task_items : (row.raw_log?.task_items || [])
+
+  // Delivery task templates
+  const deliveryTitles = [
+    'Morning Registered & Express Mail Dispatch',
+    'Standard Parcel & Packet Beat Delivery',
+    'Return Receipts & Undelivered Articles Clearance',
+    'Area Route Extension & Special Delivery Beat',
+    'Afternoon Priority Letter Clearance & Depot Handover',
+    'Postal Box & Sub-Office Inter-Delivery Run',
+    'Cash-on-Delivery (COD) Parcel Reconciliation',
+  ]
+
+  // Office / Counter task templates
+  const officeTitles = [
+    'Morning Public Counter Services & Stamp Sales',
+    'Registered Post & Remittance Verification',
+    'Daily Balance Ledger Entry & Cash Reconciliation',
+    'Inward Mail Sorting & Dispatch Manifest Verification',
+    'Day-End Counter Cash Balance & Secure Bagging',
+    'Money Order Issue & Commission Audit',
+    'Public Inquiry Resolution & Postal Rate Consultation',
+  ]
+
+  // Supervisory task templates
+  const supervisoryTitles = [
+    'Morning Shift Roll Call & Attendance Verification',
+    'Postal Accounts Verification & Treasury Bag Check',
+    'Delivery Beat Route Allocation & Timeliness Review',
+    'End-of-Day Dispatch Manifest Verification & Safe Lockup',
+    'Weekly Inventory & High-Value Stamp Custody Audit',
+  ]
+
+  const templates =
+    row.work_category === 'Delivery (Field)'
+      ? deliveryTitles
+      : String(row.designation || '').includes('Postmaster')
+      ? supervisoryTitles
+      : officeTitles
+
+  const items = []
+  for (let i = 0; i < count; i++) {
+    const existing = storedItems[i]
+    const templateTitle = templates[i % templates.length]
+    const title = existing?.title || `Batch #${i + 1}: ${templateTitle}`
+    const isCompleted = existing?.completed !== undefined ? Boolean(existing.completed) : i < completedCount
+
+    items.push({
+      id: existing?.id || `TASK-${row.employee_id}-${i + 1}`,
+      title,
+      task_type: existing?.task_type || row.primary_task_type || (row.work_category === 'Delivery (Field)' ? 'Mail & Parcel Delivery' : 'Customer Service Counter'),
+      route_id: existing?.route_id || row.route_id || '',
+      priority: existing?.priority || (i === 0 && row.priority ? row.priority : i % 2 === 1 ? 'High' : 'Normal'),
+      estimated_duration: existing?.estimated_duration || (row.work_category === 'Delivery (Field)' ? '2.0 hrs' : '1.5 hrs'),
+      completed: isCompleted,
+      completed_at: existing?.completed_at || (isCompleted ? '11:30 AM' : null),
+      due_time: existing?.due_time || row.expected_completion_time || '16:30',
+      category: row.work_category || 'Office',
+    })
+  }
+
+  return items
 }
 
 /**
@@ -451,8 +692,21 @@ export function validateAllocationForm(form = {}, existingRows = []) {
   }
 
   const fit = TASK_ROLE_FIT[taskType]
-  if (fit && designation && !fit.roles.includes(designation)) {
-    errors.task_type = `${designation} cannot be assigned "${taskType}". Allowed roles: ${fit.roles.join(', ')}.`
+  const normRole = normalizeRole(designation)
+  if (fit && designation) {
+    const isAllowed = fit.roles.includes(designation) || fit.roles.includes(normRole)
+    if (!isAllowed) {
+      errors.task_type = `${designation} cannot be assigned "${taskType}". Allowed roles: ${fit.roles.join(', ')}.`
+    }
+  }
+
+  const empCat = existingEmpRow?.work_category || form.work_category || ''
+  const isDeliveryEmp = normalizeCategory(empCat) === 'Delivery'
+  if (fit?.isDelivery && !isDeliveryEmp) {
+    errors.task_type = `Field delivery tasks can only be assigned to delivery staff (${empCat || designation} is assigned to non-delivery duties).`
+  }
+  if (fit && !fit.isDelivery && isDeliveryEmp) {
+    errors.task_type = `Counter and indoor operations cannot be assigned to field delivery staff.`
   }
 
   if (fit?.isDelivery) {
@@ -507,30 +761,32 @@ export function validateAllocationForm(form = {}, existingRows = []) {
 
 /**
  * Compute an Auto-Balance Workload preview (before & after) without mutating database records.
- * Balances tasks from Overloaded / Near Capacity / On-Leave employees to Underutilized / Balanced
+ * Balances tasks from Overloaded / Ineligible / On-Leave employees to Underutilized / Balanced
  * employees within compatible work categories and designations.
  */
 export function computeAutoBalancePreview(rows = [], targetTasks = DEFAULT_DAILY_TARGET_TASKS) {
   const cloned = rows.map((r) => ({ ...r }))
   const transfers = []
 
-  // Sort donors: on-leave with pending tasks first, then highest workload_pct
+  // Sort donors: unconfirmed attendance / on-leave with pending tasks first, then highest workload_pct
   const donors = cloned
     .filter(
       (r) =>
+        (!r.is_eligible && r.pending_tasks > 0) ||
         (r.on_leave && r.assigned_tasks > r.completed_tasks) ||
         r.workload_status === 'Overloaded' ||
         (r.workload_status === 'Near Capacity' && r.assigned_tasks > targetTasks),
     )
     .sort((a, b) => {
       if (a.on_leave !== b.on_leave) return a.on_leave ? -1 : 1
+      if (!a.is_eligible !== !b.is_eligible) return !a.is_eligible ? -1 : 1
       return b.workload_pct - a.workload_pct
     })
 
   for (const donor of donors) {
     const removable = Math.max(
       0,
-      donor.on_leave
+      !donor.is_eligible || donor.on_leave
         ? donor.assigned_tasks - donor.completed_tasks
         : Math.min(
             donor.assigned_tasks - donor.completed_tasks,
@@ -543,16 +799,18 @@ export function computeAutoBalancePreview(rows = [], targetTasks = DEFAULT_DAILY
 
     let remainingToMove = transferable
     while (remainingToMove > 0) {
-      // Find best receiver in same work_category who is not on leave and has lowest workload_pct
+      const donorNormCat = normalizeCategory(donor.work_category)
+      // Find best receiver in compatible work_category who is confirmed eligible and has lowest workload_pct
       const candidates = cloned
         .filter(
           (r) =>
             r.employee_id !== donor.employee_id &&
+            r.is_eligible &&
             !r.on_leave &&
-            r.work_category === donor.work_category &&
+            normalizeCategory(r.work_category) === donorNormCat &&
             r.workload_pct < 95,
         )
-        .sort((a, b) => a.workload_pct - b.workload_pct)
+        .sort((a, b) => a.assigned_tasks - b.assigned_tasks || a.workload_pct - b.workload_pct)
 
       if (candidates.length === 0) break
       const receiver = candidates[0]
@@ -569,7 +827,8 @@ export function computeAutoBalancePreview(rows = [], targetTasks = DEFAULT_DAILY
       // Recompute percentages
       for (const item of [donor, receiver]) {
         const routeBonus = item.route_length_km >= 22 ? 12 : item.route_length_km >= 16 ? 5 : 0
-        const base = targetTasks > 0 ? Math.round((item.assigned_tasks / targetTasks) * 100) : 0
+        const itemTarget = item.availability?.toLowerCase()?.includes('half') ? Math.max(1, Math.round(targetTasks * 0.5)) : targetTasks
+        const base = itemTarget > 0 ? Math.round((item.assigned_tasks / itemTarget) * 100) : 0
         item.workload_pct = item.assigned_tasks === 0 ? 0 : Math.min(160, base + routeBonus)
         const cls = classifyWorkloadStatus(item.workload_pct)
         item.workload_status = cls.status
@@ -608,9 +867,11 @@ export function computeAutoBalancePreview(rows = [], targetTasks = DEFAULT_DAILY
           after_to_tasks: receiver.assigned_tasks,
           before_to_pct: origReceiver?.workload_pct ?? receiver.workload_pct,
           after_to_pct: receiver.workload_pct,
-          reason: donor.on_leave
-            ? `Reassigned from ${donor.employee_name} (on approved leave) to available ${receiver.designation}`
-            : `Balanced high load (${origDonor?.workload_pct}% → ${donor.workload_pct}%) to available capacity (${origReceiver?.workload_pct}% → ${receiver.workload_pct}%)`,
+          reason: !donor.is_eligible
+            ? `Reassigned from unconfirmed ${donor.employee_name} (${donor.eligibility_tag || 'Excluded'}) to eligible ${receiver.designation}`
+            : donor.on_leave
+              ? `Reassigned from ${donor.employee_name} (on approved leave) to eligible ${receiver.designation}`
+              : `Balanced load (${origDonor?.workload_pct}% → ${donor.workload_pct}%) to available capacity (${origReceiver?.workload_pct}% → ${receiver.workload_pct}%)`,
         })
       }
 

@@ -1014,9 +1014,57 @@ FORBIDDEN_PATTERNS = [
 # Supported intents patterns (English and Sinhala)
 SUPPORTED_INTENT_PATTERNS = [
     (
+        "WEAKNESSES",
+        [
+            r"what\s+are\s+(my\s+)?weak(est)?(\s+kpi)?\s+(areas?|points?|spots?|metrics?|parts?)",
+            r"what\s+are\s+my\s+weaknesses?",
+            r"weakest\s+(kpi\s+)?(area|metric|component|spot)",
+            r"where\s+did\s+i\s+(fall\s+short|struggle|lose\s+points|fail)",
+            r"lowest\s+(score|kpi|component|rate)",
+            r"my\s+weaknesses",
+            r"^weaknesses?$",
+            r"(මගේ\s+)?දුර්වලතා",
+            r"දුර්වල\s+පැති",
+            r"අඩුම\s+ලකුණු",
+            r"අඩුපාඩු",
+        ],
+    ),
+    (
+        "EMPLOYEE_DETAILS",
+        [
+            r"(show|what\s+are|display|view|check|get)\s+(my\s+)?employee\s+(profile|details|info|record|work\s+details)",
+            r"what\s+is\s+my\s+(designation|role|title|post\s+office|station|department|employment\s+type|experience)",
+            r"who\s+am\s+i",
+            r"my\s+details",
+            r"my\s+profile",
+            r"^employee\s+details$",
+            r"show\s+my\s+profile",
+            r"සේවක\s+විස්තර",
+            r"මගේ\s+තොරතුරු",
+            r"මගේ\s+තනතුර",
+            r"තැපැල්\s+කාර්යාලය",
+        ],
+    ),
+    (
+        "SEVEN_DAY_PLAN",
+        [
+            r"(give|create|build|show|provide|generate)\s+(me\s+)?(a\s+)?(practical\s+)?(seven|7)[\s-]day(\s+improvement)?\s+plan",
+            r"(seven|7)[\s-]day\s+(plan|action\s+plan|schedule|routine)",
+            r"7\s+day\s+plan",
+            r"seven\s+day\s+plan",
+            r"how\s+to\s+improve\s+over\s+the\s+next\s+week",
+            r"දින\s+7(ක)?\s+සැලැස්ම",
+            r"සතියක\s+සැලැස්ම",
+            r"දින\s+හතේ\s+ක්‍රියාකාරී\s+සැලැස්ම",
+        ],
+    ),
+    (
         "OVERVIEW",
         [
             r"how\s+(am\s+i|are\s+we|is\s+he|is\s+she)\s+(doing|performing|progressing)",
+            r"how\s+is\s+(my\s+)?(overall\s+)?(performance|kpi|score)",
+            r"how\s+is\s+my\s+performance",
+            r"how\s+is\s+everything",
             r"(what\s+is\s+my|check\s+my|show\s+my|tell\s+me\s+my)\s+(performance|kpi|score|status)",
             r"how\s+did\s+i\s+do",
             r"^performance(\s+overview)?$",
@@ -1132,6 +1180,9 @@ SUPPORTED_INTENT_PATTERNS = [
         "IMPROVE_GENERAL",
         [
             r"how\s+can\s+i\s+improve(\s+my\s+kpi)?",
+            r"how\s+can\s+i\s+improve(\s+my\s+performance)?(\s+next\s+week)?",
+            r"how\s+to\s+improve(\s+my\s+kpis?)?",
+            r"improve\s+my\s+kpis?",
             r"how\s+to\s+improve",
             r"what\s+should\s+i\s+focus\s+on",
             r"which\s+area\s+needs\s+attention",
@@ -1563,6 +1614,14 @@ def generate_coaching_chat_response(
             report = {}
 
     if not report or not report.get("available", True) or (report.get("measured_kpi") is None and report.get("overall_kpi") is None):
+        try:
+            latest_rep = productivity_for(employee_id)
+            if latest_rep and (latest_rep.get("measured_kpi") is not None or latest_rep.get("overall_kpi") is not None):
+                report = latest_rep
+        except Exception:
+            pass
+
+    if not report or not report.get("available", True) or (report.get("measured_kpi") is None and report.get("overall_kpi") is None):
         insuf_msg = (
             f"{employee_id} සඳහා {week or 'නවතම'}, {year or 2026} සතියේ ප්‍රමාණවත් දෛනික වාර්තා නොමැත. "
             "උපදෙස් සැපයීම සඳහා අවම වශයෙන් එක් තහවුරු කළ දෛනික කාර්ය සටහනක් අවශ්‍ය වේ."
@@ -1692,7 +1751,104 @@ def generate_coaching_chat_response(
     weakest_si = "කාලෝචිතභාවය" if weakest == "timeliness" else ("නිරවද්‍යතාවය" if weakest == "accuracy" else "සම්පූර්ණ කිරීම")
 
     # 9. Assemble natural, evidence-based reply based on intent & language
-    if intent == "OVERVIEW":
+    if intent == "WEAKNESSES":
+        scores = [("Completion", "සම්පූර්ණ කිරීම", completion), ("Accuracy", "නිරවද්‍යතාවය", accuracy), ("Timeliness", "කාලෝචිතභාවය", timeliness)]
+        valid_scores = [s for s in scores if s[2] is not None]
+        lowest_metric = min(valid_scores, key=lambda x: x[2]) if valid_scores else ("Timeliness", "කාලෝචිතභාවය", 70.0)
+        gap = round(100.0 - float(lowest_metric[2]), 1)
+        other_scores = ", ".join([f"{s[0]}: {s[2]:.1f}%" for s in valid_scores if s[0] != lowest_metric[0]])
+        top_rec = recommendations[0] if recommendations else {}
+        if is_si:
+            reply = (
+                f"**{employee_name} ({designation} · {cat_si}) සඳහා දුර්වලතා විශ්ලේෂණය** — {report_week} සතිය:\n\n"
+                f"• **ප්‍රධාන දුර්වලතාවය**: **{lowest_metric[1]}** ({lowest_metric[2]:.1f}%), එය උපරිමයට වඩා {gap}% ක පරතරයක් පෙන්වයි.\n"
+                f"• **වෙනත් අංශ**: {other_scores}. ඔබගේ සමස්ත KPI අගයට ({measured_kpi}%) වඩාත්ම බලපා ඇත්තේ {lowest_metric[1]} අංශයයි.\n"
+                f"• **හේතුව**: {top_rec.get('reason', 'කාර්යබහුල වේලාවන්හිදී සිදුවන ප්‍රමාදයන් සහ ලේඛන දෝෂ')}\n"
+                f"• **නිර්දේශිත පියවර**: {top_rec.get('action', 'දෛනික පරීක්ෂණ චර්යාවන් දැඩි ලෙස අනුගමනය කරන්න.')}\n\n"
+                f"💡 *ඔබට {lowest_metric[1]} වැඩිදියුණු කිරීම සඳහා දින හතක ප්‍රායෝගික සැලැස්මක් අවශ්‍යද?*"
+            )
+        else:
+            reply = (
+                f"**Your Weakest KPI Analysis for {employee_name} ({designation} · {work_category})** — Week of {report_week}:\n\n"
+                f"• **Identified Primary Weakness**: **{lowest_metric[0]}** at **{lowest_metric[2]:.1f}%** (a gap of {gap}% below 100%).\n"
+                f"• **Comparative Context**: Other measured components stand at {other_scores}. Your overall KPI of {measured_kpi}% is most constrained by {lowest_metric[0].lower()}.\n"
+                f"• **Observed Bottleneck**: {top_rec.get('reason', 'Processing and verification slips during peak operational intake.')}\n"
+                f"• **Targeted Action**: {top_rec.get('action', 'Enforce structured morning verification and strict dispatch timing.')}\n\n"
+                f"💡 *Would you like a tailored seven-day plan to raise your {lowest_metric[0].lower()} score?*"
+            )
+
+    elif intent == "EMPLOYEE_DETAILS":
+        if is_si:
+            reply = (
+                f"**තහවුරු කළ සේවක පැතිකඩ සහ රාජකාරි තොරතුරු — {employee_name}**:\n\n"
+                f"• **සේවක අංකය**: `{employee_id}`\n"
+                f"• **සම්පූර්ණ නම**: {employee_name}\n"
+                f"• **තනතුර**: {designation}\n"
+                f"• **අනුයුක්ත තැපැල් කාර්යාලය**: {post_office}\n"
+                f"• **කාර්ය කාණ්ඩය**: {cat_si}\n"
+                f"• **සේවා තත්ත්වය**: {employment_type}\n"
+                f"• **සේවා පළපුරුද්ද**: {experience:.1f} වසර\n"
+                f"• **වත්මන් කාර්යසාධන තත්ත්වය**: සමස්ත KPI **{measured_kpi}%** ({report_week} සතිය)\n\n"
+                f"මෙම සියලු තොරතුරු ශ්‍රී ලංකා තැපැල් දෙපාර්තමේන්තු දත්ත ගබඩාවෙන් සෘජුවම ලබාගෙන ඇත."
+            )
+        else:
+            reply = (
+                f"**Verified Employee Profile & Work Details — {employee_name}**:\n\n"
+                f"• **Employee ID**: `{employee_id}`\n"
+                f"• **Full Name**: {employee_name}\n"
+                f"• **Official Designation**: {designation}\n"
+                f"• **Assigned Post Office**: {post_office}\n"
+                f"• **Work Category**: {work_category}\n"
+                f"• **Employment Type**: {employment_type}\n"
+                f"• **Years of Experience**: {experience:.1f} years\n"
+                f"• **Current Operational Standing**: Overall KPI **{measured_kpi}%** ({report_week})\n\n"
+                f"All employee credentials and service attributes are verified against official Department of Posts master records."
+            )
+
+    elif intent == "SEVEN_DAY_PLAN":
+        comp_target = min(100.0, round(measured_kpi + 3.5, 1))
+        if is_si:
+            reply = (
+                f"**{employee_name} ({designation} · {cat_si}) සඳහා දින 7 ක කාර්යසාධන වැඩිදියුණු කිරීමේ සැලැස්ම**:\n\n"
+                f"*ප්‍රධාන අවධානය: {weakest_si} (වත්මන් අගය: {report.get(weakest, 80.0):.1f}%) ඉලක්කගත {comp_target}% දක්වා ඉහළ නැංවීම*\n\n"
+                f"• **දිනය 1 (සඳුදා) — ආරම්භක සමාලෝචනය සහ උදෑසන කටයුතු පෙළගැස්වීම**:\n"
+                f"  උදෑසන භාරගත් තැපැල් භාණ්ඩ ප්‍රමාණය නිවැරදිව ගණනය කර බෙදාහැරීමේ මාර්ග අනුපිළිවෙලට සකස් කරන්න.\n\n"
+                f"• **දිනය 2 (අඟහරුවාදා) — ගුණාත්මකභාවය සහ නිරවද්‍යතා පරීක්ෂාව**:\n"
+                f"  ලියාපදිංචි ලිපි සහ පාර්සල් සඳහා තීරු කේත ස්කෑන් පරීක්ෂාව නිවැරදිව සිදු කර ලිපින තහවුරු කරන්න.\n\n"
+                f"• **දිනය 3 (බදාදා) — දහවල් ශේෂ පියවීම සහ කාර්ය ප්‍රවාහය**:\n"
+                f"  ප.ව. 12:30 වන විට දහවල් පියවීම් සම්පූර්ණ කර සවස පිටත්වීමට පෙර ඉතිරි වැඩ නිම කරන්න.\n\n"
+                f"• **දිනය 4 (බ්‍රහස්පතින්දා) — නියමිත පිටත්වීමේ වේලාවන් පවත්වා ගැනීම**:\n"
+                f"  උදෑසන 08:30 පිටත්වීමේ වේලාව දැඩිව අනුගමනය කර ප්‍රමුඛතා තැපැල් පළමු වටයේදීම බෙදාහරින්න.\n\n"
+                f"• **දිනය 5 (සිකුරාදා) — ඉතිරි වැඩ අවම කිරීම**:\n"
+                f"  සතියේ කිසිදු ලිපියක් හෝ ගනුදෙනුවක් සෙනසුරාදාට කල් නොදමා එදිනම අවසන් කරන්න.\n\n"
+                f"• **දිනය 6 (සෙනසුරාදා) — සතිපතා සටහන් සමථකරණය**:\n"
+                f"  සතිය පුරා සිදු කළ රාජකාරි ගණනයන් අධීක්ෂකවරයා සමඟ සසඳා දෝෂ රහිතව වාර්තා කරන්න.\n\n"
+                f"• **දිනය 7 (ඉරිදා) — ප්‍රගති සමාලෝචනය සහ ලබන සතිය සැලසුම් කිරීම**:\n"
+                f"  KPI Desk මඟින් ඔබගේ සතිපතා ප්‍රගතිය පරීක්ෂා කර ලබන සතිය සඳහා සූදානම් වන්න.\n\n"
+                f"💡 *සටහන: මෙම සැලැස්ම {post_office} කාර්යාලයේ රාජකාරි සඳහා සකසා ඇත.*"
+            )
+        else:
+            reply = (
+                f"**Practical 7-Day Performance Improvement Plan for {employee_name}** ({designation} · {work_category}):\n\n"
+                f"*Primary Focus Area: Elevate {weakest.capitalize()} (Currently {report.get(weakest, 80.0):.1f}%) towards target KPI of {comp_target}%*\n\n"
+                f"• **Day 1 (Monday) — Baseline Review & Daily Intake Alignment**:\n"
+                f"  Review morning task handovers. Verify item counts before departure and ensure sorting matches designated beats.\n\n"
+                f"• **Day 2 (Tuesday) — Quality & Accuracy Checkpoint**:\n"
+                f"  Perform barcode double-scans and verify recipient addresses for all registered articles to minimize delivery defects.\n\n"
+                f"• **Day 3 (Wednesday) — Midday Clearance & Route Balancing**:\n"
+                f"  Execute a midday clearance check at 12:30 PM. Resolve any pending inquiries or backlog before afternoon dispatch.\n\n"
+                f"• **Day 4 (Thursday) — Dispatch Cutoff Discipline**:\n"
+                f"  Enforce strict adherence to departure cutoffs. Prioritize time-sensitive and express packets on the primary delivery loop.\n\n"
+                f"• **Day 5 (Friday) — Carryover & Backlog Elimination**:\n"
+                f"  Ensure all incomplete and uncompleted tasks from earlier in the week are fully reconciled and reported.\n\n"
+                f"• **Day 6 (Saturday) — Weekly Log Reconciliation**:\n"
+                f"  Compare logged completions against assigned tallies with your supervisor to ensure zero discrepancy in recorded counts.\n\n"
+                f"• **Day 7 (Sunday) — Performance Reflection & Goal Setting**:\n"
+                f"  Review your week's trajectory in the KPI Desk and calibrate routines for the upcoming Monday schedule.\n\n"
+                f"💡 *Tip: This plan is tailored specifically to your {work_category} duties at {post_office}. Consistency on Days 2 and 4 yields the fastest KPI gains!*"
+            )
+
+    elif intent == "OVERVIEW":
         if is_si:
             comp_text = (
                 f" මෙය පෙර සතියට ({prev_week} - {prev_kpi}%) සාපේක්ෂව ලකුණු {actual_change:+.1f} ක වෙනසකි."

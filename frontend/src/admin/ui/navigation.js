@@ -57,6 +57,13 @@ export const workspaceNav = [
 // ── PLANNING & ANALYTICS ───────────────────────────────────────────────────
 export const analyticsNav = [
   {
+    to: '/kpi-dashboard',
+    label: 'KPI Dashboard',
+    hint: 'Comprehensive workforce performance, productivity & forecasting',
+    icon: LayoutDashboard,
+    group: 'PLANNING & ANALYTICS',
+  },
+  {
     to: '/kpi-forecasts',
     label: 'KPI Forecasts & Analytics',
     hint: 'Predict future performance with ML forecasting models',

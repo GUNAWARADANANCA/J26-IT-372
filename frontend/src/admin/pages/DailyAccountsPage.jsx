@@ -38,6 +38,7 @@ import {
   Search,
   ShieldCheck,
   Sliders,
+  Sparkles,
   Stamp,
   Trash2,
   TrendingDown,
@@ -82,6 +83,7 @@ import {
 } from '../data/repository'
 import { useAuth } from '../data/auth'
 import {
+  autoDetectColumnMapping,
   calculateCashReconciliation,
   calculateCompletenessPercent,
   filterValidationIssues,
@@ -682,19 +684,20 @@ export default function DailyAccountsPage() {
       // Populate column mapping from smart suggestions
       setUploadStage('mapping_columns')
       const sm = inspectRes.suggested_mapping || {}
+      const clientMap = autoDetectColumnMapping(inspectRes.detected_headers || [], inspectRes.sample_rows || [])
       setColumnMapping({
-        date: sm.date || '',
-        category: sm.category || '',
-        count: sm.count || '',
-        amount: sm.amount || '',
-        reference_no: sm.reference_no || '',
-        provider: sm.provider || '',
-        commission: sm.commission || '',
-        recipient: sm.recipient || '',
-        remitter: sm.remitter || '',
-        office_id: sm.office_id || '',
-        payment_method: sm.payment_method || '',
-        description: sm.description || '',
+        date: sm.date || clientMap.date || '',
+        category: sm.category || clientMap.category || '',
+        count: sm.count || clientMap.count || '',
+        amount: sm.amount || clientMap.amount || '',
+        reference_no: sm.reference_no || clientMap.reference_no || '',
+        provider: sm.provider || clientMap.provider || '',
+        commission: sm.commission || clientMap.commission || '',
+        recipient: sm.recipient || clientMap.recipient || '',
+        remitter: sm.remitter || clientMap.remitter || '',
+        office_id: sm.office_id || clientMap.office_id || '',
+        payment_method: sm.payment_method || clientMap.payment_method || '',
+        description: sm.description || clientMap.description || '',
         denomination: sm.denomination || '',
         opening_qty: sm.opening_qty || '',
         receipts_qty: sm.receipts_qty || '',
@@ -727,6 +730,80 @@ export default function DailyAccountsPage() {
       processSelectedFile(e.target.files[0])
     }
   }
+
+  const handleAutoDetectAllColumns = (overrideHeaders = null, overrideRows = null) => {
+    const hdrs = overrideHeaders || inspectData?.detected_headers || []
+    const sRows = overrideRows || inspectData?.sample_rows || []
+    const sm = inspectData?.suggested_mapping || {}
+    const clientMap = autoDetectColumnMapping(hdrs, sRows)
+    const resolved = {
+      date: clientMap.date || sm.date || '',
+      category: clientMap.category || sm.category || '',
+      count: clientMap.count || sm.count || '',
+      amount: clientMap.amount || sm.amount || '',
+      reference_no: clientMap.reference_no || sm.reference_no || '',
+      provider: clientMap.provider || sm.provider || '',
+      commission: clientMap.commission || sm.commission || '',
+      recipient: clientMap.recipient || sm.recipient || '',
+      remitter: clientMap.remitter || sm.remitter || '',
+      office_id: clientMap.office_id || sm.office_id || '',
+      payment_method: clientMap.payment_method || sm.payment_method || '',
+      description: clientMap.description || sm.description || '',
+      denomination: clientMap.denomination || sm.denomination || '',
+      opening_qty: clientMap.opening_qty || sm.opening_qty || '',
+      receipts_qty: clientMap.receipts_qty || sm.receipts_qty || '',
+      issued_qty: clientMap.issued_qty || sm.issued_qty || '',
+      damaged_qty: clientMap.damaged_qty || sm.damaged_qty || '',
+      closing_qty: clientMap.closing_qty || sm.closing_qty || '',
+      closing_value: clientMap.closing_value || sm.closing_value || '',
+      verified_by: clientMap.verified_by || sm.verified_by || '',
+    }
+    setColumnMapping(resolved)
+    return resolved
+  }
+
+  const handleWorksheetChange = (newSheet) => {
+    setSelectedSheet(newSheet)
+    if (inspectData?.sheets_data && inspectData.sheets_data[newSheet]) {
+      const sData = inspectData.sheets_data[newSheet]
+      setInspectData((prev) => ({
+        ...prev,
+        selected_sheet: newSheet,
+        detected_headers: sData.detected_headers || [],
+        sample_rows: sData.sample_rows || [],
+        suggested_mapping: sData.suggested_mapping || {},
+        total_sheet_rows: sData.total_sheet_rows || 0,
+      }))
+      const sm = sData.suggested_mapping || {}
+      const clientMap = autoDetectColumnMapping(sData.detected_headers || [], sData.sample_rows || [])
+      setColumnMapping({
+        date: sm.date || clientMap.date || '',
+        category: sm.category || clientMap.category || '',
+        count: sm.count || clientMap.count || '',
+        amount: sm.amount || clientMap.amount || '',
+        reference_no: sm.reference_no || clientMap.reference_no || '',
+        provider: sm.provider || clientMap.provider || '',
+        commission: sm.commission || clientMap.commission || '',
+        recipient: sm.recipient || clientMap.recipient || '',
+        remitter: sm.remitter || clientMap.remitter || '',
+        office_id: sm.office_id || clientMap.office_id || '',
+        payment_method: sm.payment_method || clientMap.payment_method || '',
+        description: sm.description || clientMap.description || '',
+        denomination: sm.denomination || clientMap.denomination || '',
+        opening_qty: sm.opening_qty || clientMap.opening_qty || '',
+        receipts_qty: sm.receipts_qty || clientMap.receipts_qty || '',
+        issued_qty: sm.issued_qty || clientMap.issued_qty || '',
+        damaged_qty: sm.damaged_qty || clientMap.damaged_qty || '',
+        closing_qty: sm.closing_qty || clientMap.closing_qty || '',
+        closing_value: sm.closing_value || clientMap.closing_value || '',
+        verified_by: sm.verified_by || clientMap.verified_by || '',
+      })
+    }
+  }
+
+  const mappedColumnCount = useMemo(() => {
+    return Object.values(columnMapping).filter(Boolean).length
+  }, [columnMapping])
 
   // Stage 2: Validate Sheet with selected mapping and jump to Live Preview
   const handleValidateSheet = async () => {
@@ -3207,7 +3284,7 @@ export default function DailyAccountsPage() {
                         <label className="text-xs font-bold text-slate-700">Worksheet:</label>
                         <select
                           value={selectedSheet}
-                          onChange={(e) => setSelectedSheet(e.target.value)}
+                          onChange={(e) => handleWorksheetChange(e.target.value)}
                           className="px-3 py-1.5 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 bg-white shadow-2xs"
                         >
                           {inspectData.sheet_names.map((s, idx) => (
@@ -3249,478 +3326,172 @@ export default function DailyAccountsPage() {
                     </div>
                   </div>
 
-                  {/* Mapping Instructions */}
-                  <div className="flex items-start gap-3 p-3 bg-blue-50/60 rounded-xl border border-blue-100 text-blue-900 text-xs">
-                    <Info className="size-4 text-blue-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold">Smart Column Mapping:</span> {uploadCategory === 'stamp_stock' ? 'Map stamp inventory and ledger balance columns. Zero quantities are accepted, and closing value is tracked as an asset.' : "Align your spreadsheet's column headers with Sri Lanka Post standard fields. Columns marked with an asterisk (*) are required."}
+                  {/* Smart Column Mapping Banner & Auto-Detect Summary */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-blue-50/90 to-emerald-50/80 rounded-2xl border border-blue-100 shadow-2xs">
+                    <div className="flex items-start gap-2.5">
+                      <Sparkles className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-bold text-slate-900">Smart Column Mapping</span>
+                          {mappedColumnCount > 0 ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              <Check className="size-3" /> {mappedColumnCount} Columns Auto-Detected
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                              No columns matched yet
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-600 mt-0.5">
+                          {uploadCategory === 'stamp_stock'
+                            ? 'Headers auto-mapped for stamp stock ledger. Quantities & asset valuation are tracked.'
+                            : 'Spreadsheet headers are automatically mapped below. You can review or adjust any field before previewing.'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => handleAutoDetectAllColumns()}
+                        className="px-2.5 py-1.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
+                        title="Re-run auto-detection across all columns"
+                      >
+                        <Sparkles className="size-3.5 text-blue-600" />
+                        <span>Re-Detect All</span>
+                      </button>
                     </div>
                   </div>
 
                   {/* Column Mapping Grid */}
                   {uploadCategory === 'stamp_stock' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Date */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Date Column <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.date}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, date: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Date, Trans Date</span>
-                      </div>
-
-                      {/* Stock Category / Type */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Stock Type / Category <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.category}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, category: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Stock Type, Particulars</span>
-                      </div>
-
-                      {/* Denomination (Rs.) */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Denomination (Rs.) <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.denomination || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, denomination: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Denomination (Rs.), Face Value</span>
-                      </div>
-
-                      {/* Opening Qty */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Opening Balance (Qty)
-                        </label>
-                        <select
-                          value={columnMapping.opening_qty || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, opening_qty: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Opening Qty, Opening Balance</span>
-                      </div>
-
-                      {/* Receipts Qty */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Receipts (Qty from HPO)
-                        </label>
-                        <select
-                          value={columnMapping.receipts_qty || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, receipts_qty: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Receipts, Received from HPO</span>
-                      </div>
-
-                      {/* Sold / Issued Qty */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Sold / Issued (Qty)
-                        </label>
-                        <select
-                          value={columnMapping.issued_qty || columnMapping.count || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, issued_qty: e.target.value, count: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Sold / Issued Qty, Issues</span>
-                      </div>
-
-                      {/* Damaged Qty */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Damaged / Withdrawn (Qty)
-                        </label>
-                        <select
-                          value={columnMapping.damaged_qty || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, damaged_qty: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Optional / 0 --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Damaged, Spoiled</span>
-                      </div>
-
-                      {/* Closing Qty */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Closing Balance (Qty)
-                        </label>
-                        <select
-                          value={columnMapping.closing_qty || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, closing_qty: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Closing Qty, In Hand Qty</span>
-                      </div>
-
-                      {/* Closing Value */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Closing Value (Rs.) <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.closing_value || columnMapping.amount || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, closing_value: e.target.value, amount: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Valuation Asset (GL-1201), Not Counter Revenue</span>
-                      </div>
-
-                      {/* Verified By */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Verified By / Postmaster
-                        </label>
-                        <select
-                          value={columnMapping.verified_by || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, verified_by: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Optional / Unmapped --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Postmaster Stock Verification</span>
-                      </div>
-
-                      {/* Reference No */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Reference / Batch No
-                        </label>
-                        <select
-                          value={columnMapping.reference_no || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, reference_no: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Generate Stock Ref --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Defaults to Auto-Generated STK-Date-Row</span>
-                      </div>
-
-                      {/* Office ID */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Post Office / Branch ID
-                        </label>
-                        <select
-                          value={columnMapping.office_id || ''}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, office_id: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Use Selected ({selectedOfficeName}) --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Defaults to {selectedOffice}</span>
-                      </div>
+                      {[
+                        { key: 'date', label: 'Date Column', required: true, hint: 'Expected e.g.: Date, Trans Date', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'category', label: 'Stock Type / Category', required: true, hint: 'Expected e.g.: Stock Type, Particulars', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'denomination', label: 'Denomination (Rs.)', required: true, hint: 'Expected e.g.: Denomination (Rs.), Face Value', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'opening_qty', label: 'Opening Balance (Qty)', required: false, hint: 'Expected e.g.: Opening Qty, Opening Balance', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'receipts_qty', label: 'Receipts (Qty from HPO)', required: false, hint: 'Expected e.g.: Receipts, Received from HPO', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'issued_qty', label: 'Sold / Issued (Qty)', required: false, hint: 'Expected e.g.: Sold / Issued Qty, Issues', placeholder: '-- Auto-Detect Header --', syncWithCount: true },
+                        { key: 'damaged_qty', label: 'Damaged / Withdrawn (Qty)', required: false, hint: 'Expected e.g.: Damaged, Spoiled', placeholder: '-- Optional / 0 --' },
+                        { key: 'closing_qty', label: 'Closing Balance (Qty)', required: false, hint: 'Expected e.g.: Closing Qty, In Hand Qty', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'closing_value', label: 'Closing Value (Rs.)', required: true, hint: 'Valuation Asset (GL-1201), Not Counter Revenue', placeholder: '-- Auto-Detect Header --', syncWithAmount: true },
+                        { key: 'verified_by', label: 'Verified By / Postmaster', required: false, hint: 'Postmaster Stock Verification', placeholder: '-- Optional / Unmapped --' },
+                        { key: 'reference_no', label: 'Reference / Batch No', required: false, hint: 'Defaults to Auto-Generated STK-Date-Row', placeholder: '-- Auto-Generate Stock Ref --' },
+                        { key: 'office_id', label: 'Post Office / Branch ID', required: false, hint: `Defaults to ${selectedOffice}`, placeholder: `-- Use Selected (${selectedOfficeName}) --` },
+                      ].map((field) => {
+                        const isMapped = Boolean(columnMapping[field.key])
+                        return (
+                          <div
+                            key={field.key}
+                            className={`p-3 rounded-xl border transition-all ${
+                              isMapped ? 'bg-emerald-50/40 border-emerald-300 shadow-2xs' : 'bg-white border-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-xs font-bold text-slate-800">
+                                {field.label} {field.required && <span className="text-rose-500">*</span>}
+                              </label>
+                              {isMapped && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/90 border border-emerald-300 px-1.5 py-0.5 rounded-md">
+                                  <Check className="size-2.5" /> Auto-detected
+                                </span>
+                              )}
+                            </div>
+                            <select
+                              value={columnMapping[field.key] || ''}
+                              onChange={(e) => {
+                                const val = e.target.value
+                                const nextMap = { ...columnMapping, [field.key]: val }
+                                if (field.syncWithCount) nextMap.count = val
+                                if (field.syncWithAmount) nextMap.amount = val
+                                setColumnMapping(nextMap)
+                              }}
+                              className={`w-full px-2.5 py-1.5 border rounded-lg text-xs transition-colors ${
+                                isMapped
+                                  ? 'border-emerald-400 bg-white text-slate-900 font-semibold shadow-2xs'
+                                  : 'border-slate-200 bg-slate-50 text-slate-800 font-medium'
+                              }`}
+                            >
+                              <option value="">{field.placeholder}</option>
+                              {inspectData?.detected_headers?.map((h, i) => (
+                                <option key={`${h}-${i}`} value={h}>
+                                  {h}
+                                </option>
+                              ))}
+                            </select>
+                            {isMapped ? (
+                              <span className="text-[10px] font-semibold text-emerald-700 mt-1 flex items-center gap-1 truncate">
+                                <Check className="size-3 shrink-0 text-emerald-600" />
+                                <span>Matched header: <strong className="font-bold text-emerald-900">"{columnMapping[field.key]}"</strong></span>
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 mt-1 block">{field.hint}</span>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Date */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Date Column <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.date}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, date: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Date, Trans Date</span>
-                      </div>
-
-                      {/* Category */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Category / Service <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.category}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, category: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Category, Service, Particulars</span>
-                      </div>
-
-                      {/* Amount */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Amount (LKR) <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={columnMapping.amount}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, amount: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Header --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Amount, Total, Value LKR</span>
-                      </div>
-
-                      {/* Count / Bills */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Count / Bills / Volume
-                        </label>
-                        <select
-                          value={columnMapping.count}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, count: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect (Default 1) --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Count, Qty, No. of Bills</span>
-                      </div>
-
-                      {/* Reference No */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Reference / Voucher No
-                        </label>
-                        <select
-                          value={columnMapping.reference_no}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, reference_no: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect / Generate --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Reference No, Voucher, Ticket</span>
-                      </div>
-
-                      {/* Provider */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Utility Provider / Biller
-                        </label>
-                        <select
-                          value={columnMapping.provider}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, provider: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect Provider --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: CEB, LECO, NWSDB, SLT</span>
-                      </div>
-
-                      {/* Commission */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Commission / Postal Fee
-                        </label>
-                        <select
-                          value={columnMapping.commission}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, commission: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Auto-Detect / 0.00 --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Expected e.g.: Commission, Fee, Charge</span>
-                      </div>
-
-                      {/* Recipient */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Recipient / Payee
-                        </label>
-                        <select
-                          value={columnMapping.recipient}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, recipient: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Optional / Unmapped --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">For Money Orders, Pensions</span>
-                      </div>
-
-                      {/* Remitter */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Remitter / Sender
-                        </label>
-                        <select
-                          value={columnMapping.remitter}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, remitter: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Optional / Unmapped --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">For Inward Money Orders</span>
-                      </div>
-
-                      {/* Office ID */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Post Office / Branch ID
-                        </label>
-                        <select
-                          value={columnMapping.office_id}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, office_id: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Use Selected ({selectedOfficeName}) --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Defaults to {selectedOffice}</span>
-                      </div>
-
-                      {/* Payment Method */}
-                      <div className="p-3 bg-white rounded-xl border border-slate-200">
-                        <label className="block text-xs font-bold text-slate-800 mb-1">
-                          Payment Method
-                        </label>
-                        <select
-                          value={columnMapping.payment_method}
-                          onChange={(e) => setColumnMapping({ ...columnMapping, payment_method: e.target.value })}
-                          className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs bg-slate-50 text-slate-800 font-medium"
-                        >
-                          <option value="">-- Optional (Cash / Cheque) --</option>
-                          {inspectData?.detected_headers?.map((h, i) => (
-                            <option key={`${h}-${i}`} value={h}>
-                              {h}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="text-[10px] text-slate-400 mt-1 block">Cash, Card, QR, Postal Order</span>
-                      </div>
+                      {[
+                        { key: 'date', label: 'Date Column', required: true, hint: 'Expected e.g.: Date, Trans Date', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'category', label: 'Category / Service', required: true, hint: 'Expected e.g.: Category, Service, Particulars', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'amount', label: 'Amount (LKR)', required: true, hint: 'Expected e.g.: Amount, Total, Value LKR', placeholder: '-- Auto-Detect Header --' },
+                        { key: 'count', label: 'Count / Bills / Volume', required: false, hint: 'Expected e.g.: Count, Qty, No. of Bills', placeholder: '-- Auto-Detect (Default 1) --' },
+                        { key: 'reference_no', label: 'Reference / Voucher No', required: false, hint: 'Expected e.g.: Reference No, Voucher, Ticket', placeholder: '-- Auto-Detect / Generate --' },
+                        { key: 'provider', label: 'Utility Provider / Biller', required: false, hint: 'Expected e.g.: CEB, LECO, NWSDB, SLT', placeholder: '-- Auto-Detect Provider --' },
+                        { key: 'commission', label: 'Commission / Postal Fee', required: false, hint: 'Expected e.g.: Commission, Fee, Charge', placeholder: '-- Auto-Detect / 0.00 --' },
+                        { key: 'recipient', label: 'Recipient / Payee', required: false, hint: 'For Money Orders, Pensions', placeholder: '-- Optional / Unmapped --' },
+                        { key: 'remitter', label: 'Remitter / Sender', required: false, hint: 'For Inward Money Orders', placeholder: '-- Optional / Unmapped --' },
+                        { key: 'office_id', label: 'Post Office / Branch ID', required: false, hint: `Defaults to ${selectedOffice}`, placeholder: `-- Use Selected (${selectedOfficeName}) --` },
+                        { key: 'payment_method', label: 'Payment Method', required: false, hint: 'Cash, Card, QR, Postal Order', placeholder: '-- Optional (Cash / Cheque) --' },
+                      ].map((field) => {
+                        const isMapped = Boolean(columnMapping[field.key])
+                        return (
+                          <div
+                            key={field.key}
+                            className={`p-3 rounded-xl border transition-all ${
+                              isMapped ? 'bg-emerald-50/40 border-emerald-300 shadow-2xs' : 'bg-white border-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-xs font-bold text-slate-800">
+                                {field.label} {field.required && <span className="text-rose-500">*</span>}
+                              </label>
+                              {isMapped && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/90 border border-emerald-300 px-1.5 py-0.5 rounded-md">
+                                  <Check className="size-2.5" /> Auto-detected
+                                </span>
+                              )}
+                            </div>
+                            <select
+                              value={columnMapping[field.key] || ''}
+                              onChange={(e) => setColumnMapping({ ...columnMapping, [field.key]: e.target.value })}
+                              className={`w-full px-2.5 py-1.5 border rounded-lg text-xs transition-colors ${
+                                isMapped
+                                  ? 'border-emerald-400 bg-white text-slate-900 font-semibold shadow-2xs'
+                                  : 'border-slate-200 bg-slate-50 text-slate-800 font-medium'
+                              }`}
+                            >
+                              <option value="">{field.placeholder}</option>
+                              {inspectData?.detected_headers?.map((h, i) => (
+                                <option key={`${h}-${i}`} value={h}>
+                                  {h}
+                                </option>
+                              ))}
+                            </select>
+                            {isMapped ? (
+                              <span className="text-[10px] font-semibold text-emerald-700 mt-1 flex items-center gap-1 truncate">
+                                <Check className="size-3 shrink-0 text-emerald-600" />
+                                <span>Matched header: <strong className="font-bold text-emerald-900">"{columnMapping[field.key]}"</strong></span>
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 mt-1 block">{field.hint}</span>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
 
@@ -3964,6 +3735,7 @@ export default function DailyAccountsPage() {
                   {/* Partial Ingestion Notice */}
                   <div className="p-3.5 bg-blue-50/60 border border-blue-200 rounded-2xl flex items-start gap-3 text-xs text-blue-900">
                     <Info className="size-4 text-blue-600 shrink-0 mt-0.5" />
+
                     <div>
                       <span className="font-bold">Partial Import Mode Enabled:</span>{' '}
                       {uploadPreview.batch_meta.valid_rows} valid records will be ingested directly into live reporting. Incomplete or invalid records ({uploadPreview.batch_meta.invalid_rows}) are isolated in the Validation Issues report for correction, and {uploadPreview.batch_meta.duplicate_rows} duplicate rows will be omitted to safeguard ledger balance.

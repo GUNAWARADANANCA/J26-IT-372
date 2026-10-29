@@ -42,6 +42,7 @@ const AttendanceQrPage = lazy(() => import('./attendance/AttendanceQrPage'))
 const ProductivityPage = lazy(() => import('./admin/pages/ProductivityPage'))
 const KpiSimulatorPage = lazy(() => import('./admin/pages/KpiSimulatorPage'))
 const ForecastMonitoringPage = lazy(() => import('./admin/pages/ForecastMonitoringPage'))
+const KpiDashboardPage = lazy(() => import('./admin/pages/KpiDashboardPage'))
 const KpiForecastPage = lazy(() => import('./admin/pages/KpiForecastPage'))
 const PostalKpiDashboard = lazy(() => import('./admin/pages/PostalKpiDashboard'))
 const SignInPage = lazy(() => import('./admin/pages/SignInPage'))
@@ -123,14 +124,24 @@ function BootScreen({ children }) {
 function KpiDeskShell() {
   const [ready, setReady] = useState(false)
   const [bootError, setBootError] = useState('')
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     let cancelled = false
+    setBootError('')
     ensureSeeded()
       .then(() => { if (!cancelled) setReady(true) })
-      .catch((err) => { if (!cancelled) setBootError(err.message || 'Failed to reach the API') })
+      .catch((err) => {
+        if (!cancelled) {
+          setBootError(err.message || 'Failed to reach the API')
+          const timer = setTimeout(() => {
+            if (!cancelled) setRetryKey((k) => k + 1)
+          }, 3000)
+          return () => clearTimeout(timer)
+        }
+      })
     return () => { cancelled = true }
-  }, [])
+  }, [retryKey])
 
   let body
   if (bootError) {
@@ -140,6 +151,27 @@ function KpiDeskShell() {
           Could not connect to Post-Assist LK service
         </Typography>
         <Alert severity="error" sx={{ borderRadius: 2 }}>{bootError}</Alert>
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', mt: 1 }}>
+          <button
+            type="button"
+            onClick={() => setRetryKey((k) => k + 1)}
+            style={{
+              backgroundColor: '#1677D2',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Retry Now
+          </button>
+          <Typography variant="caption" sx={{ color: '#64748B' }}>
+            Auto-reconnecting every 3 seconds...
+          </Typography>
+        </Box>
       </BootScreen>
     )
   } else if (!ready) {
@@ -210,6 +242,7 @@ export default function App() {
           <Route path="productivity" element={<ProductivityPage />} />
           <Route path="kpi-simulator" element={<KpiSimulatorPage />} />
           <Route path="forecast-monitoring" element={<RequirePostmaster><ForecastMonitoringPage /></RequirePostmaster>} />
+          <Route path="kpi-dashboard" element={<KpiDashboardPage />} />
           <Route path="kpi-forecasts" element={<RequirePostmaster><KpiForecastPage /></RequirePostmaster>} />
           <Route path="postal-kpi-dashboard" element={<RequirePostmaster><PostalKpiDashboard /></RequirePostmaster>} />
           <Route path="work-allocation" element={<WorkAllocationPage />} />

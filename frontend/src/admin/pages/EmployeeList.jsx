@@ -9,7 +9,7 @@ export default function EmployeeList({ refreshKey }) {
   const [coachId, setCoachId] = useState('')
   return (
     <>
-      <EmployeeOverviewPanel />
+      <EmployeeOverviewPanel refreshKey={refreshKey} />
       <ListView
         meta={employeeDoctype}
         basePath="/employee"

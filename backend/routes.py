@@ -1,3 +1,4 @@
+from kpi_dashboard_service import get_dashboard_data, export_dashboard_csv
 """CRUD, Excel import, and Excel export for the desk collections."""
 
 import asyncio
@@ -42,7 +43,14 @@ from attendance_credential import (
 )
 from db import get_db
 from excel_io import export_employees, export_kpi_logs, import_workbook
-from performance_review import allocation_plan, approve_allocation, confirm_overtime, promotion_board
+from performance_review import (
+    allocation_plan,
+    approve_allocation,
+    authorize_attendance_for_date,
+    auto_balance_workload,
+    confirm_overtime,
+    promotion_board,
+)
 from productivity import (
     forecast_monitoring,
     productivity_for,
@@ -158,7 +166,7 @@ def api_health():
         db_name = f"reconnecting ({exc})"
     return {"ok": True, "service": "PostAssist", "database": db_name, "db_connected": db_ok}
 
-DOCTYPES = ("employee", "daily_kpi_log", "attendance_log")
+DOCTYPES = ("employee", "daily_kpi_log", "attendance_log", "work_allocation")
 
 # Dropdowns that can grow. Values already stored on documents are included too.
 CREATABLE_FIELDS = {
@@ -773,8 +781,8 @@ def chat_coach(employee_id: str, request: Request, body: dict | None = None):
     auth = require_clerk_or_postmaster(request)
     body = body or {}
     message = str(body.get("message") or body.get("question") or "").strip()
-    week = body.get("week") or 9
-    year = int(body.get("year") or 2026)
+    week = body.get("week") or None
+    year = int(body.get("year")) if body.get("year") else None
     language = body.get("language")
     return generate_coaching_chat_response(
         employee_id=employee_id,
@@ -805,6 +813,61 @@ def chat_coach_generic(request: Request, body: dict | None = None):
         current_user=auth,
         language=language,
     )
+
+
+
+@router.post("/productivity-coach/chat")
+def productivity_coach_chat(request: Request, body: dict | None = None):
+    auth = require_clerk_or_postmaster(request)
+    body = body or {}
+    message = str(body.get("message") or body.get("question") or "").strip()
+    from datetime import datetime, timezone
+    conversation_id = body.get("conversation_id") or f"conv_{int(datetime.now(timezone.utc).timestamp())}"
+
+    # Securely resolve employee identity from session
+    username = auth.get("username", "")
+    role = auth.get("role", "")
+    db = get_db()
+
+    emp_id = None
+    # 1. Direct username match
+    emp_doc = db["employee"].find_one({"$or": [{"_id": username}, {"employee_id": username}]})
+    if emp_doc:
+        emp_id = emp_doc.get("employee_id") or emp_doc.get("_id")
+
+    # 2. Check if user document has employee_id
+    if not emp_id:
+        user_doc = db["app_user"].find_one({"username": username})
+        if user_doc and user_doc.get("employee_id"):
+            emp_id = user_doc["employee_id"]
+
+    # 3. Postmaster oversight: If postmaster supplies an employee_id in body, coach that officer
+    if (auth.get("is_postmaster") or str(role).lower() == "postmaster") and body.get("employee_id"):
+        target_eid = str(body.get("employee_id")).strip()
+        target_doc = db["employee"].find_one({"$or": [{"_id": target_eid}, {"employee_id": target_eid}]})
+        if target_doc:
+            emp_id = target_doc.get("employee_id") or target_doc.get("_id")
+
+    # 4. Fallback default
+    if not emp_id:
+        first = db["employee"].find_one()
+        emp_id = (first.get("employee_id") or first.get("_id")) if first else "EMP1137"
+
+    week = body.get("week") or 9
+    year = int(body.get("year") or 2026)
+    language = body.get("language")
+
+    res = generate_coaching_chat_response(
+        employee_id=emp_id,
+        message=message,
+        year=year,
+        week=week,
+        current_user=auth,
+        language=language,
+    )
+    res["conversation_id"] = conversation_id
+    res["timestamp"] = datetime.now(timezone.utc).isoformat()
+    return res
 
 
 @router.post("/productivity/{employee_id}/coach/ask")
@@ -898,6 +961,68 @@ def create_powerbi_embed(request: Request, body: dict | None = None):
     return embed_for(str((body or {}).get("page") or ""))
 
 
+
+
+@router.get("/kpi/dashboard")
+def read_kpi_dashboard(
+    request: Request,
+    period_type: str = "all",
+    start_date: str = "",
+    end_date: str = "",
+    post_office: str = "",
+    employee_id: str = "",
+    designation: str = "",
+    category: str = "",
+    status: str = "all",
+):
+    current_user(request)
+    return get_dashboard_data(
+        period_type=period_type,
+        start_date=start_date or None,
+        end_date=end_date or None,
+        post_office=post_office or None,
+        employee_id=employee_id or None,
+        designation=designation or None,
+        category=category or None,
+        performance_status=status or None,
+    )
+
+
+@router.get("/kpi/dashboard/export")
+def export_kpi_dashboard(
+    request: Request,
+    export_type: str = "employees",
+    period_type: str = "all",
+    start_date: str = "",
+    end_date: str = "",
+    post_office: str = "",
+    employee_id: str = "",
+    designation: str = "",
+    category: str = "",
+    status: str = "all",
+):
+    current_user(request)
+    data = get_dashboard_data(
+        period_type=period_type,
+        start_date=start_date or None,
+        end_date=end_date or None,
+        post_office=post_office or None,
+        employee_id=employee_id or None,
+        designation=designation or None,
+        category=category or None,
+        performance_status=status or None,
+    )
+    from fastapi.responses import Response
+    from datetime import date
+    csv_text = export_dashboard_csv(data, export_type=export_type)
+    filename = f"postassist_kpi_{export_type}_{date.today().isoformat()}.csv"
+    return Response(
+        content=csv_text,
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @router.get("/kpi/forecasts/summary")
 def read_kpi_summary(request: Request):
     require_postmaster(request)
@@ -968,6 +1093,48 @@ def review_allocation(request: Request, body: dict):
 def accept_allocation(request: Request, body: dict):
     require_postmaster(request)
     return approve_allocation(str(body.get("date") or ""), body.get("checklist"))
+
+
+@router.post("/allocation/authorize-attendance")
+def authorize_attendance_endpoint(request: Request, body: dict):
+    require_postmaster(request)
+    date_str = str((body or {}).get("date") or "").strip()
+    employee_ids = (body or {}).get("employee_ids")
+    status = str((body or {}).get("status") or "Present").strip()
+    notes = str((body or {}).get("notes") or "Authorized by Postmaster for work allocation").strip()
+    post_office = (body or {}).get("post_office")
+    actor = current_user(request)
+    username = actor.get("username", "postmaster") if isinstance(actor, dict) else "postmaster"
+    return authorize_attendance_for_date(
+        day_text=date_str,
+        employee_ids=employee_ids,
+        status=status,
+        notes=notes,
+        user=username,
+        post_office=post_office,
+    )
+
+
+@router.post("/allocation/auto-balance")
+def auto_balance_endpoint(request: Request, body: dict):
+    require_postmaster(request)
+    date_str = str((body or {}).get("date") or "").strip()
+    post_office = (body or {}).get("post_office")
+    checklist = (body or {}).get("checklist")
+    confirm = bool((body or {}).get("confirm", True))
+    authorized_employee_ids = (body or {}).get("authorized_employee_ids")
+    authorize_all_active = bool((body or {}).get("authorize_all_active", False))
+    actor = current_user(request)
+    username = actor.get("username", "postmaster") if isinstance(actor, dict) else "postmaster"
+    return auto_balance_workload(
+        date_str,
+        post_office=post_office,
+        checklist=checklist,
+        user=username,
+        confirm=confirm,
+        authorized_employee_ids=authorized_employee_ids,
+        authorize_all_active=authorize_all_active,
+    )
 
 
 @router.post("/allocation/overtime")

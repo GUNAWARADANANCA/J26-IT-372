@@ -48,7 +48,7 @@ async function requestOnce(path, options = {}) {
     'Content-Type': 'application/json',
     ...(options.headers || {}),
   }
-  if (method !== 'GET' && method !== 'HEAD') {
+  if (method !== 'GET' && method !== 'HEAD' && path !== '/api/auth/login') {
     const token = await ensureCsrfToken()
     if (token) {
       headers['X-CSRF-Token'] = token
@@ -158,7 +158,12 @@ async function request(path, options = {}) {
         return data
       } catch (error) {
         lastError = error
-        const lost = error.status === 503 || /temporarily unreachable/i.test(error.message || '')
+        const lost =
+          error.status === 502 ||
+          error.status === 503 ||
+          error.status === 504 ||
+          Boolean(error.isNetwork) ||
+          /temporarily unreachable|gateway error|econnrefused|failed to fetch/i.test(error.message || '')
         if (!lost || attempt === 2) throw error
         await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)))
       }
@@ -209,7 +214,7 @@ export function closeAttendanceDay(date, confirm) {
   })
 }
 
-export async function list(doctype, { search = '', filters = {} } = {}) {
+export async function list(doctype, { search = '', filters = {}, fresh = false } = {}) {
   const params = new URLSearchParams()
   if (search.trim()) params.set('search', search.trim())
   for (const [key, value] of Object.entries(filters)) {
@@ -217,7 +222,7 @@ export async function list(doctype, { search = '', filters = {} } = {}) {
     params.set(key, String(value))
   }
   const query = params.toString()
-  return request(`/api/${doctype}${query ? `?${query}` : ''}`)
+  return request(`/api/${doctype}${query ? `?${query}` : ''}`, { fresh })
 }
 
 export async function get(doctype, name) {
@@ -665,6 +670,54 @@ export function followCoach(employeeId, recommendationId, status) {
   })
 }
 
+
+export function getKpiDashboard({
+  periodType = 'all',
+  startDate = '',
+  endDate = '',
+  postOffice = '',
+  employeeId = '',
+  designation = '',
+  category = '',
+  status = 'all',
+} = {}) {
+  const params = new URLSearchParams()
+  if (periodType) params.set('period_type', periodType)
+  if (startDate) params.set('start_date', startDate)
+  if (endDate) params.set('end_date', endDate)
+  if (postOffice) params.set('post_office', postOffice)
+  if (employeeId) params.set('employee_id', employeeId)
+  if (designation) params.set('designation', designation)
+  if (category) params.set('category', category)
+  if (status) params.set('status', status)
+  const query = params.toString()
+  return request(`/api/kpi/dashboard${query ? `?${query}` : ''}`)
+}
+
+export function getKpiDashboardExportUrl({
+  exportType = 'employees',
+  periodType = 'all',
+  startDate = '',
+  endDate = '',
+  postOffice = '',
+  employeeId = '',
+  designation = '',
+  category = '',
+  status = 'all',
+} = {}) {
+  const params = new URLSearchParams()
+  params.set('export_type', exportType)
+  if (periodType) params.set('period_type', periodType)
+  if (startDate) params.set('start_date', startDate)
+  if (endDate) params.set('end_date', endDate)
+  if (postOffice) params.set('post_office', postOffice)
+  if (employeeId) params.set('employee_id', employeeId)
+  if (designation) params.set('designation', designation)
+  if (category) params.set('category', category)
+  if (status) params.set('status', status)
+  return `${API}/api/kpi/dashboard/export?${params.toString()}`
+}
+
 export function getPostalKpiDashboard({ employeeId = '', routeId = '', year = '' } = {}) {
   const params = new URLSearchParams()
   if (employeeId) params.set('employee_id', employeeId)
@@ -714,6 +767,33 @@ export function login(username, password) {
   return request('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
+  }).then((data) => {
+    if (data?.csrf_token) setCsrfToken(data.csrf_token)
+    return data
+  })
+}
+
+export function authorizeAttendance({ date, employeeIds = null, status = 'Present', notes = '', postOffice = '' } = {}) {
+  return request('/api/allocation/authorize-attendance', {
+    method: 'POST',
+    body: JSON.stringify({
+      date,
+      employee_ids: employeeIds,
+      status,
+      notes,
+      post_office: postOffice,
+    }),
+  })
+}
+
+export function autoBalanceWorkload(date, options = {}) {
+  return request('/api/allocation/auto-balance', {
+    method: 'POST',
+    body: JSON.stringify({ date, ...options }),
+  })
+}
+function _unusedLoginStub() {
+  return request('/api/auth/login-stub', {
   })
 }
 
@@ -1233,3 +1313,15 @@ export async function downloadDailyAccountsReportExcel(filters = {}) {
 
 
 
+
+export function productivityCoachChat({ message, conversationId = '', employeeId = '', language = 'en' } = {}) {
+  return request('/api/productivity-coach/chat', {
+    method: 'POST',
+    body: JSON.stringify({
+      message,
+      conversation_id: conversationId,
+      employee_id: employeeId,
+      language,
+    }),
+  })
+}

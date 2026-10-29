@@ -70,7 +70,8 @@ mobile_app/dist/
 
 # IDE, agent, and OS files
 .vs/
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .claude/
 Thumbs.db
 Desktop.ini
