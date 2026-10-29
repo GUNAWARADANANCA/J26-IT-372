@@ -182,6 +182,55 @@ export default function SignInPage() {
               </div>
             ) : null}
 
+            {/* Quick-Fill Demo Accounts */}
+            <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                  <ShieldCheck className="size-3.5 text-[#1677D2]" />
+                  Authorized Roles
+                </span>
+                <span className="text-[10px] text-slate-500 font-medium">Click to populate</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('postmaster')
+                    setPassword('YourStrongDemoPassword123!')
+                    setError('')
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white py-1.5 px-1.5 text-center hover:border-[#1677D2] hover:bg-sky-50 transition shadow-2xs cursor-pointer"
+                >
+                  <div className="font-bold text-[11px] text-[#0B1F3A]">Postmaster</div>
+                  <div className="text-[9.5px] text-slate-500 truncate">Chief Officer</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('admin')
+                    setPassword('YourStrongDemoPassword123!')
+                    setError('')
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white py-1.5 px-1.5 text-center hover:border-[#1677D2] hover:bg-sky-50 transition shadow-2xs cursor-pointer"
+                >
+                  <div className="font-bold text-[11px] text-[#0B1F3A]">Admin</div>
+                  <div className="text-[9.5px] text-slate-500 truncate">System Admin</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('clerk')
+                    setPassword('Clerk@123456')
+                    setError('')
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white py-1.5 px-1.5 text-center hover:border-[#1677D2] hover:bg-sky-50 transition shadow-2xs cursor-pointer"
+                >
+                  <div className="font-bold text-[11px] text-[#0B1F3A]">Clerk</div>
+                  <div className="text-[9.5px] text-slate-500 truncate">Colombo PO</div>
+                </button>
+              </div>
+            </div>
+
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Postmaster ID */}

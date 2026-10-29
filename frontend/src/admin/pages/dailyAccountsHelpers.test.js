@@ -115,5 +115,34 @@ describe('dailyAccountsHelpers', () => {
     assert.equal(detected.office_id, 'Post Office')
     assert.equal(detected.payment_method, 'Payment Mode')
   })
+
+  it('auto-detects stamp stock ledger columns and sets bidirectional aliases', () => {
+    const stockHeaders = [
+      'Date',
+      'Stock Type',
+      'Denomination (Rs.)',
+      'Opening Balance (Qty)',
+      'Receipts (Qty from HPO)',
+      'Sold / Issued (Qty)',
+      'Damaged / Withdrawn (Qty)',
+      'Closing Balance (Qty)',
+      'Closing Value (Rs.)',
+      'Verified By / Postmaster',
+    ]
+    const detected = autoDetectColumnMapping(stockHeaders)
+
+    assert.equal(detected.date, 'Date')
+    assert.equal(detected.category, 'Stock Type')
+    assert.equal(detected.denomination, 'Denomination (Rs.)')
+    assert.equal(detected.opening_qty, 'Opening Balance (Qty)')
+    assert.equal(detected.receipts_qty, 'Receipts (Qty from HPO)')
+    assert.equal(detected.issued_qty, 'Sold / Issued (Qty)')
+    assert.equal(detected.damaged_qty, 'Damaged / Withdrawn (Qty)')
+    assert.equal(detected.closing_qty, 'Closing Balance (Qty)')
+    assert.equal(detected.closing_value, 'Closing Value (Rs.)')
+    assert.equal(detected.verified_by, 'Verified By / Postmaster')
+    assert.equal(detected.amount, 'Closing Value (Rs.)')
+    assert.equal(detected.count, 'Sold / Issued (Qty)')
+  })
 })
 

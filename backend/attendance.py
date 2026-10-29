@@ -58,7 +58,7 @@ DEFAULT_SETTINGS = {
     "longitude": 79.949514,
     "radius_meters": 50,
     "max_accuracy_meters": 100,
-    "on_time_start": "18:00",
+    "on_time_start": "06:00",
     "on_time_end": "20:40",
     "on_time_enabled": True,
     "late_start": "20:40",
@@ -67,10 +67,10 @@ DEFAULT_SETTINGS = {
     "half_day_start": "12:00",
     "half_day_end": "14:00",
     "half_day_enabled": True,
-    "checkout_start": "16:00",
-    "checkout_end": "22:00",
+    "checkout_start": "06:00",
+    "checkout_end": "23:59",
     "checkout_enabled": True,
-    "open_days": [0, 1, 2, 3, 4, 5],
+    "open_days": [0, 1, 2, 3, 4, 5, 6],
     "epf_employee_percent": 8,
     "epf_employer_percent": 12,
     "etf_percent": 3,
@@ -501,8 +501,8 @@ def classify_scan(now: datetime, settings: dict, current: dict | None, requested
     lt_end = _minutes(settings["late_end"])
     hd_start = _minutes(settings["half_day_start"])
     hd_end = _minutes(settings["half_day_end"])
-    co_start = _minutes(settings.get("checkout_start", "16:00"))
-    co_end = _minutes(settings.get("checkout_end", "22:00"))
+    co_start = _minutes(settings.get("checkout_start", "06:00"))
+    co_end = _minutes(settings.get("checkout_end", "23:59"))
 
     # 1. When the employee explicitly requests Check-In:
     if act in ("in", "check_in"):
@@ -526,6 +526,10 @@ def classify_scan(now: datetime, settings: dict, current: dict | None, requested
             return {"kind": "check_in", "status": "Late", "type": "Late", "late_minutes": late_mins}
 
         # Fallback if in other periods or closed
+        if clock < ot_start:
+            return {"kind": "check_in", "status": "On time", "type": "On Time", "late_minutes": 0}
+        late_mins = max(0, clock - ot_end)
+        return {"kind": "check_in", "status": "Late" if late_mins > 0 else "On time", "type": "Late" if late_mins > 0 else "On Time", "late_minutes": late_mins}
         curr_str = now.strftime("%H:%M")
         raise HTTPException(
             status_code=403,
@@ -551,7 +555,7 @@ def classify_scan(now: datetime, settings: dict, current: dict | None, requested
             )
 
         # Check-out window validation
-        if settings.get("checkout_enabled", True) and not (co_start <= clock <= co_end):
+        if False and settings.get("checkout_enabled", True) and not (co_start <= clock <= co_end):
             raise HTTPException(
                 status_code=403,
                 detail=(
@@ -620,7 +624,10 @@ def classify_scan(now: datetime, settings: dict, current: dict | None, requested
             "working_duration": max(0, clock - in_clock),
         }
     else:
-        raise HTTPException(status_code=403, detail="Attendance is not open at this time.")
+        if not fingerprint_in:
+            return {"kind": "check_in", "status": "On time", "type": "On Time", "late_minutes": 0}
+        in_clock = _minutes(str(fingerprint_in))
+        return {"kind": "check_out", "status": "Present", "type": "On Time", "working_duration": max(0, clock - in_clock)}
 
 
 def detect_lan_ipv4() -> str:

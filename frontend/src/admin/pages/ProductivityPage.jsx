@@ -1,938 +1,688 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  AlertTriangle,
+  ArrowRight,
+  Bot,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  Globe,
+  HelpCircle,
+  Lightbulb,
+  Maximize2,
+  Minimize2,
+  RefreshCw,
+  RotateCcw,
+  Send,
+  Sparkles,
+  Target,
+  TrendingUp,
+  User,
+  UserCheck,
+  Zap,
+} from 'lucide-react'
 import { useAuth } from '../data/auth'
-import { changePct } from '../data/productivityMetrics'
-import { getProductivity, list } from '../data/repository'
-import ChartCard from '../ui/ChartCard'
-import LoadingState from '../ui/LoadingState'
-import CoachPanel from '../ui/CoachPanel'
-import AIProductivityCoachDialog from '../ui/AIProductivityCoachDialog'
+import { list, productivityCoachChat } from '../data/repository'
 
-function shortWeek(value) {
-  if (!value) return ''
-  const day = new Date(`${value}T00:00:00`)
-  if (Number.isNaN(day.getTime())) return value
-  return day.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+// ── Markdown & Structured Text Formatter ────────────────────────────────────
+
+function formatInline(text) {
+  if (!text) return null
+  // Replace `code` and **bold** and *italic*
+  const parts = []
+  let remaining = text
+
+  // Regex matches `code`, **bold**, or *italic*
+  const tokenRegex = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/
+  let keyIdx = 0
+
+  while (remaining) {
+    const match = remaining.match(tokenRegex)
+    if (!match) {
+      parts.push(remaining)
+      break
+    }
+    const matchIdx = match.index
+    if (matchIdx > 0) {
+      parts.push(remaining.slice(0, matchIdx))
+    }
+    const token = match[0]
+    if (token.startsWith('`') && token.endsWith('`')) {
+      parts.push(
+        <code
+          key={`code-${keyIdx++}`}
+          className="px-1.5 py-0.5 text-xs font-mono font-semibold bg-slate-100 text-[#0B1F3A] rounded border border-slate-200"
+        >
+          {token.slice(1, -1)}
+        </code>
+      )
+    } else if (token.startsWith('**') && token.endsWith('**')) {
+      parts.push(
+        <strong key={`bold-${keyIdx++}`} className="font-semibold text-slate-900">
+          {token.slice(2, -2)}
+        </strong>
+      )
+    } else if (token.startsWith('*') && token.endsWith('*')) {
+      parts.push(
+        <em key={`italic-${keyIdx++}`} className="italic text-slate-700">
+          {token.slice(1, -1)}
+        </em>
+      )
+    }
+    remaining = remaining.slice(matchIdx + token.length)
+  }
+
+  return parts
 }
 
-function shown(value, suffix = '') {
-  if (value == null || value === '') return 'Not available'
-  return `${value}${suffix}`
+function FormattedContent({ content }) {
+  if (!content) return null
+
+  const lines = content.split('\n')
+  const blocks = []
+  let currentList = []
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      blocks.push(
+        <ul key={`ul-${blocks.length}`} className="my-2 space-y-1.5 pl-1">
+          {currentList.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm text-slate-800 leading-relaxed">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1677D2] mt-2 shrink-0" />
+              <div>{formatInline(item)}</div>
+            </li>
+          ))}
+        </ul>
+      )
+      currentList = []
+    }
+  }
+
+  lines.forEach((line, index) => {
+    const trimmed = line.trim()
+
+    // Empty line
+    if (!trimmed) {
+      flushList()
+      return
+    }
+
+    // Bullet line
+    if (trimmed.startsWith('•') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+      const itemText = trimmed.replace(/^[•\-\*]\s*/, '')
+      currentList.push(itemText)
+      return
+    }
+
+    flushList()
+
+    // Callout / Tip line
+    if (trimmed.startsWith('💡') || trimmed.startsWith('ℹ️') || trimmed.startsWith('⚠️')) {
+      blocks.push(
+        <div
+          key={`tip-${index}`}
+          className="my-3 p-3 rounded-lg bg-blue-50/80 border border-blue-200/60 text-sm text-slate-800 flex items-start gap-2"
+        >
+          <span className="text-base shrink-0">{trimmed.slice(0, 2)}</span>
+          <div className="font-medium text-slate-700">{formatInline(trimmed.slice(2).trim())}</div>
+        </div>
+      )
+      return
+    }
+
+    // Numbered step (e.g. Day 1, 1., etc.)
+    const numberedMatch = trimmed.match(/^(\d+\.|Day\s+\d+[\s\w]*:)/i)
+    if (numberedMatch) {
+      blocks.push(
+        <div key={`step-${index}`} className="my-2 pl-2 text-sm leading-relaxed text-slate-800">
+          {formatInline(trimmed)}
+        </div>
+      )
+      return
+    }
+
+    // Standard paragraph
+    blocks.push(
+      <p key={`p-${index}`} className="my-1 text-sm leading-relaxed text-slate-800">
+        {formatInline(trimmed)}
+      </p>
+    )
+  })
+
+  flushList()
+
+  return <div className="space-y-1">{blocks}</div>
 }
+
+// ── Main Page Component ─────────────────────────────────────────────────────
 
 export default function ProductivityPage() {
   const { user } = useAuth()
-  const [employees, setEmployees] = useState([])
-  const [employeeId, setEmployeeId] = useState('')
-  const [year, setYear] = useState('2025')
-  const [week, setWeek] = useState('')
-  const [report, setReport] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [coachOpen, setCoachOpen] = useState(false)
-  const [reviewedStatus, setReviewedStatus] = useState(false)
+  const isPostmaster = Boolean(user?.is_postmaster || user?.role === 'postmaster' || user?.role === 'Postmaster')
 
-  // Load employee list on mount
+  const [employees, setEmployees] = useState([])
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
+  const [messages, setMessages] = useState([])
+  const [inputValue, setInputValue] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [language, setLanguage] = useState('en')
+  const [conversationId, setConversationId] = useState(() => `conv_${Date.now()}`)
+  const [errorBanner, setErrorBanner] = useState('')
+
+  const chatBottomRef = useRef(null)
+  const inputRef = useRef(null)
+
+  // 1. Load employees for Postmaster switch & default selection
   useEffect(() => {
     let cancelled = false
     list('employee')
       .then((rows) => {
-        if (!cancelled) {
+        if (!cancelled && Array.isArray(rows) && rows.length > 0) {
           const sorted = [...rows].sort((a, b) =>
             String(a.employee_name || '').localeCompare(String(b.employee_name || ''))
           )
           setEmployees(sorted)
-          if (sorted.length > 0 && !employeeId) {
-            setEmployeeId(sorted[0].employee_id || sorted[0]._id)
+
+          // Select current employee
+          if (!selectedEmployeeId) {
+            // If logged-in user matches an employee, select them
+            const matched = sorted.find(
+              (e) => (e.employee_id || e._id) === user?.username || e.employee_id === user?.employee_id
+            )
+            if (matched) {
+              setSelectedEmployeeId(matched.employee_id || matched._id)
+            } else {
+              setSelectedEmployeeId(sorted[0].employee_id || sorted[0]._id)
+            }
           }
         }
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message || 'Unable to load employees. Please try again.')
+        if (!cancelled) console.error('Failed to load employees for coach:', err)
       })
+
     return () => {
       cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [user, selectedEmployeeId])
 
-  // Core data loader
-  const loadProductivityData = useCallback(async (empId, targetWeek, targetYear) => {
-    if (!empId) {
-      setReport(null)
-      return
-    }
-    setLoading(true)
-    setError('')
-    try {
-      const payload = await getProductivity(empId, targetWeek || undefined, targetYear || undefined)
-      setReport(payload)
+  // Current selected employee object
+  const currentEmployee = useMemo(() => {
+    return employees.find((e) => (e.employee_id || e._id) === selectedEmployeeId) || null
+  }, [employees, selectedEmployeeId])
 
-      // Sync week and year from backend response if we did not have a specific week set
-      if (!targetWeek && payload?.week) {
-        setWeek(payload.week)
-      }
-      if (payload?.year && payload.year !== targetYear && !targetYear) {
-        setYear(payload.year)
-      }
-    } catch (err) {
-      setReport(null)
-      setError(err.message || 'Unable to load productivity analysis. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  // Initial load when employeeId changes
+  // Auto-scroll on new messages or typing state
   useEffect(() => {
-    if (employeeId) {
-      loadProductivityData(employeeId, week, year)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [employeeId])
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, loading])
 
-  // Real recorded weeks for the selected year from dataset
-  const recordedWeeksForYear = useMemo(() => {
-    if (!report?.weeks_by_year) return []
-    return report.weeks_by_year[year] || []
-  }, [report, year])
+  // Reset / Clear chat
+  const handleClearChat = useCallback(() => {
+    setMessages([])
+    setConversationId(`conv_${Date.now()}`)
+    setErrorBanner('')
+    if (inputRef.current) inputRef.current.focus()
+  }, [])
 
-  // Handle year filter change
-  const handleYearChange = (newYear) => {
-    setYear(newYear)
-    const weeksInYear = report?.weeks_by_year?.[newYear] || []
-    if (weeksInYear.length > 0) {
-      // Pick latest recorded week in this year
-      setWeek(weeksInYear[weeksInYear.length - 1])
-    } else {
-      // Future year or year with no recorded weeks (e.g. 2026, 2027)
-      setWeek('')
+  // Send a message
+  const handleSendMessage = useCallback(
+    async (textToSend) => {
+      const text = (textToSend || inputValue).trim()
+      if (!text || loading) return
+
+      setErrorBanner('')
+      const userMessage = {
+        id: `msg_${Date.now()}_u`,
+        sender: 'user',
+        text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      }
+
+      setMessages((prev) => [...prev, userMessage])
+      setInputValue('')
+      setLoading(true)
+
+      try {
+        const payload = await productivityCoachChat({
+          message: text,
+          conversationId,
+          employeeId: selectedEmployeeId,
+          language,
+        })
+
+        const coachMessage = {
+          id: `msg_${Date.now()}_c`,
+          sender: 'assistant',
+          text: payload.reply || "I've reviewed your operational records and updated the coaching summary.",
+          intent: payload.intent,
+          evidence: payload.evidence,
+          forecast: payload.forecast,
+          recommendations: payload.recommendations || [],
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        }
+
+        setMessages((prev) => [...prev, coachMessage])
+      } catch (err) {
+        console.error('Chat error:', err)
+        setErrorBanner(err.message || 'Unable to connect to AI Coach service. Please try again.')
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `msg_${Date.now()}_err`,
+            sender: 'assistant',
+            isError: true,
+            text: 'I encountered an error retrieving your performance records. Please verify your connection or try again.',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ])
+      } finally {
+        setLoading(false)
+      }
+    },
+    [inputValue, loading, conversationId, selectedEmployeeId, language]
+  )
+
+  // Keyboard shortcut (Enter to send, Shift+Enter for newline)
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
     }
   }
 
-  // Handle Analyze button click — refresh all sections for current (employeeId, week, year)
-  const handleAnalyze = () => {
-    if (!employeeId) return
-    loadProductivityData(employeeId, week, year)
-  }
+  // Suggestion card prompts
+  const suggestionCards = useMemo(
+    () => [
+      {
+        id: 'performance',
+        title: language === 'si' ? 'මගේ කාර්යසාධනය' : 'My Performance',
+        prompt: language === 'si' ? 'මගේ සමස්ත කාර්යසාධනය කොහොමද?' : 'How is my overall performance?',
+        desc: language === 'si' ? 'මනින ලද KPI, සම්පූර්ණ කිරීම සහ කාලෝචිතභාවය' : 'Review overall KPI, completion, accuracy and timeliness.',
+        icon: TrendingUp,
+        color: 'text-[#1677D2] bg-blue-50 border-blue-200',
+      },
+      {
+        id: 'weaknesses',
+        title: language === 'si' ? 'මගේ දුර්වලතා' : 'My Weaknesses',
+        prompt: language === 'si' ? 'මගේ අඩුම KPI අංශ මොනවාද?' : 'What are my weakest KPI areas?',
+        desc: language === 'si' ? 'අඩුපාඩු, ප්‍රධාන හේතු සහ පරතර විශ්ලේෂණය' : 'Pinpoint lowest scoring areas, gaps and primary bottlenecks.',
+        icon: AlertTriangle,
+        color: 'text-[#E53935] bg-red-50 border-red-200',
+      },
+      {
+        id: 'profile',
+        title: language === 'si' ? 'සේවක විස්තර' : 'My Employee Details',
+        prompt: language === 'si' ? 'මගේ සේවක පැතිකඩ සහ රාජකාරි තොරතුරු පෙන්වන්න' : 'Show my employee profile and work details.',
+        desc: language === 'si' ? 'තනතුර, තැපැල් කාර්යාලය, කාණ්ඩය සහ පළපුරුද්ද' : 'Official designation, station, work category and experience.',
+        icon: UserCheck,
+        color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+      },
+      {
+        id: 'improve',
+        title: language === 'si' ? 'KPI වැඩිදියුණු කිරීම' : 'Improve My KPIs',
+        prompt: language === 'si' ? 'ලබන සතියේ මගේ කාර්යසාධනය වැඩිදියුණු කරගන්නේ කෙසේද?' : 'How can I improve my performance next week?',
+        desc: language === 'si' ? 'දෙපාර්තමේන්තු උපදෙස් සහ ක්‍රියාකාරී පියවර' : 'Targeted operational advice and category-tailored best practices.',
+        icon: Sparkles,
+        color: 'text-amber-600 bg-amber-50 border-amber-200',
+      },
+    ],
+    [language]
+  )
 
-  // Determine state flags
-  const isFutureYear = Boolean(report?.is_future_year || year === '2026' || year === '2027')
-  const hasCurrentWeekLogs = Boolean(report?.available && !isFutureYear)
-  const allHistory = useMemo(() => report?.history || [], [report])
-  const filteredHistory = useMemo(() => {
-    if (!report?.week) return allHistory
-    return allHistory.filter((row) => row.week <= report.week)
-  }, [allHistory, report])
-  const hasHistoricalData = allHistory.length > 0
-
-  const previous = filteredHistory.length > 1 ? filteredHistory[filteredHistory.length - 2] : null
-  const measured = hasCurrentWeekLogs ? Number(report.measured_kpi) : null
-  const latestHistoricalKpi = hasHistoricalData
-    ? Number(allHistory[allHistory.length - 1].kpi)
-    : null
-  const forecast = report?.predicted_next_week_kpi != null ? Number(report.predicted_next_week_kpi) : null
-
-  const delta = hasCurrentWeekLogs
-    ? changePct(measured, previous ? Number(previous.kpi) : report?.previous_measured_kpi)
-    : null
-
-  // Build chart series
-  const activeHistoryForChart = hasCurrentWeekLogs ? filteredHistory : allHistory
-
-  // Sparkline helper
-  function renderTrendSparkline(points) {
-    const valid = (points || []).filter((p) => Number.isFinite(p))
-    if (valid.length < 2) {
-      return <p className="py-6 text-center text-xs text-[#64748B]">Insufficient data points</p>
-    }
-    const min = Math.min(...valid) - 2
-    const max = Math.max(...valid) + 2
-    const range = max - min || 1
-    const w = 240
-    const h = 76
-    const polyPoints = valid
-      .map((val, idx) => {
-        const x = 12 + (idx / (valid.length - 1)) * (w - 24)
-        const y = h - 12 - ((val - min) / range) * (h - 24)
-        return `${x.toFixed(1)},${y.toFixed(1)}`
-      })
-      .join(' ')
-
-    return (
-      <svg viewBox={`0 0 ${w} ${h}`} className="h-20 w-full overflow-visible" role="img" aria-label="KPI Sparkline Trend">
-        <polyline
-          fill="none"
-          stroke="#1677D2"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points={polyPoints}
-        />
-        {valid.map((val, idx) => {
-          const x = 12 + (idx / (valid.length - 1)) * (w - 24)
-          const y = h - 12 - ((val - min) / range) * (h - 24)
-          return (
-            <circle key={idx} cx={x} cy={y} r="3.5" fill="#1677D2" stroke="#fff" strokeWidth="1.5">
-              <title>{`${activeHistoryForChart[idx]?.week || ''}: ${val}%`}</title>
-            </circle>
-          )
-        })}
-      </svg>
-    )
-  }
+  // Follow-up quick pills
+  const quickPills = useMemo(
+    () => [
+      {
+        label: language === 'si' ? 'දින 7 ක සැලැස්ම' : '7-Day Improvement Plan',
+        prompt: language === 'si' ? 'මට දින හතක ප්‍රායෝගික සැලැස්මක් දෙන්න.' : 'Give me a practical seven-day improvement plan.',
+      },
+      {
+        label: language === 'si' ? 'අනාගත KPI පුරෝකථනය' : 'ML Forecast Projection',
+        prompt: language === 'si' ? 'මගේ ඊළඟ සතියේ පුරෝකථනය කළ KPI අගය කුමක්ද?' : 'What is my predicted next-week KPI forecast?',
+      },
+      {
+        label: language === 'si' ? 'ශක්තීන් විශ්ලේෂණය' : 'Top Strengths',
+        prompt: language === 'si' ? 'මගේ ප්‍රධාන ශක්තීන් මොනවාද?' : 'What are my top strengths?',
+      },
+    ],
+    [language]
+  )
 
   return (
-    <div className="space-y-5">
-      {/* ── Page Title & Subtitle ────────────────────────────────────────── */}
-      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#0B1F3A] sm:text-2xl">
-            AI Productivity Coach
-          </h1>
-          <p className="mt-0.5 text-xs text-[#64748B]">
-            Sri Lanka Postal Department · Dynamic Performance Coaching, Forecasting & Strategic Directives
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-800">
-            ● Measured Baseline Data
-          </span>
-          <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-[#1677D2]">
-            ◆ ML Forecast (MAE 3.41)
-          </span>
-          <span className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[11px] font-semibold text-[#5E35B1]">
-            ★ Strategic Horizon
-          </span>
-        </div>
-      </div>
-
-      {/* ── Filter Bar: Employee, Year, Week, and Analyze Button ─────────── */}
-      <div className="rounded-2xl border border-[#DFE8F2] bg-white p-4 shadow-xs">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end">
-          {/* Employee Dropdown */}
-          <div className="md:col-span-4">
-            <label htmlFor="prod-emp-select" className="block text-[11px] font-semibold text-[#64748B]">
-              Postal Officer / Employee
-            </label>
-            <select
-              id="prod-emp-select"
-              className="mt-1 h-10 w-full rounded-xl border border-[#DFE8F2] bg-white px-3 text-xs font-medium text-[#172B4D] focus:border-[#1677D2] focus:outline-none"
-              value={employeeId}
-              onChange={(event) => {
-                const newId = event.target.value
-                setEmployeeId(newId)
-                setWeek('')
-                setReviewedStatus(false)
-              }}
-            >
-              <option value="">Select an employee to analyze…</option>
-              {employees.map((row) => {
-                const id = row.employee_id || row._id
-                return (
-                  <option key={id} value={id}>
-                    {row.employee_name || id} ({row.designation || 'Staff'} · {row.post_office || 'General'})
-                  </option>
-                )
-              })}
-            </select>
+    <div className="flex flex-col h-[calc(100vh-4.25rem)] max-w-6xl mx-auto px-4 py-3">
+      {/* ── TOP HEADER ──────────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0B1F3A] to-[#1677D2] flex items-center justify-center text-white shadow-md shadow-blue-900/10 shrink-0">
+            <Bot className="w-5 h-5 text-blue-200" />
           </div>
-
-          {/* Year Filter */}
-          <div className="md:col-span-2">
-            <label htmlFor="prod-year-select" className="block text-[11px] font-semibold text-[#64748B]">
-              Reporting Year
-            </label>
-            <select
-              id="prod-year-select"
-              className="mt-1 h-10 w-full rounded-xl border border-[#DFE8F2] bg-white px-3 text-xs font-medium text-[#172B4D] focus:border-[#1677D2] focus:outline-none"
-              value={year}
-              onChange={(e) => handleYearChange(e.target.value)}
-            >
-              <option value="2024">2024</option>
-              <option value="2025">2025 (Historical Records)</option>
-              <option value="2026">2026 (Strategic Planning)</option>
-              <option value="2027">2027 (Long-term Horizon)</option>
-            </select>
-          </div>
-
-          {/* Reporting Week Selector - Dynamically Populated From Real Dataset */}
-          <div className="md:col-span-4">
-            <label htmlFor="prod-week-select" className="block text-[11px] font-semibold text-[#64748B]">
-              Reporting Week ({year})
-            </label>
-            <select
-              id="prod-week-select"
-              className="mt-1 h-10 w-full rounded-xl border border-[#DFE8F2] bg-white px-3 text-xs font-medium text-[#172B4D] focus:border-[#1677D2] focus:outline-none"
-              value={week}
-              onChange={(event) => setWeek(event.target.value)}
-            >
-              {recordedWeeksForYear.length > 0 ? (
-                <>
-                  <option value="">
-                    Latest Measured Week ({recordedWeeksForYear[recordedWeeksForYear.length - 1]})
-                  </option>
-                  {recordedWeeksForYear.map((w) => (
-                    <option key={w} value={w}>
-                      Week of {shortWeek(w)} ({w})
-                    </option>
-                  ))}
-                </>
-              ) : (
-                <option value="">
-                  {year >= '2026'
-                    ? `Strategic Planning Horizon (Year ${year} — Forward Look)`
-                    : `No Measured Records for Year ${year}`}
-                </option>
-              )}
-            </select>
-          </div>
-
-          {/* Analyze Button */}
-          <div className="md:col-span-2">
-            <button
-              type="button"
-              disabled={!employeeId || loading}
-              onClick={handleAnalyze}
-              className="h-10 w-full rounded-xl bg-[#1677D2] px-4 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#1262ab] disabled:opacity-50"
-            >
-              {loading ? 'Analyzing...' : 'Analyze'}
-            </button>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-[#0B1F3A] tracking-tight">AI Productivity Coach</h1>
+              {/* Green status indicator */}
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Performance Data Connected
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 font-normal">
+              Your personal AI assistant for employee performance and career development.
+            </p>
           </div>
         </div>
 
-        {/* Quick Week Switcher Bar for Available Weeks */}
-        {recordedWeeksForYear.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-[#DFE8F2] pt-2.5 text-[11px]">
-            <span className="font-semibold text-[#64748B]">Measured Weeks in {year}:</span>
-            {recordedWeeksForYear.map((w) => (
-              <button
-                key={w}
-                type="button"
-                onClick={() => setWeek(w)}
-                className={`rounded-md px-2 py-0.5 font-medium transition-colors ${
-                  week === w
-                    ? 'bg-[#1677D2] text-white'
-                    : 'bg-slate-100 text-[#172B4D] hover:bg-blue-50 hover:text-[#1677D2]'
-                }`}
-              >
-                {shortWeek(w)}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {isFutureYear && (
-          <div className="mt-3 flex items-center justify-between border-t border-purple-100 pt-2 text-[11px] text-[#5E35B1]">
-            <span>
-              ★ Forward-Looking Mode Active: Planning Horizon <strong>{year}</strong> derived from 2025 audited baseline and trained ML model forecasting.
-            </span>
-            {report?.latest_available_week && (
-              <button
-                type="button"
-                onClick={() => {
-                  setYear('2025')
-                  setWeek(report.latest_available_week)
+        {/* Controls: Employee selector (Postmaster), Language toggle, Clear Chat */}
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          {/* Employee selector for Postmasters */}
+          {isPostmaster ? (
+            <div className="relative">
+              <select
+                value={selectedEmployeeId}
+                onChange={(e) => {
+                  setSelectedEmployeeId(e.target.value)
+                  handleClearChat()
                 }}
-                className="font-bold underline hover:text-[#0B1F3A]"
+                className="appearance-none bg-white border border-slate-300 text-slate-800 text-xs font-semibold rounded-lg pl-3 pr-8 py-1.5 shadow-sm hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1677D2]"
+                title="Select employee to coach"
               >
-                View 2025 Historical Records ({report.latest_available_week})
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+                {employees.map((emp) => (
+                  <option key={emp.employee_id || emp._id} value={emp.employee_id || emp._id}>
+                    {emp.employee_name || emp.name} ({emp.employee_id || emp._id})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          ) : currentEmployee ? (
+            <div className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-slate-500" />
+              <span>
+                {currentEmployee.employee_name || currentEmployee.name} ({currentEmployee.employee_id || currentEmployee._id})
+              </span>
+            </div>
+          ) : null}
 
-      {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800" role="alert">
-          {error}{' '}
-          <button type="button" className="ml-2 font-semibold underline" onClick={handleAnalyze}>
-            Retry
+          {/* Language Toggle */}
+          <button
+            type="button"
+            onClick={() => setLanguage((prev) => (prev === 'en' ? 'si' : 'en'))}
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
+            title="Toggle between English and Sinhala"
+          >
+            <Globe className="w-3.5 h-3.5 text-[#1677D2]" />
+            <span>{language === 'en' ? 'EN' : 'සිංහල'}</span>
+          </button>
+
+          {/* Clear / New Conversation Button */}
+          <button
+            type="button"
+            onClick={handleClearChat}
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:text-[#E53935] transition-colors"
+            title="Start New Conversation"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New Chat</span>
           </button>
         </div>
-      ) : null}
+      </div>
 
-      {loading ? <LoadingState label="Loading employee productivity metrics..." /> : null}
-
-      {!loading && !employeeId ? (
-        <div className="rounded-2xl border border-dashed border-[#DFE8F2] bg-white p-12 text-center">
-          <h3 className="text-sm font-bold text-[#172B4D]">Select an Employee to Begin Coaching</h3>
-          <p className="mt-1 text-xs text-[#64748B]">
-            Choose a postal officer from the dropdown above to load verified performance history, machine learning forecasts, and personalized coaching recommendations.
-          </p>
-        </div>
-      ) : null}
-
-      {/* ── Banner when Selected Week in Past Has No Logs ── */}
-      {!loading && employeeId && report && !hasCurrentWeekLogs && !isFutureYear && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs text-amber-900 shadow-xs">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-            <div>
-              <h3 className="font-bold text-amber-950">
-                No Measured KPI Logs for Selected Week ({report.requested_week || week})
-              </h3>
-              <p className="mt-1 text-amber-800">
-                {report.message || 'No daily KPI logs were recorded for this employee during the selected week.'}
-              </p>
-              {report.earliest_available_week && report.latest_available_week && (
-                <p className="mt-1 text-[11px] font-medium text-amber-900">
-                  Historical records for <strong>{report.employee_name}</strong> are available from{' '}
-                  <span className="underline">{report.earliest_available_week}</span> to{' '}
-                  <span className="underline">{report.latest_available_week}</span>. Historical trends and baseline analysis are displayed below.
-                </p>
-              )}
+      {/* ── CHAT CONTAINER ─────────────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto py-4 px-1 space-y-4">
+        {errorBanner && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+              <span>{errorBanner}</span>
             </div>
-            {report.latest_available_week && (
-              <button
-                type="button"
-                onClick={() => {
-                  setYear(report.latest_available_week.slice(0, 4))
-                  setWeek(report.latest_available_week)
-                }}
-                className="shrink-0 rounded-xl bg-[#1677D2] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#1262ab]"
-              >
-                Jump to Latest Recorded Week ({report.latest_available_week})
-              </button>
+            <button
+              type="button"
+              onClick={() => setErrorBanner('')}
+              className="text-red-500 hover:text-red-800 font-bold px-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* ── EMPTY STATE / WELCOME SCREEN ─────────────────────────────────── */}
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[420px] text-center px-4 py-8 max-w-3xl mx-auto">
+            {/* Sparkle badge */}
+            <div className="relative mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#0B1F3A] to-[#1677D2] flex items-center justify-center text-white shadow-xl shadow-blue-900/15">
+                <Sparkles className="w-8 h-8 text-blue-200" />
+              </div>
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              </span>
+            </div>
+
+            {/* Welcome title & description */}
+            <h2 className="text-xl font-bold text-[#0B1F3A] mb-2 tracking-tight">
+              {language === 'si'
+                ? `ආයුබෝවන්! මම ඔබගේ PostAssist කාර්යසාධන උපදේශකයායි`
+                : `Hello! I'm your PostAssist AI Performance Coach`}
+            </h2>
+            <p className="text-sm text-slate-600 max-w-xl mb-8 leading-relaxed">
+              {language === 'si'
+                ? `ඔබගේ සේවක පැතිකඩ, සතිපතා KPI වාර්තා, දුර්වලතා හා ශක්තීන් තේරුම් ගැනීමට සහ කාර්යසාධනය වැඩිදියුණු කිරීමට ප්‍රායෝගික සැලැස්මක් සකස් කර ගැනීමට මට ඔබට උදව් කළ හැකිය.`
+                : `I can help you understand your employee profile, review your weekly performance, identify areas for improvement, and develop a practical plan to improve your KPIs.`}
+            </p>
+
+            {/* Currently reviewing indicator */}
+            {currentEmployee && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full bg-blue-50 border border-blue-200/80 text-xs text-[#0B1F3A] font-medium">
+                <User className="w-3.5 h-3.5 text-[#1677D2]" />
+                <span>
+                  Coaching Profile:{' '}
+                  <strong>{currentEmployee.employee_name || currentEmployee.name}</strong> ({currentEmployee.designation || 'Postal Staff'})
+                </span>
+              </div>
             )}
-          </div>
-        </div>
-      )}
 
-      {/* ── Main Content Area ── */}
-      {!loading && employeeId && (hasCurrentWeekLogs || hasHistoricalData || isFutureYear) ? (
-        <div className="space-y-5">
-          {/* ── Top 3 Cards Row ────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            {/* Card 1: Selected Week KPI or Future Horizon Target */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#64748B]">
-                    {isFutureYear
-                      ? `Strategic Planning Target (${year})`
-                      : hasCurrentWeekLogs
-                      ? `Selected Week KPI (${report.week})`
-                      : `Historical Overview (${year})`}
-                  </span>
-                  {isFutureYear ? (
-                    <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-[#5E35B1]">
-                      Model Projection
-                    </span>
-                  ) : hasCurrentWeekLogs ? (
-                    <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                      Measured Data
-                    </span>
-                  ) : (
-                    <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                      Historical Baseline
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-2 flex items-baseline gap-2.5">
-                  <span className="text-3xl font-extrabold tracking-tight text-[#172B4D]">
-                    {isFutureYear
-                      ? forecast != null
-                        ? `${forecast}%`
-                        : '88.0%'
-                      : hasCurrentWeekLogs && measured != null
-                      ? `${measured}%`
-                      : latestHistoricalKpi != null
-                      ? `${latestHistoricalKpi}%`
-                      : 'Not available'}
-                  </span>
-                  {!isFutureYear && delta != null && (
-                    <span
-                      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${
-                        delta >= 0
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}
-                    >
-                      {delta > 0 ? '+' : ''}
-                      {delta.toFixed(1)}%
-                    </span>
-                  )}
-                  {isFutureYear && report?.historical_baseline_kpi != null && (
-                    <span className="text-xs font-medium text-[#64748B]">
-                      vs 2025 baseline ({report.historical_baseline_kpi}%)
-                    </span>
-                  )}
-                </div>
-
-                {/* Sub-status badges */}
-                <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
-                  {isFutureYear ? (
-                    <span className="rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-[11px] font-semibold text-[#5E35B1]">
-                      Holdout Error Margin: ±3.41 MAE, 4.55 RMSE
-                    </span>
-                  ) : hasCurrentWeekLogs ? (
-                    <>
-                      <span
-                        className={`inline-block rounded-md px-2 py-0.5 text-[11px] font-bold ${
-                          measured >= 85
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}
-                      >
-                        {measured >= 85 ? 'On Track' : 'Needs Attention'}
-                      </span>
-                      {forecast != null && (
-                        <span className="text-[11px] font-semibold text-[#1677D2]">
-                          Predicted next week: <strong>{forecast}%</strong>
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className="text-[11px] text-[#64748B]">
-                      Latest historical KPI ({report?.latest_available_week}):{' '}
-                      <strong className="text-[#172B4D]">{latestHistoricalKpi}%</strong>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Sub-breakdown metrics */}
-              {hasCurrentWeekLogs ? (
-                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[#DFE8F2] pt-3 text-center">
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Completion</span>
-                    <span className="text-xs font-bold text-[#172B4D]">{shown(report?.completion, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Accuracy</span>
-                    <span className="text-xs font-bold text-emerald-700">{shown(report?.accuracy, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Timeliness</span>
-                    <span className="text-xs font-bold text-[#1677D2]">{shown(report?.timeliness, '%')}</span>
-                  </div>
-                </div>
-              ) : isFutureYear && report?.future_coaching_plan ? (
-                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[#DFE8F2] pt-3 text-center">
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Completion</span>
-                    <span className="text-xs font-bold text-[#172B4D]">{shown(report.future_coaching_plan.baseline_completion, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Accuracy</span>
-                    <span className="text-xs font-bold text-emerald-700">{shown(report.future_coaching_plan.baseline_accuracy, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Timeliness</span>
-                    <span className="text-xs font-bold text-[#1677D2]">{shown(report.future_coaching_plan.baseline_timeliness, '%')}</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4 border-t border-[#DFE8F2] pt-3 text-[11px] text-[#64748B]">
-                  Historical analysis mode across recorded department periods.
-                </div>
-              )}
-            </div>
-
-            {/* Card 2: Trend Sparkline */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <h3 className="text-xs font-bold text-[#172B4D]">Performance Trajectory</h3>
-                <p className="text-[11px] text-[#64748B]">
-                  Historical measured trajectory ({activeHistoryForChart.length} recorded weeks)
-                </p>
-              </div>
-              <div className="my-2">
-                {renderTrendSparkline(activeHistoryForChart.map((h) => Number(h.kpi)))}
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-[#64748B]">
-                <span>Start: {activeHistoryForChart[0]?.week || '—'}</span>
-                <span>Latest: {activeHistoryForChart[activeHistoryForChart.length - 1]?.week || '—'}</span>
-              </div>
-            </div>
-
-            {/* Card 3: Performance Bar Chart */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <h3 className="text-xs font-bold text-[#172B4D]">Weekly KPI Audit</h3>
-                <p className="text-[11px] text-[#64748B]">Audited department scores (last 8 recorded weeks)</p>
-              </div>
-              <div className="mt-3 flex h-24 items-end justify-around gap-2 pt-4">
-                {activeHistoryForChart.slice(-8).map((item, idx) => {
-                  const val = Number(item.kpi) || 0
-                  const heightPct = Math.max(15, Math.min(100, val))
-                  return (
-                    <div key={item.week || idx} className="flex flex-1 flex-col items-center gap-1">
-                      <div
-                        className="w-full max-w-[28px] rounded-t-md bg-[#1677D2] transition-all hover:bg-[#0B1F3A]"
-                        style={{ height: `${(heightPct / 100) * 72}px` }}
-                        title={`${item.week}: ${val}%`}
-                      />
-                      <span className="text-[9px] font-medium text-[#64748B]">{item.week?.slice(5) || ''}</span>
+            {/* 4 Clickable Suggestion Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left">
+              {suggestionCards.map((card) => {
+                const Icon = card.icon
+                return (
+                  <button
+                    key={card.id}
+                    type="button"
+                    onClick={() => handleSendMessage(card.prompt)}
+                    className="p-4 rounded-xl bg-white border border-slate-200/90 hover:border-[#1677D2] hover:shadow-md transition-all duration-150 group text-left flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className={`p-2 rounded-lg border ${card.color} shrink-0`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#1677D2] group-hover:translate-x-0.5 transition-all" />
+                      </div>
+                      <h3 className="text-sm font-semibold text-[#0B1F3A] group-hover:text-[#1677D2] transition-colors mb-1">
+                        {card.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{card.desc}</p>
                     </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* ── Main Section: PostAssist AI Productivity Coach (Full Focus) ─ */}
-          <div className="w-full">
-            <CoachPanel
-              employeeId={employeeId}
-              week={hasCurrentWeekLogs ? report.week : week}
-              year={year}
-              onSelectWeek={(w) => {
-                setYear(w.slice(0, 4))
-                setWeek(w)
-              }}
-            />
-          </div>
-        </div>
-      ) : null}
-
-      {loading ? <LoadingState label="Loading employee productivity metrics..." /> : null}
-
-      {!loading && !employeeId ? (
-        <div className="rounded-2xl border border-dashed border-[#DFE8F2] bg-white p-12 text-center">
-          <h3 className="text-sm font-bold text-[#172B4D]">Select an Employee to Begin Coaching</h3>
-          <p className="mt-1 text-xs text-[#64748B]">
-            Choose a postal officer from the dropdown above to load verified performance history, machine learning forecasts, and personalized coaching recommendations.
-          </p>
-        </div>
-      ) : null}
-
-      {/* ── Banner when Selected Week in Past Has No Logs ── */}
-      {!loading && employeeId && report && !hasCurrentWeekLogs && !isFutureYear && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs text-amber-900 shadow-xs">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-            <div>
-              <h3 className="font-bold text-amber-950">
-                No Measured KPI Logs for Selected Week ({report.requested_week || week})
-              </h3>
-              <p className="mt-1 text-amber-800">
-                {report.message || 'No daily KPI logs were recorded for this employee during the selected week.'}
-              </p>
-              {report.earliest_available_week && report.latest_available_week && (
-                <p className="mt-1 text-[11px] font-medium text-amber-900">
-                  Historical records for <strong>{report.employee_name}</strong> are available from{' '}
-                  <span className="underline">{report.earliest_available_week}</span> to{' '}
-                  <span className="underline">{report.latest_available_week}</span>. Historical trends and baseline analysis are displayed below.
-                </p>
-              )}
-            </div>
-            {report.latest_available_week && (
-              <button
-                type="button"
-                onClick={() => {
-                  setYear(report.latest_available_week.slice(0, 4))
-                  setWeek(report.latest_available_week)
-                }}
-                className="shrink-0 rounded-xl bg-[#1677D2] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#1262ab]"
-              >
-                Jump to Latest Recorded Week ({report.latest_available_week})
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── Main Content Area ── */}
-      {!loading && employeeId && (hasCurrentWeekLogs || hasHistoricalData || isFutureYear) ? (
-        <div className="space-y-5">
-          {/* ── Top 3 Cards Row ────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            {/* Card 1: Selected Week KPI or Future Horizon Target */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#64748B]">
-                    {isFutureYear
-                      ? `Strategic Planning Target (${year})`
-                      : hasCurrentWeekLogs
-                      ? `Selected Week KPI (${report.week})`
-                      : `Historical Overview (${year})`}
-                  </span>
-                  {isFutureYear ? (
-                    <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-[#5E35B1]">
-                      Model Projection
-                    </span>
-                  ) : hasCurrentWeekLogs ? (
-                    <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                      Measured Data
-                    </span>
-                  ) : (
-                    <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                      Historical Baseline
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-2 flex items-baseline gap-2.5">
-                  <span className="text-3xl font-extrabold tracking-tight text-[#172B4D]">
-                    {isFutureYear
-                      ? forecast != null
-                        ? `${forecast}%`
-                        : '88.0%'
-                      : hasCurrentWeekLogs && measured != null
-                      ? `${measured}%`
-                      : latestHistoricalKpi != null
-                      ? `${latestHistoricalKpi}%`
-                      : 'Not available'}
-                  </span>
-                  {!isFutureYear && delta != null && (
-                    <span
-                      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${
-                        delta >= 0
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}
-                    >
-                      {delta > 0 ? '+' : ''}
-                      {delta.toFixed(1)}%
-                    </span>
-                  )}
-                  {isFutureYear && report?.historical_baseline_kpi != null && (
-                    <span className="text-xs font-medium text-[#64748B]">
-                      vs 2025 baseline ({report.historical_baseline_kpi}%)
-                    </span>
-                  )}
-                </div>
-
-                {/* Sub-status badges */}
-                <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
-                  {isFutureYear ? (
-                    <span className="rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-[11px] font-semibold text-[#5E35B1]">
-                      Holdout Error Margin: ±3.41 MAE, 4.55 RMSE
-                    </span>
-                  ) : hasCurrentWeekLogs ? (
-                    <>
-                      <span
-                        className={`inline-block rounded-md px-2 py-0.5 text-[11px] font-bold ${
-                          measured >= 85
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}
-                      >
-                        {measured >= 85 ? 'On Track' : 'Needs Attention'}
-                      </span>
-                      {forecast != null && (
-                        <span className="text-[11px] font-semibold text-[#1677D2]">
-                          Predicted next week: <strong>{forecast}%</strong>
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className="text-[11px] text-[#64748B]">
-                      Latest historical KPI ({report?.latest_available_week}):{' '}
-                      <strong className="text-[#172B4D]">{latestHistoricalKpi}%</strong>
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Sub-breakdown metrics */}
-              {hasCurrentWeekLogs ? (
-                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[#DFE8F2] pt-3 text-center">
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Completion</span>
-                    <span className="text-xs font-bold text-[#172B4D]">{shown(report?.completion, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Accuracy</span>
-                    <span className="text-xs font-bold text-emerald-700">{shown(report?.accuracy, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-slate-50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Timeliness</span>
-                    <span className="text-xs font-bold text-[#1677D2]">{shown(report?.timeliness, '%')}</span>
-                  </div>
-                </div>
-              ) : isFutureYear && report?.future_coaching_plan ? (
-                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[#DFE8F2] pt-3 text-center">
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Completion</span>
-                    <span className="text-xs font-bold text-[#172B4D]">{shown(report.future_coaching_plan.baseline_completion, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Accuracy</span>
-                    <span className="text-xs font-bold text-emerald-700">{shown(report.future_coaching_plan.baseline_accuracy, '%')}</span>
-                  </div>
-                  <div className="rounded-lg bg-purple-50/50 p-2">
-                    <span className="block text-[10px] text-[#64748B]">Base Timeliness</span>
-                    <span className="text-xs font-bold text-[#1677D2]">{shown(report.future_coaching_plan.baseline_timeliness, '%')}</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4 border-t border-[#DFE8F2] pt-3 text-[11px] text-[#64748B]">
-                  Historical analysis mode across recorded department periods.
-                </div>
-              )}
-            </div>
-
-            {/* Card 2: Trend Sparkline */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <h3 className="text-xs font-bold text-[#172B4D]">Performance Trajectory</h3>
-                <p className="text-[11px] text-[#64748B]">
-                  Historical measured trajectory ({activeHistoryForChart.length} recorded weeks)
-                </p>
-              </div>
-              <div className="my-2">
-                {renderTrendSparkline(activeHistoryForChart.map((h) => Number(h.kpi)))}
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-[#64748B]">
-                <span>Start: {activeHistoryForChart[0]?.week || '—'}</span>
-                <span>Latest: {activeHistoryForChart[activeHistoryForChart.length - 1]?.week || '—'}</span>
-              </div>
-            </div>
-
-            {/* Card 3: Performance Bar Chart */}
-            <div className="flex flex-col justify-between rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs lg:col-span-4">
-              <div>
-                <h3 className="text-xs font-bold text-[#172B4D]">Weekly KPI Audit</h3>
-                <p className="text-[11px] text-[#64748B]">Audited department scores (last 8 recorded weeks)</p>
-              </div>
-              <div className="mt-3 flex h-24 items-end justify-around gap-2 pt-4">
-                {activeHistoryForChart.slice(-8).map((item, idx) => {
-                  const val = Number(item.kpi) || 0
-                  const heightPct = Math.max(15, Math.min(100, val))
-                  return (
-                    <div key={item.week || idx} className="flex flex-1 flex-col items-center gap-1">
-                      <div
-                        className="w-full max-w-[28px] rounded-t-md bg-[#1677D2] transition-all hover:bg-[#0B1F3A]"
-                        style={{ height: `${(heightPct / 100) * 72}px` }}
-                        title={`${item.week}: ${val}%`}
-                      />
-                      <span className="text-[9px] font-medium text-[#64748B]">{item.week?.slice(5) || ''}</span>
+                    <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-medium text-slate-400 group-hover:text-slate-600 truncate">
+                      "{card.prompt}"
                     </div>
-                  )
-                })}
-              </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
+        ) : (
+          /* ── MESSAGE THREAD ─────────────────────────────────────────────── */
+          <div className="space-y-4 pb-2">
+            {messages.map((msg) => {
+              const isUser = msg.sender === 'user'
 
-          {/* ── Main Section: AI Recommendations Panel + Supporting Evidence ─ */}
-          <div className="grid gap-5 lg:grid-cols-12">
-            {/* PostAssist AI Productivity Coach (7 cols) */}
-            <div className="lg:col-span-7">
-              <CoachPanel
-                employeeId={employeeId}
-                week={hasCurrentWeekLogs ? report.week : week}
-                year={year}
-                onSelectWeek={(w) => {
-                  setYear(w.slice(0, 4))
-                  setWeek(w)
-                }}
-              />
-            </div>
-
-            {/* Supporting Evidence & Recommendation Status (5 cols) */}
-            <div className="space-y-5 lg:col-span-5">
-              <ChartCard
-                title="Supporting Evidence"
-                note="Audited Historical Records (Measured Department Observations)"
-              >
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="border-b border-[#DFE8F2] bg-slate-50 text-[10px] font-semibold text-[#64748B] uppercase">
-                      <tr>
-                        <th className="py-2.5 px-2.5">Week</th>
-                        <th className="py-2.5 px-2.5">KPI</th>
-                        <th className="py-2.5 px-2.5">Timeliness</th>
-                        <th className="py-2.5 px-2.5">Accuracy</th>
-                        <th className="py-2.5 px-2.5 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#DFE8F2]">
-                      {allHistory.slice(-6).reverse().map((h) => {
-                        const isSelected = h.week === report?.week
-                        return (
-                          <tr key={h.week} className={`hover:bg-slate-50 ${isSelected ? 'bg-blue-50/50 font-semibold' : ''}`}>
-                            <td className="py-2.5 px-2.5 font-medium text-[#172B4D]">{h.week}</td>
-                            <td className="py-2.5 px-2.5 font-bold text-[#172B4D]">{h.kpi != null ? `${h.kpi}%` : '—'}</td>
-                            <td className="py-2.5 px-2.5 text-[#64748B]">{h.timeliness != null ? `${h.timeliness}%` : '—'}</td>
-                            <td className="py-2.5 px-2.5 text-[#64748B]">{h.accuracy != null ? `${h.accuracy}%` : '—'}</td>
-                            <td className="py-2.5 px-2.5 text-right">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setYear(h.week.slice(0, 4))
-                                  setWeek(h.week)
-                                }}
-                                className="rounded px-2 py-0.5 text-[10px] font-semibold text-[#1677D2] hover:bg-blue-50"
-                              >
-                                {isSelected ? 'Viewing' : 'Inspect'}
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </ChartCard>
-
-              {/* Recommendation Status Card */}
-              <div className="rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#0B1F3A]">Postmaster Sign-off Status</span>
-                  <span
-                    className={`inline-flex rounded-md border px-2 py-0.5 text-[11px] font-bold ${
-                      reviewedStatus
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                        : 'border-rose-200 bg-rose-50 text-rose-800'
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+                >
+                  {/* Avatar */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold shadow-sm ${
+                      isUser
+                        ? 'bg-[#0B1F3A] text-white'
+                        : 'bg-gradient-to-tr from-[#1677D2] to-blue-400 text-white'
                     }`}
                   >
-                    {reviewedStatus ? '✓ Reviewed & Approved' : 'Pending Review'}
-                  </span>
-                </div>
-                <p className="mt-1 text-[11px] text-[#64748B]">
-                  Formal acknowledgement by Postmaster or Supervisor for operational follow-up.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setReviewedStatus((prev) => !prev)}
-                  className={`mt-3 w-full rounded-xl py-2.5 text-xs font-bold text-white shadow-xs transition-colors ${
-                    reviewedStatus
-                      ? 'bg-slate-700 hover:bg-slate-800'
-                      : 'bg-[#1677D2] hover:bg-[#1262ab]'
-                  }`}
-                >
-                  {reviewedStatus ? 'Mark as Pending' : 'Mark as Reviewed by Postmaster'}
-                </button>
-              </div>
+                    {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                  </div>
 
-              {/* Model Validation & Evaluation Card */}
-              <div className="rounded-2xl border border-[#DFE8F2] bg-white p-5 shadow-xs">
-                <span className="text-xs font-bold text-[#0B1F3A]">Forecasting Model Validation</span>
-                <div className="mt-2.5 space-y-2 text-xs text-[#475569]">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                    <span className="text-[11px] text-[#64748B]">Model Architecture</span>
-                    <span className="font-semibold text-[#172B4D]">Random Forest Pipeline</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                    <span className="text-[11px] text-[#64748B]">Holdout Test MAE</span>
-                    <span className="font-bold text-[#1677D2]">3.41 points</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                    <span className="text-[11px] text-[#64748B]">Holdout Test RMSE</span>
-                    <span className="font-semibold text-[#172B4D]">4.55 points</span>
-                  </div>
-                  <div className="flex items-center justify-between pb-1">
-                    <span className="text-[11px] text-[#64748B]">Baseline Naive MAE</span>
-                    <span className="text-[#64748B]">7.93 points</span>
+                  {/* Bubble Container */}
+                  <div className={`max-w-[85%] sm:max-w-[75%] flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                    {/* Header: Sender and timestamp */}
+                    <div className="flex items-center gap-1.5 px-1 mb-1 text-[11px] text-slate-400 font-medium">
+                      <span>{isUser ? 'You' : 'PostAssist AI Coach'}</span>
+                      <span>•</span>
+                      <span>{msg.timestamp}</span>
+                    </div>
+
+                    {/* Content Box */}
+                    <div
+                      className={`p-4 rounded-2xl shadow-sm text-sm ${
+                        isUser
+                          ? 'bg-[#0B1F3A] text-white rounded-tr-none'
+                          : 'bg-white border border-slate-200/90 text-slate-800 rounded-tl-none'
+                      }`}
+                    >
+                      {isUser ? (
+                        <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                      ) : (
+                        <div>
+                          <FormattedContent content={msg.text} />
+
+                          {/* Machine Learning Forecast Card if present */}
+                          {msg.forecast && msg.forecast.predicted_kpi != null && (
+                            <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-col gap-1.5">
+                              <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200/60 rounded-lg p-2.5">
+                                <div className="flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4 text-[#1677D2] shrink-0" />
+                                  <span className="text-xs font-semibold text-[#0B1F3A]">
+                                    Projected Next-Week KPI:
+                                  </span>
+                                </div>
+                                <span className="text-sm font-bold text-[#1677D2]">
+                                  {Number(msg.forecast.predicted_kpi).toFixed(1)}%
+                                </span>
+                              </div>
+                              {msg.forecast.disclaimer && (
+                                <p className="text-[11px] text-slate-400 italic px-1">
+                                  {msg.forecast.disclaimer}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Recommendations pills if any */}
+                          {Array.isArray(msg.recommendations) && msg.recommendations.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-slate-100">
+                              <span className="text-xs font-semibold text-slate-700 block mb-2">
+                                Key Action Points:
+                              </span>
+                              <div className="space-y-1.5">
+                                {msg.recommendations.slice(0, 3).map((rec, rIdx) => (
+                                  <div
+                                    key={rIdx}
+                                    className="p-2 rounded bg-slate-50 border border-slate-200/60 text-xs text-slate-700"
+                                  >
+                                    <strong className="text-[#0B1F3A]">{rec.title || rec.headline}:</strong>{' '}
+                                    <span>{rec.action || rec.actions?.[0]}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <p className="mt-2 rounded-lg bg-slate-50 p-2 text-[10px] text-[#64748B]">
-                  Trained on 16 departmental officers. Predictions are operational guidelines, not compensation determinations.
-                </p>
+              )
+            })}
+
+            {/* Typing / Loading Indicator */}
+            {loading && (
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#1677D2] to-blue-400 flex items-center justify-center shrink-0 text-white shadow-sm">
+                  <Bot className="w-4 h-4" />
+                </div>
+                <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-3.5 shadow-sm flex items-center gap-2.5 text-xs font-medium text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-[#1677D2] animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-2 h-2 rounded-full bg-[#1677D2] animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-2 h-2 rounded-full bg-[#1677D2] animate-bounce" />
+                  </div>
+                  <span>Analyzing performance records & verified KPIs...</span>
+                </div>
               </div>
-            </div>
+            )}
+
+            <div ref={chatBottomRef} />
           </div>
-        </div>
-      ) : null}
+        )}
+      </div>
 
-      <AIProductivityCoachDialog
-        open={coachOpen}
-        employeeId={employeeId}
-        week={hasCurrentWeekLogs ? report?.week : report?.latest_available_week || week}
-        onClose={() => setCoachOpen(false)}
-      />
+      {/* ── COMPOSER / INPUT AREA ───────────────────────────────────────────── */}
+      <div className="pt-2 border-t border-slate-200 shrink-0">
+        {/* Quick follow-up pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <span className="text-[11px] font-semibold text-slate-400 shrink-0 flex items-center gap-1">
+            <Lightbulb className="w-3 h-3 text-amber-500" />
+            Quick:
+          </span>
+          {quickPills.map((pill, pIdx) => (
+            <button
+              key={pIdx}
+              type="button"
+              disabled={loading}
+              onClick={() => handleSendMessage(pill.prompt)}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-[#1677D2] hover:border-blue-200 border border-slate-200 rounded-full text-xs font-medium text-slate-600 shrink-0 transition-colors disabled:opacity-50"
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Input box */}
+        <div className="relative flex items-center bg-white border border-slate-300 rounded-2xl shadow-sm focus-within:ring-2 focus-within:ring-[#1677D2] focus-within:border-transparent transition-all">
+          <textarea
+            ref={inputRef}
+            rows={1}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              language === 'si'
+                ? 'කාර්යසාධනය, සේවක විස්තර හෝ වැඩිදියුණු කිරීම පිළිබඳව අසන්න...'
+                : 'Ask about your performance, employee details, or how to improve...'
+            }
+            disabled={loading}
+            className="w-full pl-4 pr-12 py-3 bg-transparent text-sm text-slate-800 placeholder-slate-400 resize-none focus:outline-none max-h-32 leading-relaxed"
+          />
+
+          {/* Send button */}
+          <button
+            type="button"
+            onClick={() => handleSendMessage()}
+            disabled={!inputValue.trim() || loading}
+            className="absolute right-2.5 p-2 rounded-xl bg-[#1677D2] hover:bg-[#0B1F3A] text-white disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors shadow-sm"
+            title="Send message (Enter)"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Footnote */}
+        <div className="flex items-center justify-between text-[11px] text-slate-400 px-2 pt-1.5 font-normal">
+          <span>Press Enter to send · Shift+Enter for new line</span>
+          <span>Sri Lanka Postal Department · Official Performance Coach</span>
+        </div>
+      </div>
     </div>
   )
 }

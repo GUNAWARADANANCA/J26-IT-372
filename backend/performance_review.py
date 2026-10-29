@@ -5,6 +5,9 @@ desk. They are not official Sri Lanka Post promotion standards. A person must
 approve any promotion or any change to the day's work.
 """
 
+import re
+import threading
+import time
 from datetime import date, datetime, timedelta
 
 from fastapi import HTTPException
@@ -18,72 +21,100 @@ MIN_RATE = 80
 MIN_ATTENDANCE = 90
 MIN_MONTHS_SINCE_PROMOTION = 12
 EXAMPLE_DAILY_CAPACITY = 40
-PRESENT_STATUSES = {"on time", "late", "half day"}
+DEFAULT_DAILY_BENCHMARK = 5
+PRESENT_STATUSES = {"on time", "late", "half day", "present"}
 STANDARD_DAY_HOURS = 8
 SALARY_HOURS = 240
 OT_MULTIPLIER = 1.5
 COVER_ROUTE_HOURS = 4
 EXTRA_TASK_HOURS = 1
-DELIVERY_ROLES = {"Postman", "Senior Postman", "Delivery Officer"}
+DELIVERY_ROLES = {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}
+COUNTER_OFFICE_ROLES = {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer", "Mail Sorter"}
+SUPERVISORY_ROLES = {"Postmaster (Head)", "Postmaster"}
+
+
+def normalize_role(role_name: str, category: str = "") -> str:
+    """Normalize role string to handle casing, spaces, and equivalent designation labels."""
+    r = str(role_name or "").strip().lower()
+    c = str(category or "").strip().lower()
+    if "postmaster" in r or "head" in r:
+        return "Postmaster (Head)"
+    if "senior postman" in r:
+        return "Senior Postman"
+    if "postman" in r:
+        return "Postman"
+    if "mail sorter" in r or "sorter" in r:
+        return "Mail Sorter"
+    if "counter clerk" in r:
+        return "Counter Clerk"
+    if "postal assistant" in r:
+        return "Postal Assistant"
+    if "postal clerk" in r:
+        return "Postal Clerk"
+    if "postal officer" in r:
+        return "Postal Officer"
+    if "delivery officer" in r:
+        return "Delivery Officer"
+    return str(role_name or "").strip()
 
 # Example desk rules for which current role may receive a task. Not an official postal standard.
 # A person's designation and work category are never changed by allocation.
 TASK_FIT = {
     "Mail & Parcel Delivery": {
-        "roles": {"Postman", "Senior Postman", "Delivery Officer"},
-        "category": "Delivery (Field)",
+        "roles": {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"},
+        "categories": {"Delivery (Field)", "Delivery"},
     },
     "Customer Service Counter": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations", "Counter Services"},
     },
     "Money Order Processing": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations", "Counter Services"},
     },
     "Postal Clerk Duties": {
-        "roles": {"Postal Clerk", "Postmaster (Head)"},
-        "categories": {"Office", "Supervisory / Office"},
+        "roles": {"Counter Clerk", "Postal Clerk", "Postal Assistant", "Postal Officer", "Postmaster (Head)"},
+        "categories": {"Office", "Postal Operations", "Counter Services", "Supervisory / Office"},
     },
     "Data Entry": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Accounts Processing": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Accounts Verification": {
-        "roles": {"Postmaster (Head)"},
-        "category": "Supervisory / Office",
+        "roles": {"Postmaster (Head)", "Postal Officer"},
+        "categories": {"Supervisory / Office", "Office"},
     },
     "Correspondence Handling": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Communication Support": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Calendar Management": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Postal Assistant", "Postal Clerk", "Counter Clerk"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Stock & Inventory Check": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Ad-hoc Project Support": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Postal Assistant", "Postal Clerk", "Postal Officer", "Counter Clerk"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Workflow Coordination": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Postal Assistant", "Postal Clerk", "Postal Officer", "Counter Clerk"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Team Coordination": {
-        "roles": {"Postal Assistant", "Postal Clerk"},
-        "category": "Office",
+        "roles": {"Postal Assistant", "Postal Clerk", "Postal Officer", "Counter Clerk"},
+        "categories": {"Office", "Postal Operations"},
     },
     "Approvals & Audit": {
         "roles": {"Postmaster (Head)"},
@@ -101,24 +132,24 @@ TASK_FIT = {
 
 # Daily checklist labels and the current role that may receive each one.
 CHECKLIST_FIT = {
-    "Incoming Mail Registration": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Parcel Registration and Sorting": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Registered Mail Delivery": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Parcel Delivery by Route": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Ordinary Letter Delivery": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Article Scanning and Tracking Updates": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Pending Mail and Parcel Clearance": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Undelivered Article Processing": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Counter Customer Service": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Postage and Fee Verification": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Postal Financial Transactions": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Proof of Delivery Verification": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
-    "Late Delivery Follow-up": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
+    "Incoming Mail Registration": ("Office", {"Mail Sorter", "Postal Assistant", "Postal Clerk", "Counter Clerk", "Postal Officer"}),
+    "Parcel Registration and Sorting": ("Office", {"Mail Sorter", "Postal Assistant", "Postal Clerk", "Counter Clerk", "Postal Officer"}),
+    "Registered Mail Delivery": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Parcel Delivery by Route": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Ordinary Letter Delivery": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Article Scanning and Tracking Updates": ("Office", {"Mail Sorter", "Postal Assistant", "Postal Clerk", "Counter Clerk", "Postal Officer"}),
+    "Pending Mail and Parcel Clearance": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Undelivered Article Processing": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Counter Customer Service": ("Office", {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"}),
+    "Postage and Fee Verification": ("Office", {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"}),
+    "Postal Financial Transactions": ("Office", {"Counter Clerk", "Postal Assistant", "Postal Clerk", "Postal Officer"}),
+    "Proof of Delivery Verification": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Late Delivery Follow-up": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
+    "Returned Mail and Parcel Processing": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer", "Postal Officer"}),
     "Attendance and Staff Availability Review": ("Supervisory / Office", {"Postmaster (Head)"}),
     "Daily Work Allocation Review": ("Supervisory / Office", {"Postmaster (Head)"}),
     "Incomplete Task Follow-up": ("Supervisory / Office", {"Postmaster (Head)"}),
-    "Incorrect Record and Address Verification": ("Office", {"Postal Assistant", "Postal Clerk"}),
-    "Returned Mail and Parcel Processing": ("Delivery (Field)", {"Postman", "Senior Postman", "Delivery Officer"}),
+    "Incorrect Record and Address Verification": ("Office", {"Postal Assistant", "Postal Clerk", "Counter Clerk", "Postal Officer"}),
     "Daily Productivity and Workload Review": ("Supervisory / Office", {"Postmaster (Head)"}),
     "End-of-Day Reconciliation and Reporting": ("Supervisory / Office", {"Postmaster (Head)"}),
 }
@@ -180,6 +211,9 @@ def is_present(record: dict) -> bool:
 
 def attended(record: dict) -> bool:
     """True when this person came to work, including a scan that has a time but no status."""
+    status = str(record.get("attendance_status") or "").strip().lower()
+    if status == "absent":
+        return False
     if is_present(record):
         return True
     return bool(str(record.get("fingerprint_in") or "").strip() or str(record.get("fingerprint_out") or "").strip())
@@ -386,21 +420,79 @@ def _task_name(log: dict) -> str:
     return str(log.get("primary_task_type") or "").strip()
 
 
+def _normalize_category(cat: str) -> str:
+    c = str(cat or "").strip().lower()
+    if "delivery" in c or "field" in c:
+        return "delivery"
+    if "sort" in c:
+        return "sorting"
+    if "counter" in c:
+        return "counter"
+    if "supervis" in c or "head" in c:
+        return "supervisory"
+    if "office" in c or "operation" in c or "clerk" in c:
+        return "office"
+    return c
+
+
+def _categories_match(emp_cat: str, task_cat: str) -> bool:
+    if not emp_cat or not task_cat:
+        return True
+    ec = _normalize_category(emp_cat)
+    tc = _normalize_category(task_cat)
+    if ec == tc:
+        return True
+    # Office, counter, and sorting are all non-delivery administrative/indoor operations
+    non_delivery = {"office", "counter", "sorting", "supervisory"}
+    if ec in non_delivery and tc in non_delivery:
+        return True
+    return False
+
+
 def _can_do_task(employee: dict, task: str) -> bool | None:
     """True when this person's current role may receive the task.
-
-    None means the task is not in the example list, so allocation keeps the
-    older same-category rule.
+    Enforces strict departmental boundary: Delivery officers cannot receive
+    counter/office tasks; Counter/Office/Sorting staff cannot receive delivery route tasks.
     """
     fit = TASK_FIT.get(task)
     if fit is None:
-        return None
+        cfit = CHECKLIST_FIT.get(task)
+        if cfit:
+            cat, roles = cfit
+            fit = {"roles": roles, "categories": {cat}}
+        else:
+            return None
+
     designation = str(employee.get("designation") or "").strip()
     category = str(employee.get("work_category") or "").strip()
+    emp_norm_cat = _normalize_category(category)
+
     categories = fit.get("categories")
     if categories is None:
         categories = {fit.get("category")}
-    return designation in fit["roles"] and category in categories
+    task_norm_cats = {_normalize_category(c) for c in categories if c}
+
+    is_delivery_task = "delivery" in task_norm_cats
+    is_delivery_emp = emp_norm_cat == "delivery"
+
+    # Strictly enforce delivery vs. counter / office barrier
+    if is_delivery_task != is_delivery_emp:
+        return False
+
+    norm_role = normalize_role(designation, category)
+    allowed_roles = set(fit.get("roles") or [])
+
+    if designation in allowed_roles or norm_role in allowed_roles:
+        return True
+
+    # Postal Officer: Delivery category performs delivery; Counter/Office performs counter/office
+    if "postal officer" in designation.lower():
+        if is_delivery_emp and is_delivery_task:
+            return True
+        if not is_delivery_emp and not is_delivery_task:
+            return True
+
+    return False
 
 
 def _prior_work(logs: list[dict], day: date) -> tuple[dict, dict]:
@@ -936,3 +1028,687 @@ def confirm_overtime(day_text: str, checklist=None) -> dict:
             detail="Overtime could not be confirmed because basic salary is missing.",
         )
     return {"ok": True, "saved": saved, "skipped": skipped, "plan": plan}
+
+
+_auto_balance_lock = threading.Lock()
+
+
+def is_on_approved_leave(employee_id: str, day: date, db) -> tuple[bool, str]:
+    """Check if the employee has an approved leave overlapping this day."""
+    if not employee_id:
+        return False, ""
+    day_iso = day.isoformat()
+    try:
+        query = {
+            "employee_id": employee_id,
+            "status": {"$regex": "^approved$", "$options": "i"},
+        }
+        for row in db["entitlement_leave"].find(query):
+            start = str(row.get("start_date") or row.get("from_date") or "")[:10]
+            end = str(row.get("end_date") or row.get("to_date") or "")[:10]
+            l_type = row.get("leave_type") or "Approved Leave"
+            if start and end:
+                if start <= day_iso <= end:
+                    return True, f"Approved leave ({l_type}) from {start} to {end}."
+            elif not start and not end:
+                return True, f"Approved leave ({l_type}) on file."
+    except Exception:
+        pass
+
+    try:
+        if "leave_request" in db.list_collection_names():
+            for row in db["leave_request"].find({"employee_id": employee_id, "status": {"$regex": "^approved$", "$options": "i"}}):
+                start = str(row.get("start_date") or row.get("from_date") or "")[:10]
+                end = str(row.get("end_date") or row.get("to_date") or "")[:10]
+                l_type = row.get("leave_type") or "Approved Leave"
+                if start and end:
+                    if start <= day_iso <= end:
+                        return True, f"Approved leave ({l_type}) from {start} to {end}."
+                elif not start and not end:
+                    return True, f"Approved leave ({l_type}) on file."
+    except Exception:
+        pass
+
+    return False, ""
+
+
+def get_employee_attendance_eligibility(
+    employee: dict,
+    day: date,
+    db,
+    benchmark_capacity: int = DEFAULT_DAILY_BENCHMARK,
+) -> dict:
+    """Classify employee eligibility based on confirmed attendance records and approved leave."""
+    emp_id = str(employee.get("employee_id") or employee.get("_id") or "").strip()
+    emp_name = str(employee.get("employee_name") or emp_id).strip()
+    day_iso = day.isoformat()
+
+    # 1. Approved Leave Check
+    on_leave, leave_reason = is_on_approved_leave(emp_id, day, db)
+    if on_leave:
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": False,
+            "status": "On Leave",
+            "tag": "On Leave — Excluded",
+            "reason": leave_reason or "Employee is on approved leave on this date.",
+            "capacity": 0,
+            "is_half_day": False,
+        }
+
+    # 2. Attendance Record Check
+    att_doc = db["attendance_log"].find_one({"employee_id": emp_id, "date": day_iso})
+    if not att_doc:
+        att_doc = db["attendance_log"].find_one({"_id": f"{emp_id}-{day_iso}"})
+    if not att_doc:
+        att_doc = db["attendance_log"].find_one({"employee_id": emp_id, "attendance_date": day_iso})
+    if not att_doc:
+        try:
+            att_doc = db["attendance_log"].find_one({
+                "employee_id": {"$regex": f"^{re.escape(emp_id)}$", "$options": "i"},
+                "$or": [
+                    {"date": {"$regex": f"^{day_iso}"}},
+                    {"attendance_date": {"$regex": f"^{day_iso}"}},
+                ],
+            })
+        except Exception:
+            pass
+
+    if not att_doc:
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": False,
+            "status": "Attendance Not Recorded",
+            "tag": "Attendance Not Recorded — Excluded",
+            "reason": "Attendance has not been recorded for this date. Cannot verify presence.",
+            "capacity": 0,
+            "is_half_day": False,
+        }
+
+    att_status = str(att_doc.get("attendance_status") or "").strip().lower()
+    fingerprint_in = str(att_doc.get("fingerprint_in") or att_doc.get("check_in_time") or "").strip()
+    source = str(att_doc.get("source") or "").strip().lower()
+
+    if att_status == "absent":
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": False,
+            "status": "Absent",
+            "tag": "Absent — Excluded",
+            "reason": "Employee is marked absent on this date.",
+            "capacity": 0,
+            "is_half_day": False,
+        }
+
+    # Manually authorized by Postmaster fallback
+    if source == "postmaster_authorized" or att_status in {"manually authorized", "authorized"}:
+        half_cap = max(1, round(benchmark_capacity * 0.5))
+        is_half = "half" in att_status
+        cap = half_cap if is_half else benchmark_capacity
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": True,
+            "status": "Manually Authorized",
+            "tag": "Present (Manually Authorized) — Eligible",
+            "reason": f"Authorized by Postmaster for {day_iso}. Configured capacity: {cap} tasks.",
+            "capacity": cap,
+            "is_half_day": is_half,
+        }
+
+    if att_status == "half day":
+        half_cap = max(1, round(benchmark_capacity * 0.5))
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": True,
+            "status": "Half day",
+            "tag": "Present (Half Day) — Eligible",
+            "reason": f"Confirmed attendance: Half Day (working capacity adjusted to {half_cap} tasks).",
+            "capacity": half_cap,
+            "is_half_day": True,
+        }
+
+    if att_status in {"on time", "late", "present"} or fingerprint_in:
+        return {
+            "employee_id": emp_id,
+            "employee_name": emp_name,
+            "eligible": True,
+            "status": "Present",
+            "tag": "Present — Eligible",
+            "reason": f"Confirmed attendance ({att_doc.get('attendance_status') or 'Present'}). Standard capacity: {benchmark_capacity} tasks.",
+            "capacity": benchmark_capacity,
+            "is_half_day": False,
+        }
+
+    return {
+        "employee_id": emp_id,
+        "employee_name": emp_name,
+        "eligible": False,
+        "status": att_status.capitalize() or "Unavailable",
+        "tag": "Unavailable — Excluded",
+        "reason": f"Attendance status '{att_status}' is not eligible for daily task allocation.",
+        "capacity": 0,
+        "is_half_day": False,
+    }
+
+
+def authorize_attendance_for_date(
+    day_text: str,
+    employee_ids: list[str] | None = None,
+    status: str = "Present",
+    notes: str = "Authorized by Postmaster for work allocation",
+    user: str = "postmaster",
+    post_office: str | None = None,
+) -> dict:
+    """Postmaster explicitly authorizes attendance for selected or all active non-leave employees."""
+    day = parse_day(day_text)
+    if not day:
+        raise HTTPException(status_code=400, detail="Invalid date format.")
+    day_iso = day.isoformat()
+    db = get_db()
+    emp_col = db["employee"]
+    att_col = db["attendance_log"]
+
+    q = {}
+    if post_office and post_office != "All":
+        q["$or"] = [{"post_office": post_office}, {"office_id": post_office}]
+    all_emps = list(emp_col.find(q))
+    if not all_emps:
+        all_emps = list(emp_col.find({}))
+
+    authorized_records = []
+    skipped_records = []
+    target_ids = set(employee_ids) if employee_ids is not None else {str(e.get("employee_id") or e.get("_id")) for e in all_emps}
+
+    for emp in all_emps:
+        eid = str(emp.get("employee_id") or emp.get("_id"))
+        if eid not in target_ids:
+            continue
+
+        on_leave, leave_reason = is_on_approved_leave(eid, day, db)
+        if on_leave:
+            skipped_records.append({"employee_id": eid, "reason": leave_reason})
+            continue
+
+        doc_id = f"{eid}-{day_iso}"
+        rec = {
+            "_id": doc_id,
+            "name": doc_id,
+            "employee_id": eid,
+            "employee_name": emp.get("employee_name") or eid,
+            "designation": emp.get("designation") or "",
+            "department": emp.get("work_category") or emp.get("department") or "Postal Operations",
+            "work_category": emp.get("work_category") or "Postal Operations",
+            "post_office": emp.get("post_office") or "Kaduwela",
+            "date": day_iso,
+            "attendance_date": day_iso,
+            "fingerprint_in": "08:00",
+            "check_in_time": "08:00",
+            "attendance_status": status,
+            "source": "postmaster_authorized",
+            "authorized_by": user,
+            "verification_method": "Postmaster Manual Authorization",
+            "notes": notes,
+            "updated_at": datetime.now().isoformat(timespec="seconds"),
+        }
+        att_col.replace_one({"_id": doc_id}, rec, upsert=True)
+        authorized_records.append(eid)
+
+    return {
+        "ok": True,
+        "date": day_iso,
+        "authorized_count": len(authorized_records),
+        "authorized_employee_ids": authorized_records,
+        "skipped_count": len(skipped_records),
+        "skipped": skipped_records,
+        "message": f"Successfully authorized attendance for {len(authorized_records)} officer(s) on {day_iso}.",
+    }
+
+
+def auto_balance_workload(
+    day_text: str,
+    post_office: str | None = None,
+    checklist=None,
+    user: str = "postmaster",
+    benchmark_capacity: int = DEFAULT_DAILY_BENCHMARK,
+    confirm: bool = True,
+    authorized_employee_ids: list[str] | None = None,
+    authorize_all_active: bool = False,
+) -> dict:
+    """Automatically balance workload among eligible present employees based on attendance."""
+    day = parse_day(day_text)
+    if day is None:
+        raise HTTPException(status_code=400, detail="Enter a valid date")
+    day_iso = day.isoformat()
+    db = get_db()
+
+    with _auto_balance_lock:
+        # Pre-authorize attendance if requested by Postmaster
+        if authorize_all_active or authorized_employee_ids is not None:
+            authorize_attendance_for_date(
+                day_text=day_iso,
+                employee_ids=authorized_employee_ids,
+                user=user,
+                post_office=post_office,
+            )
+
+        # Check settings for open days / holidays if configured
+        try:
+            settings = db["settings"].find_one({"_id": "attendance"}) or {}
+            open_days = settings.get("open_days", [0, 1, 2, 3, 4, 5, 6])
+            if day.weekday() not in open_days:
+                return {
+                    "ok": False,
+                    "message": f"Post office is closed on {day.strftime('%A')} ({day_iso}). Routine daily assignments cannot be created.",
+                    "date": day_iso,
+                    "tasks_assigned": 0,
+                    "eligible_count": 0,
+                    "unassigned_count": 0,
+                    "excluded_employees": [],
+                    "eligible_employees": [],
+                    "transfers": [],
+                }
+        except Exception:
+            pass
+
+        # Retrieve employees
+        emp_query = {}
+        if post_office and post_office != "All":
+            emp_query["$or"] = [
+                {"post_office": post_office},
+                {"office_id": post_office},
+            ]
+        employees = list(db["employee"].find(emp_query))
+        if not employees:
+            employees = list(db["employee"].find({}))
+
+        by_id = {str(e.get("employee_id") or e.get("_id")): e for e in employees}
+
+        # Check attendance & availability for all employees
+        eligibility_by_id = {}
+        for emp in employees:
+            eid = str(emp.get("employee_id") or emp.get("_id"))
+            eligibility_by_id[eid] = get_employee_attendance_eligibility(emp, day, db, benchmark_capacity)
+
+        eligible_list = [e for eid, e in eligibility_by_id.items() if e["eligible"]]
+        excluded_list = [
+            {
+                "employee_id": e["employee_id"],
+                "employee_name": e["employee_name"],
+                "designation": by_id.get(e["employee_id"], {}).get("designation") or "",
+                "attendance_status": e["status"],
+                "reason": e["tag"],
+                "details": e["reason"],
+            }
+            for eid, e in eligibility_by_id.items()
+            if not e["eligible"]
+        ]
+
+        # 5. Handle No Eligible Employees
+        if not eligible_list:
+            return {
+                "ok": False,
+                "attendance_missing": True,
+                "message": "No eligible employees are available for allocation on this date. Please verify attendance records.",
+                "date": day_iso,
+                "tasks_assigned": 0,
+                "eligible_count": 0,
+                "unassigned_count": 0,
+                "excluded_employees": excluded_list,
+                "eligible_employees": [],
+                "transfers": [],
+                "overloaded_count": 0,
+                "balanced_count": 0,
+                "underutilized_count": 0,
+            }
+
+        # Retrieve daily KPI logs on that date
+        logs_today_docs = list(db["daily_kpi_log"].find({"date": day_iso}))
+        logs_today = {str(log.get("employee_id")): log for log in logs_today_docs}
+
+        # Compute prior work for route & task affinity
+        all_logs = list(db["daily_kpi_log"].find())
+        done_tasks, done_routes = _prior_work(all_logs, day)
+
+        # Track live assignments and capacity per employee
+        state = {}
+        for emp in employees:
+            eid = str(emp.get("employee_id") or emp.get("_id"))
+            log = logs_today.get(eid)
+            assigned = int(round(_num(log.get("assigned_work_count")))) if log else 0
+            completed = int(round(_num(log.get("completed_work_count")))) if log else 0
+            uncompleted = int(round(_num(log.get("uncompleted_work_count")))) if log and log.get("uncompleted_work_count") is not None else max(0, assigned - completed)
+            cap = eligibility_by_id[eid]["capacity"] if eligibility_by_id[eid]["eligible"] else 0
+            is_eligible = eligibility_by_id[eid]["eligible"]
+
+            tag = eligibility_by_id[eid]["tag"]
+            if is_eligible and assigned >= cap and cap > 0:
+                tag = "At Capacity — No additional work"
+
+            state[eid] = {
+                "employee": emp,
+                "employee_id": eid,
+                "employee_name": emp.get("employee_name") or eid,
+                "designation": emp.get("designation") or "",
+                "work_category": emp.get("work_category") or "",
+                "eligible": is_eligible,
+                "status": tag,
+                "capacity": cap,
+                "initial_assigned": assigned,
+                "current_assigned": assigned,
+                "completed": completed,
+                "uncompleted": uncompleted,
+                "log": log,
+            }
+
+        # 2. Retrieve Work That Needs Assignment
+        # Items to allocate:
+        # A. Movable uncompleted work from excluded / absent / on-leave employees
+        # B. Movable uncompleted work from overloaded eligible employees (> capacity)
+        # C. Any checklist / backlog work items passed in request
+        assignable_units = []
+
+        # From excluded employees (e.g. absent, on leave, unrecorded)
+        for eid, s in state.items():
+            if not s["eligible"] and s["uncompleted"] > 0:
+                log = s["log"]
+                task = _task_name(log) if log else ("Mail & Parcel Delivery" if s["work_category"] == "Delivery (Field)" else "Customer Service Counter")
+                route = str(log.get("route_id") or "") if log else ""
+                route_km = _num(log.get("route_length_km")) if log else 0
+                deliv_pts = _num(log.get("delivery_points")) if log else 0
+                priority = str(log.get("priority") or "Normal") if log else "Normal"
+                count = s["uncompleted"]
+                for _ in range(count):
+                    assignable_units.append({
+                        "source_type": "ineligible_reassign",
+                        "donor_id": eid,
+                        "donor_name": s["employee_name"],
+                        "task": task,
+                        "route_id": route,
+                        "route_length_km": route_km,
+                        "delivery_points": deliv_pts,
+                        "priority": priority,
+                        "work_category": s["work_category"],
+                        "reason": f"Reassigned from {s['employee_name']} ({s['status']})",
+                    })
+
+        # From overloaded eligible employees
+        for eid, s in state.items():
+            if s["eligible"] and s["current_assigned"] > s["capacity"] and s["uncompleted"] > 0:
+                excess = min(s["uncompleted"], s["current_assigned"] - s["capacity"])
+                if excess > 0:
+                    log = s["log"]
+                    task = _task_name(log) if log else ("Mail & Parcel Delivery" if s["work_category"] == "Delivery (Field)" else "Customer Service Counter")
+                    route = str(log.get("route_id") or "") if log else ""
+                    route_km = _num(log.get("route_length_km")) if log else 0
+                    deliv_pts = _num(log.get("delivery_points")) if log else 0
+                    priority = str(log.get("priority") or "Normal") if log else "Normal"
+                    for _ in range(excess):
+                        assignable_units.append({
+                            "source_type": "overload_balance",
+                            "donor_id": eid,
+                            "donor_name": s["employee_name"],
+                            "task": task,
+                            "route_id": route,
+                            "route_length_km": route_km,
+                            "delivery_points": deliv_pts,
+                            "priority": priority,
+                            "work_category": s["work_category"],
+                            "reason": f"Balanced from overloaded {s['employee_name']} ({s['current_assigned']} tasks > benchmark {s['capacity']})",
+                        })
+
+        # From checklist / unassigned items if provided
+        if checklist is not None:
+            labels = _checklist_labels(checklist)
+            for label in labels:
+                assignable_units.append({
+                    "source_type": "checklist",
+                    "donor_id": None,
+                    "donor_name": "Daily Operations Checklist",
+                    "task": label,
+                    "route_id": "",
+                    "route_length_km": 0,
+                    "delivery_points": 0,
+                    "priority": "Normal",
+                    "work_category": CHECKLIST_FIT.get(label, ("Office", set()))[0],
+                    "reason": f"Operational checklist: {label}",
+                })
+
+        # Calculate pre-allocation metrics
+        overloaded_pre = sum(1 for s in state.values() if s["eligible"] and s["current_assigned"] > s["capacity"])
+        balanced_pre = sum(1 for s in state.values() if s["eligible"] and s["capacity"] > 0 and 0.70 <= (s["current_assigned"] / s["capacity"]) <= 1.10)
+        underutilized_pre = sum(1 for s in state.values() if s["eligible"] and s["capacity"] > 0 and (s["current_assigned"] / s["capacity"]) < 0.70)
+
+        # If no assignable work exists:
+        if not assignable_units:
+            eligible_summary = [
+                {
+                    "employee_id": s["employee_id"],
+                    "employee_name": s["employee_name"],
+                    "designation": s["designation"],
+                    "work_category": s["work_category"],
+                    "status": s["status"],
+                    "assigned_tasks": s["current_assigned"],
+                    "before_assigned": s["initial_assigned"],
+                    "after_assigned": s["current_assigned"],
+                    "completed_tasks": s["completed"],
+                    "pending_tasks": s["uncompleted"],
+                    "capacity": s["capacity"],
+                    "workload_pct": round((s["current_assigned"] / s["capacity"]) * 100) if s["capacity"] > 0 else 0,
+                    "workload_status": "Overloaded" if (s["capacity"] > 0 and (s["current_assigned"] / s["capacity"]) > 1.10) else ("Balanced" if (s["capacity"] > 0 and (s["current_assigned"] / s["capacity"]) >= 0.70) else "Underutilized"),
+                }
+                for s in state.values()
+                if s["eligible"]
+            ]
+            return {
+                "ok": False,
+                "attendance_missing": False,
+                "message": "No pending work is available for automatic allocation.",
+                "date": day_iso,
+                "tasks_assigned": 0,
+                "eligible_count": len(eligible_list),
+                "unassigned_count": 0,
+                "excluded_employees": excluded_list,
+                "eligible_employees": eligible_summary,
+                "transfers": [],
+                "overloaded_count": overloaded_pre,
+                "balanced_count": balanced_pre,
+                "underutilized_count": underutilized_pre,
+            }
+
+        # 3. Fair Work Distribution Among Eligible Attending Employees
+        transfers = []
+        unassigned_units = []
+
+        prio_weights = {"urgent": 4, "high": 3, "normal": 2, "low": 1}
+        assignable_units.sort(
+            key=lambda u: prio_weights.get(str(u.get("priority") or "").lower(), 2),
+            reverse=True,
+        )
+
+        for unit in assignable_units:
+            task = unit["task"]
+            route = unit.get("route_id") or ""
+            donor_id = unit.get("donor_id")
+
+            # Find candidates among eligible employees who have current_assigned < capacity
+            candidates = []
+            for eid, s in state.items():
+                if not s["eligible"]:
+                    continue
+                if eid == donor_id:
+                    continue
+                if s["current_assigned"] >= s["capacity"]:
+                    continue
+
+                # Check task/role fit
+                task_allowed = _can_do_task(s["employee"], task)
+                if task_allowed is None:
+                    cfit = CHECKLIST_FIT.get(task)
+                    if cfit:
+                        cat, roles = cfit
+                        task_allowed = s["designation"] in roles and _categories_match(s["work_category"], cat)
+                    else:
+                        task_allowed = _categories_match(s["work_category"], unit.get("work_category", s["work_category"]))
+
+                if not task_allowed:
+                    continue
+
+                candidates.append(s)
+
+            if not candidates:
+                unassigned_units.append(unit)
+                continue
+
+            # Prioritize candidates:
+            # 1. Route affinity (done this route before)
+            # 2. Task affinity (done this task before)
+            # 3. Most spare capacity (capacity - current_assigned)
+            # 4. Name
+            candidates.sort(
+                key=lambda s: (
+                    1 if route and route in done_routes.get(s["employee_id"], ()) else 0,
+                    1 if task and task in done_tasks.get(s["employee_id"], ()) else 0,
+                    s["capacity"] - s["current_assigned"],
+                ),
+                reverse=True,
+            )
+
+            chosen = candidates[0]
+            before_from = state[donor_id]["current_assigned"] if donor_id and donor_id in state else 0
+            before_to = chosen["current_assigned"]
+
+            chosen["current_assigned"] += 1
+            chosen["uncompleted"] += 1
+
+            if donor_id and donor_id in state:
+                state[donor_id]["current_assigned"] -= 1
+                state[donor_id]["uncompleted"] = max(0, state[donor_id]["uncompleted"] - 1)
+
+            transfers.append({
+                "from_employee_id": donor_id or "UNASSIGNED",
+                "from_employee_name": unit.get("donor_name") or "Unassigned Backlog",
+                "from_designation": state[donor_id]["designation"] if donor_id and donor_id in state else "Unassigned",
+                "to_employee_id": chosen["employee_id"],
+                "to_employee_name": chosen["employee_name"],
+                "to_designation": chosen["designation"],
+                "designation": chosen["designation"],
+                "work_category": chosen["work_category"],
+                "task": task,
+                "route_id": route,
+                "tasks_moved": 1,
+                "before_from_tasks": before_from,
+                "after_from_tasks": state[donor_id]["current_assigned"] if donor_id and donor_id in state else 0,
+                "before_to_tasks": before_to,
+                "after_to_tasks": chosen["current_assigned"],
+                "reason": unit.get("reason") or f"Allocated {task} to attending {chosen['designation']}",
+            })
+
+        # 4. Persist to MongoDB only if confirm is True
+        if confirm:
+            logs_col = db["daily_kpi_log"]
+            # Save updated daily KPI logs
+            for eid, s in state.items():
+                if s["current_assigned"] != s["initial_assigned"]:
+                    doc_id = _log_id(eid, day)
+                    cur = logs_col.find_one({"_id": doc_id})
+                    if cur is None:
+                        cur = {
+                            "_id": doc_id,
+                            "name": doc_id,
+                            "employee_id": eid,
+                            "employee_name": s["employee_name"],
+                            "designation": s["designation"],
+                            "work_category": s["work_category"],
+                            "post_office": s["employee"].get("post_office") or "Kaduwela",
+                            "date": day_iso,
+                            "completed_work_count": s["completed"],
+                        }
+                    cur["assigned_work_count"] = s["current_assigned"]
+                    cur["uncompleted_work_count"] = max(0, s["current_assigned"] - s["completed"])
+                    if not cur.get("primary_task_type"):
+                        cur["primary_task_type"] = "Mail & Parcel Delivery" if s["work_category"] == "Delivery (Field)" else "Customer Service Counter"
+                    cur["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                    cur["notes"] = f"Auto-balanced on {day_iso}. {s['status']}."
+                    logs_col.replace_one({"_id": doc_id}, cur, upsert=True)
+
+            # Record audit document in work_allocation collection
+            assigned_count = len(transfers)
+            alloc_col = db["work_allocation"]
+            alloc_record = {
+                "_id": f"alloc-{post_office or 'ALL'}-{day_iso}-{int(time.time())}",
+                "name": f"alloc-{post_office or 'ALL'}-{day_iso}",
+                "date": day_iso,
+                "post_office": post_office or "All",
+                "allocated_at": datetime.now().isoformat(timespec="seconds"),
+                "allocated_by": user,
+                "tasks_assigned_count": assigned_count,
+                "eligible_employees_count": len(eligible_list),
+                "unassigned_tasks_count": len(unassigned_units),
+                "excluded_employees": excluded_list,
+                "transfers": transfers,
+                "status": "Applied",
+            }
+            alloc_col.insert_one(alloc_record)
+
+        # Prepare summary of eligible employees with their updated status & workload
+        assigned_count = len(transfers)
+        eligible_summary = []
+        for s in state.values():
+            if not s["eligible"]:
+                continue
+            pct = round((s["current_assigned"] / s["capacity"]) * 100) if s["capacity"] > 0 else 0
+            if pct > 110:
+                wl_status = "Overloaded"
+            elif pct >= 96:
+                wl_status = "Near Capacity"
+            elif pct >= 70:
+                wl_status = "Balanced"
+            else:
+                wl_status = "Underutilized"
+
+            tag = s["status"]
+            if s["current_assigned"] >= s["capacity"]:
+                tag = "At Capacity — No additional work"
+
+            eligible_summary.append({
+                "employee_id": s["employee_id"],
+                "employee_name": s["employee_name"],
+                "designation": s["designation"],
+                "work_category": s["work_category"],
+                "status": tag,
+                "assigned_tasks": s["current_assigned"],
+                "before_assigned": s["initial_assigned"],
+                "after_assigned": s["current_assigned"],
+                "completed_tasks": s["completed"],
+                "pending_tasks": max(0, s["current_assigned"] - s["completed"]),
+                "capacity": s["capacity"],
+                "workload_pct": pct,
+                "workload_status": wl_status,
+            })
+
+        overloaded_post = sum(1 for s in eligible_summary if s["workload_status"] == "Overloaded")
+        balanced_post = sum(1 for s in eligible_summary if s["workload_status"] in ("Balanced", "Near Capacity"))
+        underutilized_post = sum(1 for s in eligible_summary if s["workload_status"] == "Underutilized")
+
+        action_msg = "Successfully auto-balanced" if confirm else "Proposed rebalance plan for"
+        return {
+            "ok": True,
+            "confirmed": confirm,
+            "attendance_missing": False,
+            "message": f"{action_msg} {assigned_count} task(s) among {len(eligible_summary)} attending officer(s).",
+            "date": day_iso,
+            "tasks_assigned": assigned_count,
+            "eligible_count": len(eligible_summary),
+            "unassigned_count": len(unassigned_units),
+            "excluded_employees": excluded_list,
+            "eligible_employees": eligible_summary,
+            "transfers": transfers,
+            "overloaded_count": overloaded_post,
+            "balanced_count": balanced_post,
+            "underutilized_count": underutilized_post,
+        }

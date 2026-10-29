@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
+  generateKpiForecasts,
   getKpiForecast,
   getKpiForecastSummary,
   getKpiForecasts,
+  list,
 } from '../data/repository'
 import {
   calculateForecastSummary,
@@ -13,13 +16,17 @@ import {
   validateDateRange,
 } from '../data/forecastDataHelpers'
 
-// Official benchmark metrics from offline model evaluation (Holdout test)
+// Official benchmark metrics from offline model evaluation (Holdout test on 1,056 test rows)
 const MODEL_COMPARISONS = [
-  { model: 'Gradient Boosting', mae: 4.32, rmse: 6.87, r2: 0.92, status: 'Best' },
-  { model: 'Random Forest', mae: 5.76, rmse: 8.91, r2: 0.86, status: 'Alternative' },
+  { model: 'Gradient Boosting (post_assist_kpi_model.joblib)', mae: 3.21, rmse: 4.15, r2: 0.81, status: 'Active (Trained)' },
+  { model: 'Random Forest (Alternative Pipeline)', mae: 5.76, rmse: 8.91, r2: 0.86, status: 'Alternative' },
 ]
 
 export default function KpiForecastPage() {
+  const [employees, setEmployees] = useState([])
+  const [loadingEmployees, setLoadingEmployees] = useState(true)
+  const [employeeError, setEmployeeError] = useState('')
+
   const [rows, setRows] = useState([])
   const [summary, setSummary] = useState(null)
   const [detail, setDetail] = useState(null)
@@ -27,13 +34,14 @@ export default function KpiForecastPage() {
   // Filters state
   const [employeeId, setEmployeeId] = useState('')
   const [timePeriod, setTimePeriod] = useState('Next Week')
-  const [fromDate, setFromDate] = useState('')
-  const [toDate, setToDate] = useState('')
-  const [appliedFilters, setAppliedFilters] = useState({ fromDate: '', toDate: '', timePeriod: 'Next Week' })
+  const [fromDate, setFromDate] = useState('2025-09-01')
+  const [toDate, setToDate] = useState('2025-12-22')
+  const [appliedFilters, setAppliedFilters] = useState({ fromDate: '2025-09-01', toDate: '2025-12-22', timePeriod: 'Next Week' })
 
   // Loading & error states
   const [loading, setLoading] = useState(true)
   const [loadingDetail, setLoadingDetail] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
   const [dateError, setDateError] = useState('')
   const [notice, setNotice] = useState('')
@@ -49,23 +57,36 @@ export default function KpiForecastPage() {
   // Modal state for "View Forecast Details"
   const [showDetailModal, setShowDetailModal] = useState(false)
 
-  // Load forecast records list on initial mount
+  // Load employees and forecast records list on initial mount
   function loadData() {
     setLoading(true)
     setError('')
     Promise.all([
+      list('employee'),
       getKpiForecasts({}),
       getKpiForecastSummary(),
     ])
-      .then(([forecasts, totals]) => {
-        const list = forecasts || []
-        setRows(list)
+      .then(([empList, forecasts, totals]) => {
+        const validEmps = Array.isArray(empList) ? empList : []
+        setEmployees(validEmps)
+        setLoadingEmployees(false)
+
+        const listRows = forecasts || []
+        setRows(listRows)
         setSummary(totals || null)
-        if (!employeeId && list.length > 0) {
-          setEmployeeId(list[0].employee_id)
+
+        if (!employeeId) {
+          if (validEmps.length > 0) {
+            setEmployeeId(validEmps[0].employee_id || validEmps[0]._id)
+          } else if (listRows.length > 0) {
+            setEmployeeId(listRows[0].employee_id)
+          }
         }
       })
-      .catch((err) => setError(err.message || 'Could not load forecasts'))
+      .catch((err) => {
+        setError(err.message || 'Could not load forecasts')
+        setLoadingEmployees(false)
+      })
       .finally(() => setLoading(false))
   }
 
@@ -86,7 +107,7 @@ export default function KpiForecastPage() {
       .then((payload) => {
         if (!cancelled) setDetail(payload)
       })
-      .catch((err) => {
+      .catch(() => {
         if (!cancelled) {
           setDetail(null)
         }
@@ -113,11 +134,36 @@ export default function KpiForecastPage() {
     setTimeout(() => setNotice(''), 3000)
   }
 
-  // Currently selected employee's stored forecast document
+  // Handle On-Demand Forecast Generation
+  async function handleGenerateForecast() {
+    setGenerating(true)
+    setError('')
+    setNotice('')
+    try {
+      const res = await generateKpiForecasts()
+      setNotice(`Forecasts successfully generated for ${res.generated || 0} officer(s) using Gradient Boosting model.`)
+      setTimeout(() => setNotice(''), 4500)
+      loadData()
+      if (employeeId) {
+        const payload = await getKpiForecast(employeeId)
+        setDetail(payload)
+      }
+    } catch (err) {
+      setError(err.message || 'Could not generate KPI forecast')
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  // Currently selected employee's stored forecast document (latest by source_week)
   const selectedRecord = useMemo(() => {
     if (!employeeId) return rows[0] || null
-    return rows.find((r) => r.employee_id === employeeId) || null
-  }, [rows, employeeId])
+    const empRows = rows.filter((r) => r.employee_id === employeeId)
+    if (empRows.length > 0) {
+      return [...empRows].sort((a, b) => (b.source_week || '').localeCompare(a.source_week || ''))[0]
+    }
+    return detail?.forecast || null
+  }, [rows, employeeId, detail])
 
   // Real actual history list for the selected employee
   const rawHistory = useMemo(() => {
@@ -222,6 +268,11 @@ export default function KpiForecastPage() {
     setTimeout(() => setNotice(''), 4000)
   }
 
+  // Selected employee metadata object
+  const currentEmp = useMemo(() => {
+    return employees.find((e) => (e.employee_id || e._id) === employeeId) || null
+  }, [employees, employeeId])
+
   return (
     <div className="space-y-5">
       {/* ── 1. Breadcrumb, Header & Subtitle ─────────────────────────────────── */}
@@ -237,14 +288,34 @@ export default function KpiForecastPage() {
           <span className="text-[#94A3B8]">/</span>
           <span className="text-[#172B4D]">KPI Forecasts & Analytics</span>
         </nav>
-        <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-[#172B4D] sm:text-2xl">
-              KPI Forecasts & Analytics
+              KPI Forecasts &amp; Analytics
             </h1>
             <p className="mt-0.5 text-xs text-[#64748B]">
-              Predict future employee performance and review model quality.
+              Predict future employee performance and review model quality using trained Gradient Boosting intelligence.
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/kpi-dashboard"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[#DFE8F2] bg-white px-3.5 py-2 text-xs font-bold text-[#172B4D] shadow-xs hover:bg-slate-50"
+            >
+              📊 KPI Dashboard
+            </Link>
+            <button
+              type="button"
+              disabled={generating}
+              onClick={handleGenerateForecast}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#1677D2] px-4 py-2 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#1262ab] disabled:opacity-50"
+              title="Run trained Gradient Boosting model inference for next week"
+            >
+              <svg className={`size-3.5 ${generating ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{generating ? 'Generating...' : 'Generate Next-Week Forecast'}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -286,12 +357,28 @@ export default function KpiForecastPage() {
                 }}
                 className="w-full rounded-xl border border-[#DFE8F2] bg-white py-2 pl-8 pr-8 text-xs font-medium text-[#172B4D] focus:border-[#1677D2] focus:outline-none"
               >
-                {rows.map((r) => (
-                  <option key={r.employee_id} value={r.employee_id}>
-                    {r.employee_name || r.employee_id}
-                  </option>
-                ))}
-                {rows.length === 0 && <option value="">No employees found</option>}
+                {loadingEmployees ? (
+                  <option value="">Loading employees...</option>
+                ) : employeeError ? (
+                  <option value="">Error loading employees</option>
+                ) : employees.length > 0 ? (
+                  employees.map((e) => {
+                    const eid = e.employee_id || e._id || e.name
+                    return (
+                      <option key={eid} value={eid}>
+                        {eid} — {e.employee_name || eid} ({e.designation || 'Staff'})
+                      </option>
+                    )
+                  })
+                ) : rows.length > 0 ? (
+                  rows.map((r) => (
+                    <option key={r.employee_id} value={r.employee_id}>
+                      {r.employee_id} — {r.employee_name || r.employee_id}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No employees found</option>
+                )}
               </select>
             </div>
           </div>
@@ -374,19 +461,20 @@ export default function KpiForecastPage() {
             </svg>
             Apply
           </button>
-          {(appliedFilters.fromDate || appliedFilters.toDate) && (
+          {(appliedFilters.fromDate !== '2025-09-01' || appliedFilters.toDate !== '2025-12-22' || appliedFilters.timePeriod !== 'Next Week') && (
             <button
               type="button"
               onClick={() => {
-                setFromDate('')
-                setToDate('')
+                setFromDate('2025-09-01')
+                setToDate('2025-12-22')
+                setTimePeriod('Next Week')
                 setDateError('')
-                setAppliedFilters({ fromDate: '', toDate: '', timePeriod: 'Next Week' })
+                setAppliedFilters({ fromDate: '2025-09-01', toDate: '2025-12-22', timePeriod: 'Next Week' })
                 setHistoryPage(1)
               }}
               className="rounded-xl border border-[#DFE8F2] bg-white px-3 py-2.5 text-xs font-semibold text-[#64748B] hover:bg-slate-50"
             >
-              Reset
+              Reset to 2025 History
             </button>
           )}
         </div>
@@ -406,16 +494,15 @@ export default function KpiForecastPage() {
               <span className="text-xs font-medium text-[#64748B]">Current KPI</span>
             </div>
             <div className="text-2xl font-bold tracking-tight text-[#172B4D]">
-              {currentKpi ? `${currentKpi}%` : 'Actual KPI not available'}
+              {currentKpi ? `${currentKpi}%` : 'No historical KPI available'}
             </div>
             <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-              {rawHistory.length >= 2 ? (
-                <span>
-                  {rawHistory[rawHistory.length - 1].kpi >= rawHistory[rawHistory.length - 2].kpi ? '↑' : '↓'}{' '}
-                  {Math.abs(rawHistory[rawHistory.length - 1].kpi - rawHistory[rawHistory.length - 2].kpi).toFixed(1)}% vs prev week
-                </span>
+              {filteredRawHistory.length > 0 ? (
+                <span>Observed: {filteredRawHistory[filteredRawHistory.length - 1].week}</span>
+              ) : selectedRecord?.source_week ? (
+                <span>Observed: {selectedRecord.source_week}</span>
               ) : (
-                <span className="text-[#64748B]">Historical actual baseline</span>
+                <span className="text-[#64748B]">No historical KPI available</span>
               )}
             </div>
           </div>
@@ -437,7 +524,11 @@ export default function KpiForecastPage() {
               {predictedKpi ? `${predictedKpi}%` : 'No prediction'}
             </div>
             <div className="flex items-center gap-1 text-[11px] font-semibold text-[#1677D2]">
-              {formattedChange ? `${formattedChange} from current` : 'Model estimate'}
+              {selectedRecord?.forecast_week ? (
+                <span>Target: {selectedRecord.forecast_week}</span>
+              ) : (
+                <span>Trained Model Horizon</span>
+              )}
             </div>
           </div>
           <div>{renderSparkline([...rawHistory.map((h) => Number(h.kpi)), Number(selectedRecord?.predicted_kpi)].filter(Number.isFinite), '#8B5CF6')}</div>
@@ -458,7 +549,7 @@ export default function KpiForecastPage() {
               {formattedChange || '—'}
             </div>
             <div className="flex items-center gap-1 text-[11px] font-semibold text-[#64748B]">
-              <span>{statusNote}</span>
+              <span>{statusNote} (Absolute diff)</span>
             </div>
           </div>
           <div>{renderSparkline([0, Number(selectedRecord?.predicted_change) || 0], '#10B981')}</div>
@@ -482,7 +573,7 @@ export default function KpiForecastPage() {
               {statusLabel}
             </div>
             <div className="flex items-center gap-1 text-[11px] font-semibold text-[#64748B]">
-              <span>{statusNote}</span>
+              <span>{selectedRecord?.recommendation ? 'Review action guide' : statusNote}</span>
             </div>
           </div>
           <div>{renderSparkline(rawHistory.map((h) => Number(h.kpi)), '#10B981')}</div>
@@ -503,7 +594,7 @@ export default function KpiForecastPage() {
               <div>
                 <h2 className="text-sm font-bold text-[#172B4D]">Actual vs Forecast KPI</h2>
                 <p className="text-[11px] text-[#64748B]">
-                  {selectedRecord?.employee_name || 'Selected Employee'}
+                  {currentEmp ? `${currentEmp.employee_name || employeeId} (${currentEmp.designation || 'Staff'})` : (selectedRecord?.employee_name || 'Selected Employee')}
                   {appliedFilters.fromDate || appliedFilters.toDate
                     ? ` (Filtered: ${appliedFilters.fromDate || 'Start'} to ${appliedFilters.toDate || 'End'})`
                     : ''}
@@ -539,6 +630,17 @@ export default function KpiForecastPage() {
               <span className="mt-1 text-[11px] text-[#94A3B8]">
                 Adjust From/To dates or clear filters to view available historical data (2024–2025).
               </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setFromDate('2025-09-01')
+                  setToDate('2025-12-22')
+                  setAppliedFilters({ fromDate: '2025-09-01', toDate: '2025-12-22', timePeriod: 'Next Week' })
+                }}
+                className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#1677D2] hover:underline"
+              >
+                Reset to Full Historical Range (Sep–Dec 2025) →
+              </button>
             </div>
           ) : (
             <div className="relative pt-6 pb-2">
@@ -696,15 +798,27 @@ export default function KpiForecastPage() {
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between">
+                <span className="text-[#64748B]">Officer</span>
+                <span className="text-xs font-bold text-[#172B4D]">
+                  {currentEmp?.employee_name || selectedRecord?.employee_name || employeeId}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[#64748B]">Designation / Office</span>
+                <span className="text-xs font-medium text-[#475569]">
+                  {currentEmp?.designation || selectedRecord?.designation || 'Staff'} · {currentEmp?.post_office || selectedRecord?.post_office || 'Kaduwela'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-[#64748B]">Forecasted KPI ({appliedFilters.timePeriod || timePeriod})</span>
                 <span className="text-sm font-bold text-[#172B4D]">
                   {predictedKpi ? `${predictedKpi}%` : 'No prediction'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#64748B]">Current KPI</span>
+                <span className="text-[#64748B]">Current Actual Baseline</span>
                 <span className="text-sm font-semibold text-[#172B4D]">
-                  {currentKpi ? `${currentKpi}%` : 'Actual KPI not available'}
+                  {currentKpi ? `${currentKpi}%` : 'No historical KPI available'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -727,15 +841,15 @@ export default function KpiForecastPage() {
                 </svg>
                 <span>Forecast Period:</span>
                 <strong className="text-[#172B4D]">
-                  {selectedRecord?.source_week || '—'} to {selectedRecord?.forecast_week || '—'}
+                  {selectedRecord?.source_week || '2025-12-15'} to {selectedRecord?.forecast_week || '2025-12-22'}
                 </strong>
               </div>
               <div className="flex items-center gap-2 text-[#64748B]">
                 <svg className="size-3.5 shrink-0 text-[#1677D2]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
                 </svg>
-                <span>Model:</span>
-                <strong className="text-[#172B4D]">Gradient Boosting</strong>
+                <span>Model Identity:</span>
+                <strong className="text-[#172B4D]">Gradient Boosting ({selectedRecord?.model_version || 'post_assist_kpi_model.joblib'})</strong>
               </div>
             </div>
 
@@ -745,7 +859,7 @@ export default function KpiForecastPage() {
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
-              <span>Forecasts are estimates, not guaranteed outcomes. Actual observations are only recorded where real operational logs exist.</span>
+              <span>Forecasts are monitoring indicators generated by the trained Gradient Boosting model. Observations reflect verified historical KPI logs.</span>
             </div>
           </div>
 
@@ -913,31 +1027,31 @@ export default function KpiForecastPage() {
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                 <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
               </svg>
-              <h3 className="text-sm font-bold text-[#172B4D]">Model Comparison</h3>
+              <h3 className="text-sm font-bold text-[#172B4D]">Model Quality &amp; Evaluation</h3>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-[#DFE8F2] text-[11px] font-semibold text-[#64748B]">
-                    <th className="py-2 pr-2">Model</th>
-                    <th className="py-2 px-2 text-center">MAE ↓</th>
-                    <th className="py-2 px-2 text-center">RMSE ↓</th>
-                    <th className="py-2 px-2 text-center">R² ↑</th>
+                    <th className="py-2 pr-2">Model Pipeline</th>
+                    <th className="py-2 px-1 text-center" title="Mean Absolute Error">MAE ↓</th>
+                    <th className="py-2 px-1 text-center" title="Root Mean Squared Error">RMSE ↓</th>
+                    <th className="py-2 px-1 text-center" title="Coefficient of Determination">R² ↑</th>
                     <th className="py-2 pl-2 text-right">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#DFE8F2]">
                   {MODEL_COMPARISONS.map((m) => (
                     <tr key={m.model} className="hover:bg-[#F8FAFC]">
-                      <td className="py-3 pr-2 font-bold text-[#172B4D]">{m.model}</td>
-                      <td className="py-3 px-2 text-center font-medium text-[#64748B]">{m.mae.toFixed(2)}</td>
-                      <td className="py-3 px-2 text-center font-medium text-[#64748B]">{m.rmse.toFixed(2)}</td>
-                      <td className="py-3 px-2 text-center font-bold text-[#1677D2]">{m.r2.toFixed(2)}</td>
+                      <td className="py-3 pr-2 font-bold text-[#172B4D] text-[11px]">{m.model}</td>
+                      <td className="py-3 px-1 text-center font-medium text-[#64748B]">{m.mae.toFixed(2)}</td>
+                      <td className="py-3 px-1 text-center font-medium text-[#64748B]">{m.rmse.toFixed(2)}</td>
+                      <td className="py-3 px-1 text-center font-bold text-[#1677D2]">{m.r2.toFixed(2)}</td>
                       <td className="py-3 pl-2 text-right">
                         <span
                           className={`inline-block rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                            m.status === 'Best'
+                            m.status.includes('Active')
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : 'bg-slate-100 text-slate-600 border border-slate-200'
                           }`}
@@ -958,7 +1072,7 @@ export default function KpiForecastPage() {
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <span>Production model uses Gradient Boosting on rolling weekly logs.</span>
+            <span>Production model uses Gradient Boosting on rolling weekly logs. R² denotes Coefficient of Determination across 1,056 holdout test rows.</span>
           </div>
         </div>
 
@@ -1049,27 +1163,18 @@ export default function KpiForecastPage() {
                 type="button"
                 disabled={historyPage <= 1}
                 onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
-                className="flex size-5 items-center justify-center rounded border border-[#DFE8F2] text-[#64748B] hover:bg-slate-50 disabled:opacity-40"
+                className="rounded border border-[#DFE8F2] px-2 py-0.5 font-bold hover:bg-slate-50 disabled:opacity-30"
               >
                 ‹
               </button>
-              {Array.from({ length: Math.min(3, totalHistoryPages) }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setHistoryPage(p)}
-                  className={`flex size-5 items-center justify-center rounded text-[10px] font-bold ${
-                    historyPage === p ? 'bg-[#1677D2] text-white' : 'text-[#64748B] hover:bg-slate-50'
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
+              <span className="font-semibold text-[#172B4D]">
+                {historyPage} / {totalHistoryPages}
+              </span>
               <button
                 type="button"
                 disabled={historyPage >= totalHistoryPages}
                 onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages, p + 1))}
-                className="flex size-5 items-center justify-center rounded border border-[#DFE8F2] text-[#64748B] hover:bg-slate-50 disabled:opacity-40"
+                className="rounded border border-[#DFE8F2] px-2 py-0.5 font-bold hover:bg-slate-50 disabled:opacity-30"
               >
                 ›
               </button>
@@ -1078,65 +1183,73 @@ export default function KpiForecastPage() {
         </div>
       </div>
 
-      {/* ── View Forecast Details Modal (Supported Action) ────────────────────── */}
+      {/* ── 9. View Forecast Details Modal ────────────────────────────────────── */}
       {showDetailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-xl rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-2xs">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#DFE8F2] bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between border-b border-[#DFE8F2] pb-3">
               <div>
-                <h3 className="text-base font-bold text-[#172B4D]">
-                  {selectedRecord?.employee_name || 'Employee Forecast Details'}
-                </h3>
+                <h3 className="text-base font-bold text-[#172B4D]">Detailed Forecast Breakdown</h3>
                 <p className="text-xs text-[#64748B]">
-                  ID: {selectedRecord?.employee_id} · Post Office: {selectedRecord?.post_office}
+                  {selectedRecord?.employee_name || 'Selected Officer'} · {selectedRecord?.employee_id}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDetailModal(false)}
-                className="rounded-lg p-1 text-[#64748B] hover:bg-slate-100 hover:text-[#172B4D]"
+                className="rounded-lg p-1 text-[#64748B] hover:bg-slate-100"
               >
                 ✕
               </button>
             </div>
 
             <div className="mt-4 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3 text-center">
-                  <div className="text-[10px] text-[#64748B]">Measured KPI</div>
-                  <div className="mt-1 text-base font-bold text-[#172B4D]">{currentKpi ? `${currentKpi}%` : 'Actual KPI not available'}</div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
+                  <div className="text-[11px] text-[#64748B]">Source Week</div>
+                  <div className="text-sm font-bold text-[#172B4D]">{selectedRecord?.source_week || '—'}</div>
                 </div>
-                <div className="rounded-xl border border-[#DFE8F2] bg-blue-50 p-3 text-center">
-                  <div className="text-[10px] text-[#1677D2]">Predicted KPI</div>
-                  <div className="mt-1 text-base font-bold text-[#1677D2]">{predictedKpi ? `${predictedKpi}%` : '—'}</div>
+                <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
+                  <div className="text-[11px] text-[#64748B]">Target Forecast Week</div>
+                  <div className="text-sm font-bold text-[#172B4D]">{selectedRecord?.forecast_week || '—'}</div>
                 </div>
-                <div className="rounded-xl border border-[#DFE8F2] bg-emerald-50 p-3 text-center">
-                  <div className="text-[10px] text-emerald-700">Change</div>
-                  <div className="mt-1 text-base font-bold text-emerald-700">{formattedChange || '—'}</div>
+                <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
+                  <div className="text-[11px] text-[#64748B]">Current Actual KPI</div>
+                  <div className="text-sm font-bold text-[#1677D2]">{currentKpi ? `${currentKpi}%` : '—'}</div>
                 </div>
-                <div className="rounded-xl border border-[#DFE8F2] bg-slate-50 p-3 text-center">
-                  <div className="text-[10px] text-[#64748B]">Category</div>
-                  <div className="mt-1 text-xs font-bold text-[#172B4D]">{statusLabel}</div>
+                <div className="rounded-xl border border-[#DFE8F2] bg-[#F8FAFC] p-3">
+                  <div className="text-[11px] text-[#64748B]">Predicted KPI</div>
+                  <div className="text-sm font-bold text-[#8B5CF6]">{predictedKpi ? `${predictedKpi}%` : '—'}</div>
                 </div>
               </div>
 
-              {detail?.indicators && (
-                <div className="rounded-xl border border-[#DFE8F2] p-3">
-                  <div className="mb-2 font-bold text-[#172B4D]">Baseline Performance Indicators:</div>
-                  <div className="grid grid-cols-2 gap-2 text-[#64748B] sm:grid-cols-3">
-                    <div>Completion Rate: <strong className="text-[#172B4D]">{detail.indicators.completion_rate ?? '—'}%</strong></div>
-                    <div>Accuracy Rate: <strong className="text-[#172B4D]">{detail.indicators.accuracy_rate ?? '—'}%</strong></div>
-                    <div>Timeliness Rate: <strong className="text-[#172B4D]">{detail.indicators.timeliness_rate ?? '—'}%</strong></div>
-                    <div>Assigned Mail: <strong className="text-[#172B4D]">{detail.indicators.assigned_work_count ?? '—'}</strong></div>
-                    <div>Days Worked: <strong className="text-[#172B4D]">{detail.indicators.days_worked ?? '—'}</strong></div>
+              <div className="space-y-2 rounded-xl border border-[#DFE8F2] p-3">
+                <h4 className="font-bold text-[#172B4D]">Key Contributing Indicators</h4>
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-[#64748B]">Completion Rate:</span>{' '}
+                    <strong>{selectedRecord?.completion_rate != null ? `${selectedRecord.completion_rate}%` : '—'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Accuracy Rate:</span>{' '}
+                    <strong>{selectedRecord?.accuracy_rate != null ? `${selectedRecord.accuracy_rate}%` : '—'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Timeliness Rate:</span>{' '}
+                    <strong>{selectedRecord?.timeliness_rate != null ? `${selectedRecord.timeliness_rate}%` : '—'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#64748B]">Assigned Work Batches:</span>{' '}
+                    <strong>{selectedRecord?.assigned_work_count != null ? selectedRecord.assigned_work_count : '—'}</strong>
                   </div>
                 </div>
-              )}
+              </div>
 
-              <div className="rounded-xl bg-[#F8FAFC] p-3 text-[11px] leading-relaxed text-[#64748B]">
-                <strong className="text-[#172B4D]">Supervisory Recommendation: </strong>
-                {selectedRecord?.recommendation ||
-                  'Continue routine monitoring and compare next week’s actual KPI with this forecast.'}
+              <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 text-[11px]">
+                <div className="font-bold text-[#1677D2]">Recommended Supervisory Action</div>
+                <p className="mt-1 leading-relaxed text-[#172B4D]">
+                  {selectedRecord?.recommendation || 'Continue routine weekly performance reviews and note factors contributing to positive KPI trajectories.'}
+                </p>
               </div>
             </div>
 
@@ -1144,7 +1257,7 @@ export default function KpiForecastPage() {
               <button
                 type="button"
                 onClick={() => setShowDetailModal(false)}
-                className="rounded-xl bg-[#1677D2] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#1262ab]"
+                className="rounded-xl bg-[#1677D2] px-4 py-2 text-xs font-bold text-white hover:bg-[#1262ab]"
               >
                 Close
               </button>
